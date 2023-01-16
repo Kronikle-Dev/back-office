@@ -22,7 +22,7 @@ try {
   }
 } catch (e) {
   console.error('Bad event id : ', eventid, e)
-  navigateTo('/admin')
+  navigateTo('/')
 }
 </script>
 

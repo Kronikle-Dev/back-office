@@ -150,7 +150,7 @@ async function addDisplay() {
     } else {
       const result = await databases.createDocument('kronikle', 'display', 'unique()', newDisplay)
     }
-    navigateTo('/admin/display')
+    navigateTo('/display')
   } catch (e) {
     console.error('Fail to add Display error : ', e)
   }
@@ -160,7 +160,7 @@ async function deleteDisplay() {
   if (props.display) {
     try {
       const res = await databases.deleteDocument('kronikle', 'display', props.display.$id)
-      navigateTo('/admin/display')
+      navigateTo('/display')
     } catch (e) {
       console.error('Failed to delete Display : ', e)
     }
@@ -174,7 +174,7 @@ const originUrl = window.location.origin
   <div class="p-4">
     <h1 class="h1">{{ props.display ? $t('display.form.update-title') : $t('display.form.title')}} : {{state.name.length > 0 ? state.name : ''}}</h1>
     <div v-if="props.display">
-      <span class="font-thin"><NuxtLink target="_blank" :to="originUrl + '/display/' + props.display.$id">{{ originUrl + '/display/' + props.display.$id }}</NuxtLink></span>
+      <span class="font-thin"><NuxtLink target="_blank" :to="originUrl + '/d/' + props.display.$id">{{ originUrl + '/d/' + props.display.$id }}</NuxtLink></span>
     </div>
     <label class="label mt-8">
       <span class="label-text">{{$t('display.form.name-label')}}</span>

@@ -126,7 +126,7 @@ async function importEvent(eventId: string) {
   // Redirect to /event/:eventId
   Promise.all(datesPromises).then(() => {
     console.log('import OK')
-    navigateTo('/admin')
+    navigateTo('/')
   })
 }
 

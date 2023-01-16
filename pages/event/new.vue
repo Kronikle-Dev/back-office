@@ -68,7 +68,7 @@ async function publish () {
 
   Promise.all(datesPromises).then(() => {
     console.log('done')
-    navigateTo('/admin')
+    navigateTo('/')
   })
 }
 

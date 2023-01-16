@@ -30,7 +30,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOpti
 <template>
   <div class="max-w-xl ml-4">
     <div class="card bg-white not-prose shadow">
-      <NuxtLink :to="`/admin/event/edit/${props.event.$id}`">
+      <NuxtLink :to="`/event/edit/${props.event.$id}`">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
       <figure><img :src="props.event.imageUrl" alt="Event image" /></figure>

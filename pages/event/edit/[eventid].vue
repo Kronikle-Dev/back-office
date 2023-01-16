@@ -22,7 +22,7 @@ try {
   }
 } catch (e) {
   console.error('Bad event id : ', eventid, e)
-  navigateTo('/admin')
+  navigateTo('/')
 }
 
 const newevent = reactive({
@@ -88,7 +88,7 @@ async function publish () {
 
   Promise.all(datesPromises).then(() => {
     console.log('done')
-    navigateTo('/admin')
+    navigateTo('/')
   })
 }
 
