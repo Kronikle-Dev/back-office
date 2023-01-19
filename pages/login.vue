@@ -48,7 +48,7 @@ async function login () {
 
 <template>
   <div>
-    <div class="max-w-lg mx-auto mt-20 prose">
+    <div class="max-w-lg mx-auto px-4 mt-20 prose">
       <h1 class="h1">{{$t('login.title')}}</h1>
       <label class="label">
         <span class="label-text">{{$t('login.email')}}</span>
