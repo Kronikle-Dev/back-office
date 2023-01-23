@@ -22,14 +22,16 @@
         <span class="hidden lg:inline" :title="$t('sidebar.import-event')">{{$t('sidebar.import-event')}}</span>
       </NuxtLink>
     </li>
+    <div class="tooltip tooltip-right" :data-tip="$t('sidebar.to-come')">
     <li>
-      <NuxtLink to="/">
-        <svg class="h-5 w-5" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
-      </svg>
-        <span class="hidden lg:inline" :title="$t('sidebar.places')">{{$t('sidebar.places')}}</span>
-      </NuxtLink>
+        <NuxtLink>
+          <svg class="h-5 w-5" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
+        </svg>
+          <span class="hidden lg:inline" :title="$t('sidebar.places')">{{$t('sidebar.places')}}</span>
+        </NuxtLink>
     </li>
+    </div>
     <li>
       <NuxtLink to="/label">
         <svg class="h-5 w-5" viewBox="0 0 24 24">
@@ -46,13 +48,15 @@
         <span class="hidden lg:inline" :title="$t('sidebar.displays')">{{$t('sidebar.displays')}}</span>
       </NuxtLink>
     </li>
+    <div class="tooltip tooltip-right" :data-tip="$t('sidebar.to-come')">
     <li>
-      <NuxtLink to="/">
+      <NuxtLink>
         <svg class="h-5 w-5" viewBox="0 0 24 24">
           <path fill="currentColor" d="M6,17C6,15 10,13.9 12,13.9C14,13.9 18,15 18,17V18H6M15,9A3,3 0 0,1 12,12A3,3 0 0,1 9,9A3,3 0 0,1 12,6A3,3 0 0,1 15,9M3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3H5C3.89,3 3,3.9 3,5Z" />
       </svg>
         <span class="hidden lg:inline" :title="$t('sidebar.profile')">{{$t('sidebar.profile')}}</span>
       </NuxtLink>
     </li>
+    </div>
   </ul>
 </template>

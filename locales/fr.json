@@ -6,7 +6,8 @@
     "places": "Lieux",
     "labels": "Labels",
     "profile": "Profil",
-    "displays": "Affichages"
+    "displays": "Affichages",
+    "to-come": "À venir"
   },
   "login": {
     "title": "Connexion",
@@ -94,7 +95,8 @@
       "title": "Importer un événement",
       "subtitle": "Importer un événement depuis votre outils d'agenda, vous faites partie de l'organisation : ",
       "name-label": "Nom de l'événement",
-      "name-placeholder": "Entrez ici le nom de l'événement que vous souhaitez importer"
+      "name-placeholder": "Entrez ici le nom de l'événement que vous souhaitez importer",
+      "importing": "Import en cours."
     }
   },
   "resource": {

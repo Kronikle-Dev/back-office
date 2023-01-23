@@ -10,7 +10,8 @@ definePageMeta({
 
 const state = reactive({
   query: '',
-  organization: 'none'
+  organization: 'none',
+  importing: false
 })
 
 const { data: events, pending, refresh, error } = await useFetch(() => `/api/third-party/${state.organization}/list?query=${state.query}`)
@@ -40,6 +41,8 @@ async function importEvent(eventId: string) {
   let publicTypesIds = [] as string[]
   let existingEventTypes = [] as {$id: string, name: string}[]
   let eventTypesIds = [] as string[]
+
+  state.importing = true
 
   // Get the KImportEvent Object
   const event = await $fetch(`/api/third-party/${state.organization}/event/${eventId}`)
@@ -125,8 +128,9 @@ async function importEvent(eventId: string) {
   }
   // Redirect to /event/:eventId
   Promise.all(datesPromises).then(() => {
+    state.importing = false
     console.log('import OK')
-    navigateTo('/')
+    //navigateTo('/')
   })
 }
 
@@ -141,13 +145,22 @@ async function importEvent(eventId: string) {
       <span class="label-text">{{$t('event.import.name-label')}}</span>
     </label>
     <input v-model="state.query" type="text" :placeholder="$t('event.import.name-placeholder')" class="input input-bordered bg-white w-full" @keypress.enter="search">
+    <div class="my-4" v-if="pending">Chargement...</div>
     <div 
       @click="importEvent(event.id)"
       v-for="event of events"
       :key="event.id"
-      class="my-3 bg-white card shadow py-2 px-4 cursor-pointer hover:shadow-lg">
+      class="my-3 bg-white card shadow py-2 px-4 cursor-pointer hover:shadow-lg"
+      :class="{'bg-base-100': pending, 'text-base-200': pending}">
       <div class="font-bold">{{event.name}}</div>
       <div v-for="date of event.date" :key="date" class="text-sm">{{(new Date(date)).toLocaleDateString()}}</div>
+    </div>
+    <!-- Put this part before </body> tag -->
+    <input type="checkbox" id="my-modal" class="modal-toggle" v-model="state.importing" />
+    <div class="modal">
+      <div class="modal-box">
+        <p class="py-4">{{$t('event.import.importing')}}</p>
+      </div>
     </div>
   </div>
 </template>
