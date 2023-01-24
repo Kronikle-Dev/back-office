@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query } from 'appwrite'
 import { DateTimeFormatOptions } from '@intlify/core-base';
+const {$appwrite} = useNuxtApp()
 
-const databases = new Databases(Appwrite.client)
+const databases = new Databases($appwrite().client)
 
 const props = defineProps<{
   event: KEvent,

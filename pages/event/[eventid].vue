@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Appwrite from '@/utils/appwrite'
 import { Databases } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 const route = useRoute()
 
 definePageMeta({
@@ -9,10 +9,10 @@ definePageMeta({
 })
 
 const eventid = route.params.eventid as string
-const databases = new Databases(Appwrite.client)
+const databases = new Databases($appwrite().client)
 let event = null as unknown as KEvent
 
-const prefs = await Appwrite.account.getPrefs()
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
 
 try {

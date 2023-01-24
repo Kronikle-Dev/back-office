@@ -4,10 +4,10 @@ import { required, minLength, maxLength, integer } from '@vuelidate/validators'
 import 'v-calendar/dist/style.css';
 import {ID} from 'appwrite'
 import { DateTimeFormatOptions } from '@intlify/core-base'
-import Appwrite from '~~/utils/appwrite'
 import { Databases } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 
-const databases = new Databases(Appwrite.client)
+const databases = new Databases($appwrite().client)
 
 
 const emit = defineEmits(['next', 'prev'])

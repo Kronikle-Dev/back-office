@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 const router = useRouter()
-import Appwrite from '~~/utils/appwrite'
 import {useVuelidate} from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
+const {$appwrite} = useNuxtApp()
 
 definePageMeta({
   layout: "blank",
@@ -33,7 +33,7 @@ async function login () {
     return
   }
   state.loading = true
-  const account = Appwrite.account
+  const account = $appwrite().account
   try {
     const resp = await account.createEmailSession(state.email, state.password)
     state.loading = false

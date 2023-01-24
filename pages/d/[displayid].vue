@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import Appwrite from '@/utils/appwrite'
 import { Databases, Query } from 'appwrite'
 import {DateTime} from 'luxon'
-const databases = new Databases(Appwrite.client)
+const {$appwrite} = useNuxtApp()
+const databases = new Databases($appwrite().client)
 const route = useRoute()
 const displayid = route.params.displayid as string
 let display = null as unknown as KDisplay

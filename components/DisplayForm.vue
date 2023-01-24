@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { required, requiredUnless, url } from '@vuelidate/validators'
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query, Permission, Role } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+const {$appwrite} = useNuxtApp()
 
 const props = defineProps({
   display: {
@@ -14,10 +14,10 @@ const props = defineProps({
   }
 })
 
-const databases = new Databases(Appwrite.client)
-const prefs = await Appwrite.account.getPrefs()
+const databases = new Databases($appwrite().client)
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
-const accountData = await Appwrite.account.get()
+const accountData = await $appwrite().account.get()
 
 const availableTags = ref([] as Array<{$id: string, name: string}>)
 const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
@@ -25,7 +25,7 @@ const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 const availableEvents = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   let promiseArray = []
   promiseArray.push(databases.listDocuments('kronikle', 'tag').then((response) => {
     availableTags.value = response.documents.map((doc): {$id: string, name: string} => {

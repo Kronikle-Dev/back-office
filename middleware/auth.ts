@@ -1,7 +1,7 @@
-import Appwrite from "~~/utils/appwrite"
+const { $appwrite } = useNuxtApp()
 
 export default defineNuxtRouteMiddleware( async (to, from) => {
-  const account = Appwrite.account
+  const account = $appwrite().account
   try {
     const accountStatus = await account.get()
     console.log(accountStatus)

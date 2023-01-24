@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import Appwrite from '@/utils/appwrite'
 import { Databases, Permission, Role, Query } from 'appwrite'
 import { organizationId } from '~~/server/api/third-party/sygefor-33/SygeforImporterConfig';
+const {$appwrite} = useNuxtApp()
 
 definePageMeta({
   middleware: ["auth"],
@@ -17,7 +17,7 @@ const state = reactive({
 const { data: events, pending, refresh, error } = await useFetch(() => `/api/third-party/${state.organization}/list?query=${state.query}`)
 
 onBeforeMount (async () => {
-  const account = Appwrite.account
+  const account = $appwrite().account
   console.log(account)
   const prefs = await account.getPrefs()
   if (!prefs.organization) {
@@ -34,7 +34,7 @@ async function search () {
 }
 
 async function importEvent(eventId: string) {
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   let existingTags = [] as {$id: string, name: string}[]
   let tagIds = [] as string[]
   let existingPublicTypes = [] as {$id: string, name: string}[]

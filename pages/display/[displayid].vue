@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import Appwrite from '@/utils/appwrite'
 import { Databases } from 'appwrite'
-const databases = new Databases(Appwrite.client)
+const {$appwrite} = useNuxtApp()
+const databases = new Databases($appwrite().client)
 const route = useRoute()
 definePageMeta({
   middleware: ["auth"],
   layout: "app",
 })
-const prefs = await Appwrite.account.getPrefs()
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
 const displayid = route.params.displayid as string
 let display = null as unknown as KDisplay

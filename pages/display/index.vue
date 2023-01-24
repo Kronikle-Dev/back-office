@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 
-const databases = new Databases(Appwrite.client)
-const prefs = await Appwrite.account.getPrefs()
+const databases = new Databases($appwrite().client)
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
 
 definePageMeta({
@@ -17,7 +17,7 @@ displays.value = (await databases.listDocuments('kronikle', 'display', [
   Query.equal('organization', organization)
 ])).documents as unknown as KDisplay[]
 
-Appwrite.client.subscribe(['databases.kronikle.collections.display.documents'], async response => {
+$appwrite().client.subscribe(['databases.kronikle.collections.display.documents'], async () => {
 displays.value = (await databases.listDocuments('kronikle', 'event', [
     Query.equal('organization', organization)
   ])).documents as unknown as KDisplay[]

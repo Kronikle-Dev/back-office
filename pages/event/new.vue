@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Appwrite from '@/utils/appwrite'
 import { Databases } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 
 definePageMeta({
   middleware: ["auth"],
@@ -28,7 +28,7 @@ const newevent = reactive({
 const dates = ref([] as Array<any>)
 
 onBeforeMount (async () => {
-  const account = Appwrite.account
+  const account = $appwrite().account
   console.log(account)
   const prefs = await account.getPrefs()
   if (!prefs.organization) {
@@ -55,7 +55,7 @@ async function publish () {
   newevent.creationDate = new Date().toISOString()
   newevent.updateDate = new Date().toISOString()
 
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   const inserted = await databases.createDocument('kronikle', 'event', 'unique()', newevent)
   for (const d of dates.value) {
     if (d.new) {

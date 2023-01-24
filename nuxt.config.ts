@@ -4,6 +4,11 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
   ],
+  runtimeConfig: {
+    public: {
+      appwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle'
+    }
+  },
   // @ts-ignore
   i18n: {
     vueI18n: {

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { Databases } from 'appwrite'
-import Appwrite from '@/utils/appwrite'
 import {ref} from 'vue'
 const router = useRouter()
 const props = defineProps(['event', 'dates'])
 const emit = defineEmits(['fragment', 'datefragment', 'publish'])
+const {$appwrite} = useNuxtApp()
 
 const step = ref(0)
 
@@ -24,7 +24,7 @@ const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
 const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   databases.listDocuments('kronikle', 'tag').then((response) => {
     availableTags.value = response.documents.map((doc): {$id: string, name: string} => {
       return {

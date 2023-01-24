@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Storage } from 'appwrite'
-import Appwrite from '@/utils/appwrite'
 
 import vueFilePond from "vue-filepond"
 import "filepond/dist/filepond.min.css"
@@ -8,6 +7,8 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+
+const { $appwrite } = useNuxtApp()
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -24,7 +25,7 @@ const imageResp = ref(null as any)
 const serverObj = {
   // @ts-ignore
   process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-    const storage = new Storage(Appwrite.client)
+    const storage = new Storage($appwrite().client)
     if (typeof(file) === 'string') {
       // Image has been loaded from URL
       load(file)

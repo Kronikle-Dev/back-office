@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { Databases } from 'appwrite'
-import Appwrite from '@/utils/appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+const {$appwrite} = useNuxtApp()
 
 
 const emit = defineEmits(['next', 'prev'])
@@ -22,7 +22,7 @@ const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
 const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   let promiseArray = []
   promiseArray.push(databases.listDocuments('kronikle', 'tag').then((response) => {
     availableTags.value = response.documents.map((doc): {$id: string, name: string} => {

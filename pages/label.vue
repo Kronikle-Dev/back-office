@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query, Permission, Role } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 
 definePageMeta({
   middleware: ["auth"],
@@ -8,10 +8,10 @@ definePageMeta({
 })
 
 
-const databases = new Databases(Appwrite.client)
-const prefs = await Appwrite.account.getPrefs()
+const databases = new Databases($appwrite().client)
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
-const accountData = await Appwrite.account.get()
+const accountData = await $appwrite().account.get()
 
 const availableTags = ref([] as Array<{$id: string, name: string}>)
 const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
@@ -27,7 +27,7 @@ const state = reactive({
 })
 
 onMounted(() => {
-  const databases = new Databases(Appwrite.client)
+  const databases = new Databases($appwrite().client)
   let promiseArray = []
   promiseArray.push(databases.listDocuments('kronikle', 'tag').then((response) => {
     availableTags.value = response.documents.map((doc): {$id: string, name: string} => {

@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { required, requiredUnless, url } from '@vuelidate/validators'
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+const {$appwrite} = useNuxtApp()
 
-const databases = new Databases(Appwrite.client)
-const prefs = await Appwrite.account.getPrefs()
+const databases = new Databases($appwrite().client)
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
-const accountData = await Appwrite.account.get()
+const accountData = await $appwrite().account.get()
 
 const props = defineProps<{
   event: KEvent,
@@ -23,7 +23,7 @@ resources.value = (await databases.listDocuments('kronikle', 'resource', [
   Query.equal('eventId', props.event.$id as string)
 ])).documents as unknown as KResource[]
 
-Appwrite.client.subscribe(['databases.kronikle.collections.resource.documents'], async response => {
+$appwrite().client.subscribe(['databases.kronikle.collections.resource.documents'], async () => {
   console.log('refresh resources')
   resources.value = (await databases.listDocuments('kronikle', 'resource', [
     Query.equal('organization', organization),

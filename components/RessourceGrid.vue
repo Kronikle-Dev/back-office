@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import Appwrite from '~~/utils/appwrite'
 import { Databases, Query } from 'appwrite'
+const {$appwrite} = useNuxtApp()
 
-const databases = new Databases(Appwrite.client)
-const prefs = await Appwrite.account.getPrefs()
+const databases = new Databases($appwrite().client)
+const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
 
 const props = defineProps<{
@@ -18,7 +18,7 @@ resources.value = (await databases.listDocuments('kronikle', 'resource', [
   Query.equal('eventId', props.event.$id as string)
 ])).documents as unknown as KResource[]
 
-Appwrite.client.subscribe(['databases.kronikle.collections.resource.documents'], async response => {
+$appwrite().client.subscribe(['databases.kronikle.collections.resource.documents'], async () => {
   console.log('refresh resources')
   resources.value = (await databases.listDocuments('kronikle', 'resource', [
     Query.equal('organization', organization),
