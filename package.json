@@ -17,7 +17,7 @@
     "@tailwindcss/typography": "^0.5.8",
     "@vuelidate/core": "^2.0.0",
     "@vuelidate/validators": "^2.0.0",
-    "appwrite": "^10.1.0",
+    "appwrite": "^10.2.0",
     "daisyui": "^2.41.0",
     "filepond": "^4.30.4",
     "filepond-plugin-file-validate-size": "^2.2.7",

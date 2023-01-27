@@ -56,7 +56,7 @@ const state = reactive({
 const imageToLoad = ref([] as Array<string>)
 
 onMounted(() => {
-  if (state.imageUrl.length > 0) {
+  if (state.imageUrl && state.imageUrl.length > 0) {
     imageToLoad.value = [state.imageUrl]
   }
 })

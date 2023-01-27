@@ -12,7 +12,8 @@ export default defineEventHandler(async (event) : Promise<{ error?: string | und
     }
   } else {
     try {
-      const data = await ogs({url: url})
+      const html = await useFetch(url)
+      const data = await ogs({html: (html.data as unknown as string)})
       if (data.error) {
         return {
           error: JSON.stringify(data.result),
