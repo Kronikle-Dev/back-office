@@ -12,7 +12,9 @@ export default defineEventHandler(async (event) : Promise<{ error?: string | und
     }
   } else {
     try {
-      const data = await ogs({url: url})
+      const response = await fetch(url)
+      //@ts-ignore
+      const data = await ogs({html: (await response.text())})
       if (data.error) {
         return {
           error: JSON.stringify(data.result),
