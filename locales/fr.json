@@ -34,7 +34,7 @@
       "subtitle": "Quelques informations de base sur votre événement, ne vous en faites pas vous pourrez les modifier plus tard.",
       "name-label": "Nom",
       "name-placeholder": "Entrez ici le nom de votre événement",
-      "description-label": "Description",
+      "description-label": "Description (on accepte de Markdown !)",
       "description-placeholder": "N'hésitez pas à être exhaustif !"
     },
     "newtwo": {

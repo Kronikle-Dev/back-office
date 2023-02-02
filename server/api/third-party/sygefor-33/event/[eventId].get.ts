@@ -1,5 +1,6 @@
 
 import config from '../SygeforImporterConfig.js'
+import turndown from 'turndown'
 
 export default defineEventHandler(async (event): Promise<KImportEvent>  => {
   const eventId = event.context.params.eventId
@@ -44,11 +45,14 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
       }
     })
 
+    const rawDescription = event.program || event.objectives || ''
+    const turndownService = new turndown()
+    const parsedDescription = turndownService.turndown(rawDescription)
 
     return {
       event: {
         name: event.name,
-        description: event.program || event.objectives || '',
+        description: parsedDescription,
         creationDate: new Date(),
         updateDate: new Date(),
         status: 'published',

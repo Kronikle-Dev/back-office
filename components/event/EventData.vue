@@ -2,7 +2,10 @@
 import { Databases, Query } from 'appwrite'
 import { DateTimeFormatOptions } from '@intlify/core-base';
 const {$appwrite} = useNuxtApp()
+//@ts-ignore
+import showdown from 'showdown'
 
+const converter = new showdown.Converter()
 const databases = new Databases($appwrite().client)
 
 const props = defineProps<{
@@ -13,6 +16,8 @@ const props = defineProps<{
 if (!props.event.$id) {
   throw new Error('Missing event id');
 }
+
+const htmlDescription = converter.makeHtml(props.event.description)
 
 const dates = (await databases.listDocuments('kronikle', 'date', [
   Query.equal('eventId', props.event.$id)
@@ -36,7 +41,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOpti
       <figure><img :src="props.event.imageUrl" alt="Event image" /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>
-        <div v-html="props.event.description"></div>
+        <div v-html="htmlDescription"></div>
         <!--
         <div>
           <span v-for="tag of props.event.tags" :key="tag">{{availableTags.find((t) => t.$id === tag)?.name}} </span>

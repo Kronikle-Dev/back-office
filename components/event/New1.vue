@@ -54,7 +54,7 @@ async function next () {
       <span v-if="v$.name.$error && v$.name.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 200})}}</span>
     </label>
     <label class="label">
-      <span class="label-text">{{$t('event.newone.description-label')}}</span>
+      <span class="label-text">{{$t('event.newone.description-label')}} <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">ℹ️</a></span>
     </label>
     <textarea v-model="state.description" class="textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newone.description-placeholder')"/>
     <label class="label">

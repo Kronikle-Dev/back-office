@@ -53,7 +53,7 @@ async function login () {
       <label class="label">
         <span class="label-text">{{$t('login.email')}}</span>
       </label>
-      <input v-model="state.email" type="email" :placeholder="$t('login.email-placeholder')" class="input input-bordered w-full" />
+      <input v-model="state.email" type="email" :placeholder="$t('login.email-placeholder')" class="input input-bordered bg-white w-full" />
       <label class="label">
         <span v-if="v$.email.$error && v$.email.email.$invalid" class="label-text-alt text-error">{{$t('validation.email')}}</span>
         <span v-if="v$.email.$error && v$.email.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
@@ -61,7 +61,7 @@ async function login () {
       <label class="label">
         <span class="label-text">{{$t('login.password')}}</span>
       </label>
-      <input v-model="state.password" type="password" :placeholder="$t('login.password-placeholder')" class="input input-bordered w-full" @keypress.enter="login" />
+      <input v-model="state.password" type="password" :placeholder="$t('login.password-placeholder')" class="input input-bordered bg-white w-full" @keypress.enter="login" />
       <label class="label">
         <span v-if="v$.password.$error && v$.password.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       </label>

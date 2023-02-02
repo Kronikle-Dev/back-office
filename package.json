@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@types/luxon": "^3.2.0",
+    "@types/turndown": "^5.0.1",
     "nuxt": "3.0.0"
   },
   "dependencies": {
@@ -25,6 +26,8 @@
     "filepond-plugin-image-preview": "^4.6.11",
     "luxon": "^3.2.1",
     "open-graph-scraper": "^5.0.2",
+    "showdown": "^2.1.0",
+    "turndown": "^7.1.1",
     "v-calendar": "^3.0.0-alpha.8",
     "vue-filepond": "^7.0.3",
     "vue-multiselect": "^3.0.0-alpha.2"
