@@ -7,12 +7,18 @@ const route = useRoute()
 const displayid = route.params.displayid as string
 let display = null as unknown as KDisplay
 
+definePageMeta({
+  layout: "display",
+})
+
 try {
   display = (await databases.getDocument('kronikle', 'display', displayid)) as unknown as KDisplay
 } catch (e) {
-  console.error('Bad event id : ', displayid, e)
-  navigateTo('/display/error')
+  console.error('Bad display id : ', displayid, e)
+  navigateTo(`/d${route.params.qr}/error`)
 }
+
+const qr = route.params.qr.length > 0
 
 let eventIdList = null as unknown as Set<string>
 
@@ -96,10 +102,13 @@ if (eventIdList != null) {
   }
 }
 
+const dates = (await databases.listDocuments('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDate[]
+
 </script>
 
 <template>
-  <div class="max-w-xl mx-auto prose">
-    <TemplateBasic :events="events"></TemplateBasic>
+  <div>
+    <TemplateBasic v-if="qr || display.template === 'basic'" :events="events"></TemplateBasic>
+    <TemplateExploreHome v-if="!qr && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates"></TemplateExploreHome>
   </div>
 </template>

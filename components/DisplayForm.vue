@@ -95,7 +95,7 @@ const templates = [
   },
   {
     name: 'Explore v3',
-    caode :'explore-v3'
+    code :'explore-v3'
   }
 ]
 

@@ -174,5 +174,12 @@
     "maxLength": "C'est un peu long (maximum : {length})",
     "maxValue": "C'est un peu beaucoup (maximum : {value})",
     "valid-url": "Doit être une URL valide (ex: https://example.fr)"
+  },
+  "displays": {
+    "kronikle-v3": {
+      "back-to-home": "Cliquer ici pour retourner à l'accueil",
+      "our-themes": "Thèmes de nos programmes",
+      "find-our-program-qr": "Retrouvez tout notre programme culturel en flashant ce QR code :"
+    }
   }
 }

@@ -12,6 +12,7 @@ const state = reactive({
   email: '',
   password: '',
   loading: false,
+  error: null as unknown
 })
 
 const rules = {
@@ -41,6 +42,7 @@ async function login () {
     await navigateTo('/')
   } catch (error) {
     state.loading = false
+    state.error = error
     console.log(error)
   }
 }
@@ -67,6 +69,13 @@ async function login () {
       </label>
       <div class="flex flex-row w-full space-x-4">
         <button class="btn btn-primary mt-4 grow" :class="{'loading': state.loading}" @click="login">{{$t('login.login')}}</button>
+      </div>
+    </div>
+    <div v-if="state.error" class="toast toast-end">
+      <div class="alert alert-error">
+        <div>
+          <span>{{ $t('login.error') }}</span>
+        </div>
       </div>
     </div>
   </div>
