@@ -56,7 +56,7 @@ async function next () {
     <label class="label">
       <span class="label-text">{{$t('event.newone.description-label')}} <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">ℹ️</a></span>
     </label>
-    <textarea v-model="state.description" class="textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newone.description-placeholder')"/>
+    <textarea v-model="state.description" class="min-h-[15rem] textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newone.description-placeholder')"/>
     <label class="label">
       <span v-if="v$.description.$error && v$.description.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.description.$error && v$.description.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 1})}}</span>

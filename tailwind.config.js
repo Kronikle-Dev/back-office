@@ -5,6 +5,7 @@ module.exports = {
   ],
   theme: {
     colors: {
+      "white": "#ffffff",
       "urfist-50": "#e85724", 
       "urfist-100": "#F29F20", 
       "urfist-200": "#FAAF5E", 

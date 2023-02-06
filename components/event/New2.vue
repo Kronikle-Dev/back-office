@@ -167,21 +167,6 @@ function cloneDate(date: any) {
   <div>
     <h2>{{$t('event.newtwo.title')}}</h2>
     <p>{{$t('event.newtwo.subtitle')}}</p>
-    <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mb-10">
-      <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
-        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span> 
-        <span v-else class="indicator-item badge badge-primary cursor-pointer" @click="cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
-        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span> 
-        <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span> 
-        <div class="card w-64 bg-white shadow not-prose" :class="{'card-bordered border-4 border-error': date.status == 'canceled'}">
-          <span v-if="date.status == 'canceled'" class="absolute t-0 l-0 text-error -rotate-45 -translate-x-8">CANCELLED</span>
-          <div class="card-body">
-            <h2 class="card-title">{{date.startDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.startDateTime.toLocaleTimeString(undefined, timeOptions)}})</h2>
-            <p>{{date.placeName}}, {{date.placeDescription}}.<br/>{{date.endDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.endDateTime.toLocaleTimeString(undefined, timeOptions)}})</p>
-          </div>
-        </div>
-      </div>
-    </div>
       <div class="flex flex-row space-x-4 not-prose">
         <div>
           <label class="label">
@@ -292,6 +277,21 @@ function cloneDate(date: any) {
       <span v-if="v$.dates.$error && v$.dates.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.dates.$error && v$.dates.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 1})}}</span>
     </label>
+    <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mb-10">
+      <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
+        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span> 
+        <span v-else class="indicator-item badge badge-primary cursor-pointer" @click="cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
+        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span> 
+        <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span> 
+        <div class="card w-64 bg-white shadow not-prose" :class="{'card-bordered border-4 border-error': date.status == 'canceled'}">
+          <span v-if="date.status == 'canceled'" class="absolute t-0 l-0 text-error -rotate-45 -translate-x-8">CANCELLED</span>
+          <div class="card-body">
+            <h2 class="card-title">{{date.startDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.startDateTime.toLocaleTimeString(undefined, timeOptions)}})</h2>
+            <p>{{date.placeName}}, {{date.placeDescription}}.<br/>{{date.endDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.endDateTime.toLocaleTimeString(undefined, timeOptions)}})</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="flex flex-row w-full space-x-4 mt-10 mb-10">
       <button class="btn btn-outline btn-primary mt-4 grow" @click="emit('prev')">{{$t('form.previous')}}</button>
       <button class="btn btn-primary mt-4 grow" @click="next">{{$t('form.next')}}</button>
