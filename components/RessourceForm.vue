@@ -88,15 +88,15 @@ async function addResource() {
   const newResource = {
     eventId: props.event.$id,
     name: state.name,
-    description: state.description. length > 0 ? state.description : null,
+    description: state.description?.length > 0 ? state.description : null,
     isOwnResource: state.isOwnResource,
     resourceType: state.resourceType,
-    imageUrl: state.imageUrl.length > 0 ? state.imageUrl : null,
-    imageAlt: state.imageAlt.length > 0 ? state.imageAlt : null,
+    imageUrl: state.imageUrl?.length > 0 ? state.imageUrl : null, // ICI C'EST CASSE ! imageUrl == null URL https://zenodo.org/record/7104154#.Y-DlynbMKUk
+    imageAlt: state.imageAlt?.length > 0 ? state.imageAlt : null,
     tags: state.tags.map(t => t.name),
     author: accountData.$id,
     organization: organization,
-    url: resourceUrl.value.length > 0 ? resourceUrl.value : null
+    url: resourceUrl.value?.length > 0 ? resourceUrl.value : null
   }
   try {
     const result = await databases.createDocument('kronikle', 'resource', 'unique()', newResource)
@@ -117,7 +117,7 @@ async function addResource() {
 <template>
   <div class="p-4">
     <div class="card w-96 bg-white shadow-xl" v-if="state.name.length > 0 || resourceUrl.length > 0 || state.description.length > 0 || state.imageUrl.length > 0 || state.tags.length > 0 ">
-      <figure v-if="state.imageUrl.length > 0"><img :src="state.imageUrl" :alt="state.imageAlt" /></figure>
+      <figure v-if="state.imageUrl?.length > 0"><img :src="state.imageUrl" :alt="state.imageAlt" /></figure>
       <div class="card-body">
         <h2 class="card-title"
           v-if="state.name.length > 0">
