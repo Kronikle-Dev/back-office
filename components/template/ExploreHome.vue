@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 import {DateTime} from 'luxon'
 
+enum DisplayType {
+  DAY = 1,
+  WEEK,
+  MONTH
+}
+
 const props = defineProps<{
   events: KEvent[],
   display: KDisplay,
-  dates: KDate[]
+  dates: KDateApi[]
 }>()
 
 useHead({
@@ -14,7 +20,12 @@ useHead({
 })
 
 const state = reactive({
-  tags: [] as string[]
+  tags: [] as string[],
+  displayType: DisplayType.MONTH,
+  pastEvents: [] as KDateApi[],
+  currentEvents: [] as KDateApi[],
+  nextEvents: [] as KDateApi[],
+  futureEvents: [] as KDateApi[]
 })
 
 function addTag (tag: string) {
@@ -25,14 +36,83 @@ function removeTag (tag: string) {
   state.tags.splice(state.tags.indexOf(tag), 1)
 }
 
+// BEGIN Détermination du mode d'affichage des événement : day, week, ou month (défaut)
 const beginOfToday = DateTime.fromObject({hour: 0, minute: 0, second: 0})
 const endOfToday = DateTime.fromObject({hour: 23, minute: 59})
 const beginOfWeek = DateTime.fromObject({weekday: 1})
 const endOfWeek = DateTime.fromObject({weekday: 7, hour: 23, minute: 59})
 const beginOfMonth = DateTime.fromObject({day: 1})
 const endOfMonth = DateTime.fromObject({day: DateTime.now().daysInMonth, hour: 23, minute: 59})
-console.log(beginOfMonth.toISO())
-console.log(endOfMonth.toISO())
+
+const beginOfTomorrow = DateTime.fromObject({day: DateTime.now().day + 1, hour: 0, minute: 0, second: 0})
+const endOfTomorrow = DateTime.fromObject({day: DateTime.now().day + 1, hour: 23, minute: 59})
+const beginOfNextWeek = DateTime.fromObject({weekNumber: DateTime.now().weekNumber + 1, weekday: 1})
+const endOfNextWeek = DateTime.fromObject({weekNumber: DateTime.now().weekNumber + 1, weekday: 7, hour: 23, minute: 59})
+const beginOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: 1})
+const endOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: DateTime.now().daysInMonth, hour: 23, minute: 59})
+
+const numberOfDatesWeek = props.dates.filter((date => {
+  const dateStart = DateTime.fromISO(date.startDateTime)
+  return dateStart >= beginOfWeek && dateStart <= endOfWeek
+})).length
+
+const numberOfDatesMonth = props.dates.filter((date => {
+  const dateStart = DateTime.fromISO(date.startDateTime)
+  return dateStart >= beginOfMonth && dateStart <= endOfMonth
+})).length
+
+if (numberOfDatesMonth > 8) {
+  state.displayType = DisplayType.WEEK
+}
+
+if (numberOfDatesWeek > 8) {
+  state.displayType = DisplayType.DAY
+}
+// END Détermination
+
+state.pastEvents = props.dates.filter(date => {
+  if (state.displayType == DisplayType.DAY) {
+    return DateTime.fromISO(date.startDateTime) < beginOfToday
+  } else if (state.displayType == DisplayType.WEEK) {
+    return DateTime.fromISO(date.startDateTime) < beginOfWeek
+  } else if (state.displayType == DisplayType.MONTH) {
+    return DateTime.fromISO(date.startDateTime) < beginOfMonth
+  }
+})
+
+state.currentEvents = props.dates.filter(date => {
+  if (state.displayType == DisplayType.DAY) {
+    return DateTime.fromISO(date.startDateTime) > beginOfToday && DateTime.fromISO(date.startDateTime) < endOfToday
+  } else if (state.displayType == DisplayType.WEEK) {
+    return DateTime.fromISO(date.startDateTime) > beginOfWeek && DateTime.fromISO(date.startDateTime) < endOfWeek
+  } else if (state.displayType == DisplayType.MONTH) {
+    return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
+  }
+})
+
+state.nextEvents = props.dates.filter(date => {
+  if (state.displayType == DisplayType.DAY) {
+    return DateTime.fromISO(date.startDateTime) > beginOfTomorrow && DateTime.fromISO(date.startDateTime) < endOfTomorrow
+  } else if (state.displayType == DisplayType.WEEK) {
+    return DateTime.fromISO(date.startDateTime) > beginOfNextWeek && DateTime.fromISO(date.startDateTime) < endOfNextWeek
+  } else if (state.displayType == DisplayType.MONTH) {
+    return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
+  }
+})
+
+state.futureEvents = props.dates.filter(date => {
+  if (state.displayType == DisplayType.DAY) {
+    return DateTime.fromISO(date.startDateTime) > endOfTomorrow
+  } else if (state.displayType == DisplayType.WEEK) {
+    return DateTime.fromISO(date.startDateTime) > endOfNextWeek
+  } else if (state.displayType == DisplayType.MONTH) {
+    return DateTime.fromISO(date.startDateTime) > endOfNextMonth
+  }
+})
+
+onMounted(() => {
+  document.getElementById('current-section')?.scrollIntoView()
+})
 
 </script>
 
@@ -48,16 +128,46 @@ console.log(endOfMonth.toISO())
         :events="events">
       </TemplateExploreThemePanel>
       <div class="grow overflow-y-scroll nobar">
-        <TemplateExploreEventCard v-for="event of props.events" :key="event.$id" :event="event">
-        </TemplateExploreEventCard>
-        <TemplateExploreEventCard v-for="event of props.events" :key="event.$id" :event="event">
-        </TemplateExploreEventCard>
-        <TemplateExploreEventCard v-for="event of props.events" :key="event.$id" :event="event">
-        </TemplateExploreEventCard>
-        <TemplateExploreEventCard v-for="event of props.events" :key="event.$id" :event="event">
-        </TemplateExploreEventCard>
-        <TemplateExploreEventCard v-for="event of props.events" :key="event.$id" :event="event">
-        </TemplateExploreEventCard>
+        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
+        <div class="flex flex-row flex-wrap w-full mt-16">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+        </div>
+        <div id="current-section" v-if="state.displayType == DisplayType.DAY" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.WEEK" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.MONTH" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
+        <div class="flex flex-row flex-wrap w-full">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+        </div>
+        <div v-if="state.displayType == DisplayType.DAY" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
+        <div v-if="state.displayType == DisplayType.WEEK" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
+        <div v-if="state.displayType == DisplayType.MONTH" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
+        <div class="flex flex-row flex-wrap w-full">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+        </div>
+        <div class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.future') }}</div>
+        <div class="flex flex-row flex-wrap w-full">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          </TemplateExploreEventCard>
+        </div>
       </div>
     </div>
   </div>
@@ -74,4 +184,8 @@ console.log(endOfMonth.toISO())
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 } 
+
+.consult-bg-gradient {
+  background: linear-gradient(0deg, rgba(2,0,36,0) 0%, rgba(36,47,70,1) 24%, rgba(36,47,70,1) 100%);
+}
 </style>

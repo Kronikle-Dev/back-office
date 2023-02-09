@@ -179,7 +179,15 @@
     "kronikle-v3": {
       "back-to-home": "Cliquer ici pour retourner à l'accueil",
       "our-themes": "Thèmes de nos programmes",
-      "find-our-program-qr": "Retrouvez tout notre programme culturel en flashant ce QR code :"
+      "find-our-program-qr": "Retrouvez tout notre programme culturel en flashant ce QR code :",
+      "consult-our-program": "Consultez notre programme",
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "this-week": "Cette semaine",
+      "next-week": "La semaine prochaine",
+      "this-month": "Ce mois-ci",
+      "next-month": "Le mois prochain",
+      "future": "À venir"
     }
   }
 }

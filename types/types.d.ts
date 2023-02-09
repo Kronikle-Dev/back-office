@@ -20,6 +20,11 @@ interface KDate {
   status?: 'valid' | 'updated' | 'canceled' ,
 }
 
+interface KDateApi extends KDate {
+  startDateTime: string, // ISO Date string
+  endDateTome: string, // ISO Date string
+}
+
 interface KEvent {
   name: string,
   description: string,
