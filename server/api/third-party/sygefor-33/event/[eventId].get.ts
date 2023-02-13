@@ -1,6 +1,7 @@
 
 import config from '../SygeforImporterConfig.js'
 import turndown from 'turndown'
+import { DateTime } from 'luxon'
 
 export default defineEventHandler(async (event): Promise<KImportEvent>  => {
   const eventId = event.context.params.eventId
@@ -31,10 +32,14 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
       } else if (isPresentiel) {
         attendanceMode = 'offline'
       }
+
+      const startDateTime = DateTime.fromISO(session.dateBegin).set({hour: DateTime.fromISO(session.hourBegin).hour, minute: DateTime.fromISO(session.hourBegin).minute})
+      const endDateTime = DateTime.fromISO(session.dateEnd).set({hour: DateTime.fromISO(session.hourEnd).hour, minute: DateTime.fromISO(session.hourEnd).minute})
+
       return {
         eventId: '',
-        startDateTime: new Date(session.dateBegin),
-        endDateTime: new Date(session.dateEnd),
+        startDateTime: startDateTime.toJSDate(),
+        endDateTime: endDateTime.toJSDate(),
         placeName: session.physicalRoom?.room || '',
         placeDescription: session.physicalRoom?.name || '',
         maxAttendeeCapacity: session?.maximumNumberOfRegistrations || null,

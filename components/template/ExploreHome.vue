@@ -28,6 +28,10 @@ const state = reactive({
   futureEvents: [] as KDateApi[]
 })
 
+function getEventForDate (date: KDateApi) : KEvent  | null {
+  return props.events.find((e) => e.$id == date.eventId) || null
+}
+
 function addTag (tag: string) {
   state.tags.push(tag)
 }
@@ -130,42 +134,26 @@ onMounted(() => {
       <div class="grow overflow-y-scroll nobar">
         <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
         <div class="flex flex-row flex-wrap w-full mt-16">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.pastEvents" :key="date.$id" :date="date" :event="getEventForDate(date)">
           </TemplateExploreEventCard>
         </div>
         <div id="current-section" v-if="state.displayType == DisplayType.DAY" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
         <div id="current-section" v-if="state.displayType == DisplayType.WEEK" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
         <div id="current-section" v-if="state.displayType == DisplayType.MONTH" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.currentEvents" :key="date.$id" :date="date" :event="getEventForDate(date)">
           </TemplateExploreEventCard>
         </div>
         <div v-if="state.displayType == DisplayType.DAY" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
         <div v-if="state.displayType == DisplayType.WEEK" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
         <div v-if="state.displayType == DisplayType.MONTH" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.nextEvents" :key="date.$id" :date="date" :event="getEventForDate(date)">
           </TemplateExploreEventCard>
         </div>
         <div class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.future') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
-          </TemplateExploreEventCard>
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="event of props.events" :key="event.$id" :event="event">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.futureEvents" :key="date.$id" :date="date" :event="getEventForDate(date)">
           </TemplateExploreEventCard>
         </div>
       </div>

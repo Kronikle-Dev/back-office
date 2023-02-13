@@ -22,7 +22,7 @@ interface KDate {
 
 interface KDateApi extends KDate {
   startDateTime: string, // ISO Date string
-  endDateTome: string, // ISO Date string
+  endDateTime: string, // ISO Date string
 }
 
 interface KEvent {
