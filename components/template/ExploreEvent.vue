@@ -10,7 +10,8 @@ enum DisplayType {
 const props = defineProps<{
   events: KEvent[],
   display: KDisplay,
-  dates: KDateApi[]
+  dates: KDateApi[],
+  event: KEvent
 }>()
 
 useHead({
@@ -114,15 +115,11 @@ state.futureEvents = props.dates.filter(date => {
   }
 })
 
-onMounted(() => {
-  document.getElementById('current-section')?.scrollIntoView()
-})
-
 </script>
 
 <template>
   <div class="bg-primary-200-kv3 h-screen flex flex-col">
-    <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
+    <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
       <TemplateExploreThemePanel
         class="mt-6"
@@ -132,30 +129,7 @@ onMounted(() => {
         :events="events">
       </TemplateExploreThemePanel>
       <div class="grow overflow-y-scroll nobar">
-        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full" v-if="state.pastEvents.length > 0">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
-        <div class="flex flex-row flex-wrap w-full mt-16">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.pastEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/event/${getEventForDate(date)?.$id}`)">
-          </TemplateExploreEventCard>
-        </div>
-        <div id="current-section" v-if="state.displayType == DisplayType.DAY && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.WEEK && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.MONTH && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.currentEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/event/${getEventForDate(date)?.$id}`)">
-          </TemplateExploreEventCard>
-        </div>
-        <div v-if="state.displayType == DisplayType.DAY && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
-        <div v-if="state.displayType == DisplayType.WEEK && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
-        <div v-if="state.displayType == DisplayType.MONTH && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.nextEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/event/${getEventForDate(date)?.$id}`)">
-          </TemplateExploreEventCard>
-        </div>
-        <div class="font-extrabold text-4xl text-urfist-100 mt-16" v-if="state.futureEvents.length > 0">{{ $t('displays.kronikle-v3.future') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.futureEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/event/${getEventForDate(date)?.$id}`)">
-          </TemplateExploreEventCard>
-        </div>
+        <h1 class="pt-5 text-white">{{ props.event.name }}</h1>
       </div>
     </div>
   </div>
