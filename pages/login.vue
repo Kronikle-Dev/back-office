@@ -55,7 +55,7 @@ async function login () {
       <label class="label">
         <span class="label-text">{{$t('login.email')}}</span>
       </label>
-      <input v-model="state.email" type="email" :placeholder="$t('login.email-placeholder')" class="input input-bordered bg-white w-full" />
+      <input v-model="state.email" type="email" :placeholder="$t('login.email-placeholder')" class="input input-bordered bg-white w-full"  @keypress.enter="login"/>
       <label class="label">
         <span v-if="v$.email.$error && v$.email.email.$invalid" class="label-text-alt text-error">{{$t('validation.email')}}</span>
         <span v-if="v$.email.$error && v$.email.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>

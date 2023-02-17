@@ -118,18 +118,29 @@ state.futureEvents = props.dates.filter(date => {
 </script>
 
 <template>
-  <div class="bg-primary-200-kv3 h-screen flex flex-col">
+  <div class="bg-urfist-300 h-screen flex flex-col">
     <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
-      <TemplateExploreThemePanel
+      <TemplateExploreSearchPanel
         class="mt-6"
         @select="addTag"
         @deselect="removeTag"
         :display="display"
         :events="events">
-      </TemplateExploreThemePanel>
+      </TemplateExploreSearchPanel>
       <div class="grow overflow-y-scroll nobar">
-        <h1 class="pt-5 text-white">{{ props.event.name }}</h1>
+        <div class="pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
+        <div class="rounded-lg p-7 bg-urfist-200 max-w-2xl">
+          <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
+          <div class="grid grid-cols-2 gap-x-5 mt-5">
+            <img :src="props.event.imageUrl"/>
+            <div>
+              <div>08 février 2023</div>
+              <div>18:00 - 20:00</div>
+              <div>Bibliothèque Mériadeck</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -187,7 +187,8 @@
       "next-week": "La semaine prochaine",
       "this-month": "Ce mois-ci",
       "next-month": "Le mois prochain",
-      "future": "À venir"
+      "future": "À venir",
+      "event-sheet": "Fiche programme"
     }
   }
 }
