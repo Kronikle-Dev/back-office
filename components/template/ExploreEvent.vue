@@ -1,5 +1,12 @@
 <script lang="ts" setup>
+import { Databases, Query } from 'appwrite'
 import {DateTime} from 'luxon'
+const {$appwrite} = useNuxtApp()
+const databases = new Databases($appwrite().client)
+//@ts-ignore
+import showdown from 'showdown'
+
+const converter = new showdown.Converter()
 
 enum DisplayType {
   DAY = 1,
@@ -11,7 +18,8 @@ const props = defineProps<{
   events: KEvent[],
   display: KDisplay,
   dates: KDateApi[],
-  event: KEvent
+  event: KEvent,
+  date: KDateApi,
 }>()
 
 useHead({
@@ -26,8 +34,28 @@ const state = reactive({
   pastEvents: [] as KDateApi[],
   currentEvents: [] as KDateApi[],
   nextEvents: [] as KDateApi[],
-  futureEvents: [] as KDateApi[]
+  futureEvents: [] as KDateApi[],
+  hideDescription: true
 })
+
+const eventTypes = (await databases.listDocuments('kronikle', 'event-type',
+  [
+    Query.equal('$id', [...props.event.eventType as string[]])
+  ])).documents as unknown as {$id: string, name: string}[]
+
+
+const eventTags = (await databases.listDocuments('kronikle', 'tag',
+  [
+    Query.equal('$id', [...props.event.tags as string[]])
+  ])).documents as unknown as {$id: string, name: string}[]
+
+const eventResources = (await databases.listDocuments('kronikle', 'resource',
+  [
+    Query.equal('eventId', props.event.$id as string)
+  ])).documents as unknown as KResource[]
+
+const resourceLabels = new Set<string>()
+eventResources.map(r => r.tags.map(t => resourceLabels.add(t)))
 
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
@@ -115,10 +143,12 @@ state.futureEvents = props.dates.filter(date => {
   }
 })
 
+const htmlDescription = converter.makeHtml(props.event.description)
+
 </script>
 
 <template>
-  <div class="bg-urfist-300 h-screen flex flex-col">
+  <div class="bg-urfist-800 h-screen flex flex-col">
     <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
       <TemplateExploreSearchPanel
@@ -130,15 +160,73 @@ state.futureEvents = props.dates.filter(date => {
       </TemplateExploreSearchPanel>
       <div class="grow overflow-y-scroll nobar">
         <div class="pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
-        <div class="rounded-lg p-7 bg-urfist-200 max-w-2xl">
-          <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
-          <div class="grid grid-cols-2 gap-x-5 mt-5">
-            <img :src="props.event.imageUrl"/>
-            <div>
-              <div>08 février 2023</div>
-              <div>18:00 - 20:00</div>
-              <div>Bibliothèque Mériadeck</div>
+        <div class="flex flex-row flex-wrap space-y-7 items-end">
+          <div class="rounded-lg p-7 mr-7 bg-urfist-200 max-w-2xl">
+            <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
+            <div class="grid grid-cols-2 gap-x-5 gap-y-5 mt-5">
+              <img :src="props.event.imageUrl"/>
+              <div class="flex flex-col space-y-2.5">
+                <div class="flex flex-row space-x-1">
+                  <svg class="text-primary-200-kv3 w-5" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.9583 3.33335H18.75V0.916687H16.3333V3.33335H6.66667V0.916687H4.25V3.33335H3.04167C1.70042 3.33335 0.637083 4.42085 0.637083 5.75002L0.625 22.6667C0.625 23.9959 1.70042 25.0834 3.04167 25.0834H19.9583C21.2875 25.0834 22.375 23.9959 22.375 22.6667V5.75002C22.375 4.42085 21.2875 3.33335 19.9583 3.33335ZM19.9583 22.6667H3.04167V10.5834H19.9583V22.6667ZM7.875 15.4167H5.45833V13H7.875V15.4167ZM12.7083 15.4167H10.2917V13H12.7083V15.4167ZM17.5417 15.4167H15.125V13H17.5417V15.4167ZM7.875 20.25H5.45833V17.8334H7.875V20.25ZM12.7083 20.25H10.2917V17.8334H12.7083V20.25ZM17.5417 20.25H15.125V17.8334H17.5417V20.25Z" fill="currentColor"/>
+                  </svg>
+                  <span class="font-bold text-lg text-primary-100-kv3">
+                    {{ DateTime.fromISO(props.date.startDateTime).toLocaleString({day: '2-digit', month: 'long', year: 'numeric'}) }}
+                  </span>
+                </div>
+                <div class="flex flex-row space-x-1">
+                  <svg class="text-primary-200-kv3 w-5" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.4879 0.916687C5.81794 0.916687 0.416687 6.33002 0.416687 13C0.416687 19.67 5.81794 25.0834 12.4879 25.0834C19.17 25.0834 24.5834 19.67 24.5834 13C24.5834 6.33002 19.17 0.916687 12.4879 0.916687ZM12.5 22.6667C7.15919 22.6667 2.83335 18.3409 2.83335 13C2.83335 7.65919 7.15919 3.33335 12.5 3.33335C17.8409 3.33335 22.1667 7.65919 22.1667 13C22.1667 18.3409 17.8409 22.6667 12.5 22.6667ZM13.1042 6.95835H11.2917V14.2084L17.6354 18.0146L18.5417 16.5284L13.1042 13.3021V6.95835Z" fill="currentColor"/>
+                  </svg>
+                  <span class="font-bold text-lg text-primary-100-kv3">
+                    {{ DateTime.fromISO(props.date.startDateTime).toLocaleString({hour: '2-digit', minute: '2-digit'}) }} - {{ DateTime.fromISO(props.date.endDateTime).toLocaleString({hour: '2-digit', minute: '2-digit'}) }}
+                  </span>
+                </div>
+                <div class="flex flex-row space-x-1">
+                  <svg class="text-primary-200-kv3 w-5 h-6" viewBox="0 0 17 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.50002 0.916687C3.82377 0.916687 0.041687 4.69877 0.041687 9.37502C0.041687 15.7188 8.50002 25.0834 8.50002 25.0834C8.50002 25.0834 16.9584 15.7188 16.9584 9.37502C16.9584 4.69877 13.1763 0.916687 8.50002 0.916687ZM8.50002 12.3959C6.83252 12.3959 5.47919 11.0425 5.47919 9.37502C5.47919 7.70752 6.83252 6.35419 8.50002 6.35419C10.1675 6.35419 11.5209 7.70752 11.5209 9.37502C11.5209 11.0425 10.1675 12.3959 8.50002 12.3959Z" fill="currentColor"/>
+                  </svg>
+                  <span class="font-bold text-lg text-primary-100-kv3">
+                    {{ props.date.placeName }}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <TemplateExploreEventTypeButton
+                    v-for="type of eventTypes"
+                    :key="type.$id"
+                    :type-name="type.name"
+                    :type-id="type.$id">
+                  </TemplateExploreEventTypeButton>
+                  <div class="flex flex-row space-x-2.5 mt-2.5">
+                    <TemplateExploreThemeTagButton
+                      v-for="type of eventTags"
+                      :key="type.$id"
+                      :tag-name="type.name"
+                      :tag-id="type.$id">
+                    </TemplateExploreThemeTagButton>
+                  </div>
+                </div>
+              </div>
+              <div class="text-lg">
+                <div class="font-semibold">{{ $t('displays.kronikle-v3.description') }}</div>
+                <div class="overflow-clip" :class="{'max-h-full': !state.hideDescription, 'max-h-[5.25rem]': state.hideDescription}" v-html="htmlDescription"></div>
+              </div>
+              <div>
+                <!-- FILLER -->
+              </div>
+              <div class="text-lg underline cursor-pointer">
+                <a v-if="state.hideDescription" @click="state.hideDescription = false">{{ $t('displays.kronikle-v3.click-to-expand') }}</a>
+                <a v-else @click="state.hideDescription = true">{{ $t('displays.kronikle-v3.click-to-retract') }}</a>
+              </div>
             </div>
+          </div>
+          <div class="bg-urfist-300 max-w-md w-fit rounded-lg p-6 font-normal text-xl shrink">
+            <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>
+            <ul>
+              <li v-for="label of resourceLabels" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
+            </ul>
           </div>
         </div>
       </div>

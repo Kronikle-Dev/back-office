@@ -188,7 +188,11 @@
       "this-month": "Ce mois-ci",
       "next-month": "Le mois prochain",
       "future": "À venir",
-      "event-sheet": "Fiche programme"
+      "event-sheet": "Fiche programme",
+      "description": "Description",
+      "click-to-expand": "Cliquez ici pour voir plus",
+      "click-to-retract": "Cliquez ici pour réduire",
+      "index": "Table des ressources"
     }
   }
 }

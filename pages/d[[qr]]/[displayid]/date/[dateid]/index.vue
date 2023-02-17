@@ -5,8 +5,9 @@ const {$appwrite} = useNuxtApp()
 const databases = new Databases($appwrite().client)
 const route = useRoute()
 const displayid = route.params.displayid as string
-const eventid = route.params.eventid as string
+const dateid = route.params.dateid as string
 let display = null as unknown as KDisplay
+let date = null as unknown as KDateApi
 let event = null as unknown as KEvent
 
 definePageMeta({
@@ -21,9 +22,16 @@ try {
 }
 
 try {
-  event = (await databases.getDocument('kronikle', 'event', eventid)) as unknown as KEvent
+  date = (await databases.getDocument('kronikle', 'date', dateid)) as unknown as KDateApi
 } catch (e) {
-  console.error('Bad event id : ', eventid, e)
+  console.error('Bad date id : ', dateid, e)
+  navigateTo(`/d${route.params.qr}/error`)
+}
+
+try {
+  event = (await databases.getDocument('kronikle', 'event', date.eventId)) as unknown as KEvent
+} catch (e) {
+  console.error('Bad event id : ', date.eventId, e)
   navigateTo(`/d${route.params.qr}/error`)
 }
 
@@ -118,6 +126,6 @@ const dates = (await databases.listDocuments('kronikle', 'date', [Query.equal('e
 <template>
   <div>
     <TemplateBasicEvent v-if="qr || display.template === 'basic'" :events="events" :event="event"></TemplateBasicEvent>
-    <TemplateExploreEvent v-if="!qr && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event"></TemplateExploreEvent>
+    <TemplateExploreEvent v-if="!qr && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event" :date="date"></TemplateExploreEvent>
   </div>
 </template>
