@@ -78,7 +78,8 @@ interface KResource {
   imageUrl?: string,
   imageAlt?: string,
   author: string,
-  tags: string[]
+  tags: string[],
+  html?: string
 }
 
 interface KDisplay {

@@ -38,7 +38,8 @@ const state = reactive({
   resourceType: '',
   imageUrl: '',
   imageAlt: '',
-  tags: [] as {name: string, code: string}[]
+  tags: [] as {name: string, code: string}[],
+  html: null as unknown as string
 })
 
 const resourceUrl = ref('')
@@ -66,9 +67,10 @@ watch(resourceUrl, async (newUrl, oldUrl) => {
   const isUrlCorrect = await vurl$.value.$validate()
   if (isUrlCorrect) {
     const result = await $fetch(`/api/open-graph?url=${resourceUrl.value}`)
-    if (!result.error && result.og.success) {
-      state.name = result.og.ogTitle
-      state.imageUrl = result.og.ogImage.url
+    if (!result.error) {
+      state.name = result.og?.ogTitle || ''
+      state.imageUrl = result.og?.ogImage?.url || ''
+      state.html = result?.html || ''
     }
   }
 })
@@ -96,7 +98,8 @@ async function addResource() {
     tags: state.tags.map(t => t.name),
     author: accountData.$id,
     organization: organization,
-    url: resourceUrl.value?.length > 0 ? resourceUrl.value : null
+    url: resourceUrl.value?.length > 0 ? resourceUrl.value : null,
+    html: state.html
   }
   try {
     const result = await databases.createDocument('kronikle', 'resource', 'unique()', newResource)
@@ -118,7 +121,7 @@ async function addResource() {
   <div class="p-4">
     <div class="card w-96 bg-white shadow-xl" v-if="state.name.length > 0 || resourceUrl.length > 0 || state.description.length > 0 || state.imageUrl.length > 0 || state.tags.length > 0 ">
       <figure v-if="state.imageUrl?.length > 0"><img :src="state.imageUrl" :alt="state.imageAlt" /></figure>
-      <div class="card-body">
+      <div class="card-body overflow-hidden">
         <h2 class="card-title"
           v-if="state.name.length > 0">
           {{state.name}}
@@ -128,6 +131,7 @@ async function addResource() {
         <div class="card-actions justify-end">
           <div class="badge badge-outline" v-for="tag of state.tags" :key="tag.name">{{tag.name}}</div>
         </div>
+        <div v-if="state.html" v-html="state.html" class="bg-white rounded"></div>
       </div>
     </div>
     <label class="label">

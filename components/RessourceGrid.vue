@@ -47,6 +47,7 @@ async function deleteResource (resource: KResource) {
         <div class="card-actions justify-end">
           <div class="badge badge-outline" v-for="tag of resource.tags" :key="tag">{{tag}}</div>
         </div>
+        <div v-if="resource.html" v-html="resource.html"></div>
       </div>
     </div>
   </div>
