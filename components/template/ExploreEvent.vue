@@ -168,8 +168,8 @@ const htmlDescription = converter.makeHtml(props.event.description)
         class="mt-6"
         @select="addTag"
         @deselect="removeTag"
-        :display="display"
-        :events="events">
+        :display="props.display"
+        :events="props.events">
       </TemplateExploreSearchPanel>
       <div class="grow overflow-y-scroll nobar">
         <div class="pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
