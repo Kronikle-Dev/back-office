@@ -57,6 +57,19 @@ const eventResources = (await databases.listDocuments('kronikle', 'resource',
 const resourceLabels = new Set<string>()
 eventResources.map(r => r.tags.map(t => resourceLabels.add(t)))
 
+const orderedResources = {}
+for (const res of eventResources) {
+  for (const tag of res.tags) {
+    // @ts-ignore
+    if (orderedResources[tag] === undefined) {
+    // @ts-ignore
+      orderedResources[tag] = []
+    }
+    // @ts-ignore
+    orderedResources[tag].push(res)
+  }
+}
+
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
@@ -229,6 +242,14 @@ const htmlDescription = converter.makeHtml(props.event.description)
             </ul>
           </div>
         </div>
+          <div>
+            <div v-for="(value, key) in orderedResources"
+                :key="key"
+                :id="key"
+                class="mt-10">
+              <em>{{ key }}</em> : {{ value }}
+            </div>
+          </div>
       </div>
     </div>
   </div>
