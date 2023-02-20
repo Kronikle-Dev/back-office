@@ -243,12 +243,13 @@ const htmlDescription = converter.makeHtml(props.event.description)
           </div>
         </div>
           <div>
-            <div v-for="(value, key) in orderedResources"
+            <TemplateExploreResourceFolder v-for="(value, key) in orderedResources"
                 :key="key"
                 :id="key"
+                :resources="value"
+                :label="key"
                 class="mt-10">
-              <em>{{ key }}</em> : {{ value }}
-            </div>
+            </TemplateExploreResourceFolder>
           </div>
       </div>
     </div>
