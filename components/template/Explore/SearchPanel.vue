@@ -23,10 +23,10 @@ const tags: Ref<{$id: string, name: string}[]> = ref([])
 const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
 const qrUrlTarget = ref('')
 
-tags.value = (await databases.listDocuments('kronikle', 'tag',
+tags.value = ((await databases.listDocuments('kronikle', 'tag',
   [
     Query.equal('$id', [...tagsIds.value])
-  ])).documents as unknown as {$id: string, name: string}[]
+  ])).documents as unknown as {$id: string, name: string}[]).slice(0,6)
 
 watch(tagsIds, async (newVal, oldVal) => {
   tags.value = (await databases.listDocuments('kronikle', 'tag',
