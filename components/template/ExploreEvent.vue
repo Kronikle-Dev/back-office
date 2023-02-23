@@ -80,6 +80,10 @@ for (const res of eventResources) {
   }
 }
 
+const noTagResources = computed(() => {
+  return eventResources.filter(res => res.tags.length === 0)
+})
+
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
@@ -259,6 +263,11 @@ const htmlDescription = converter.makeHtml(props.event.description)
                 :id="key"
                 :resources="value"
                 :label="key"
+                class="mt-10">
+            </TemplateExploreResourceFolder>
+            <TemplateExploreResourceFolder 
+                :resources="noTagResources"
+                :label="''"
                 class="mt-10">
             </TemplateExploreResourceFolder>
           </div>

@@ -7,13 +7,14 @@ const props = defineProps<{
 <template>
   <a :href="props.resource.url ?? ''" target="_blank">
     <div class="rounded-md w-[260px] p-3 bg-urfist-800 hover:bg-urfist-400 hover:drop-shadow-sm hover:-translate-y-0.5 transition">
+      <div class="rounded bg-white p-3" v-if="props.resource.html" v-html="props.resource.html"></div>
       <img
         v-if="props.resource.imageUrl && props.resource.imageUrl.length > 0"
         :src="props.resource.imageUrl"
-        class="mx-h-[200px]"/>
+        class="max-h-[200px] rounded"/>
       <div class="flex flex-row space-x-2.5">
-        <img />
-        <div>{{ props.resource.name }}</div>
+        <TemplateExploreResourceTypeIcon class="self-center" :resource="props.resource"></TemplateExploreResourceTypeIcon>
+        <div class="mt-2.5 font-medium text-lg text-primary-100-kv3">{{ props.resource.name }}</div>
       </div>
     </div>
   </a>
