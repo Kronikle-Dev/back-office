@@ -192,7 +192,10 @@
       "description": "Description",
       "click-to-expand": "Cliquez ici pour voir plus",
       "click-to-retract": "Cliquez ici pour réduire",
-      "index": "Table des ressources"
+      "index": "Table des ressources",
+      "additional-resource-to-consult": "ressources supplémentaires à consulter",
+      "supplementary-material": "Ressources supplémentaires",
+      "click-here": "Cliquez ici"
     }
   }
 }
