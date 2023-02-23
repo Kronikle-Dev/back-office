@@ -266,6 +266,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
                 class="mt-10">
             </TemplateExploreResourceFolder>
             <TemplateExploreResourceFolder 
+                v-if="noTagResources.length > 0"
                 :resources="noTagResources"
                 :label="''"
                 class="mt-10">
