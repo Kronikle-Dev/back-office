@@ -38,50 +38,62 @@ const state = reactive({
   hideDescription: true
 })
 
-const eventTypes = [] as unknown as {$id: string, name: string}[]
-try {
-  eventTypes.push(...(await databases.listDocuments('kronikle', 'event-type',
+const eventTypes = ref([] as unknown as {$id: string, name: string}[])
+
+databases.listDocuments('kronikle', 'event-type',
   [
     Query.equal('$id', [...props.event?.eventType as string[]])
-  ])).documents as unknown as {$id: string, name: string}[])
-} catch (e) {
-  console.log('Event has no type assigned')
-}
+  ]).then(docs => {
+    eventTypes.value.push(...docs.documents as unknown as {$id: string, name: string}[])
+  }).catch(e => {
+    console.log('Event has no type assigned')
+  })
 
 
-const eventTags = [] as unknown as {$id: string, name: string}[]
-try {
-  eventTags.push(...(await databases.listDocuments('kronikle', 'tag',
+const eventTags = ref([] as unknown as {$id: string, name: string}[])
+
+databases.listDocuments('kronikle', 'tag',
   [
     Query.equal('$id', [...props.event.tags as string[]])
-  ])).documents as unknown as {$id: string, name: string}[])
-} catch (e) {
-  console.log('Event ha no tags assigned')
-}
+  ]).then(docs => {
+    eventTags.value.push(...docs.documents as unknown as {$id: string, name: string}[])
+  }).catch(e => {
+    console.log('Event has no tags assigned')
+  })
 
-const eventResources = (await databases.listDocuments('kronikle', 'resource',
+const eventResources = ref([] as KResource[])
+
+databases.listDocuments('kronikle', 'resource',
   [
     Query.equal('eventId', props.event.$id as string)
-  ])).documents as unknown as KResource[]
+  ]).then(docs => {
+    eventResources.value.push(...docs.documents as unknown as KResource[])
+  })
 
-const resourceLabels = new Set<string>()
-eventResources.map(r => r.tags.map(t => resourceLabels.add(t)))
+const resourceLabels = computed(() => {
+  const labels = new Set<string>()
+  eventResources.value.map(r => r.tags.map(t => labels.add(t)))
+  return labels
+})
 
-const orderedResources = {}
-for (const res of eventResources) {
-  for (const tag of res.tags) {
-    // @ts-ignore
-    if (orderedResources[tag] === undefined) {
-    // @ts-ignore
-      orderedResources[tag] = []
+const orderedResources = computed(() => {
+  const oresources = {}
+  for (const res of eventResources.value) {
+    for (const tag of res.tags) {
+      // @ts-ignore
+      if (oresources[tag] === undefined) {
+      // @ts-ignore
+      oresources[tag] = []
+      }
+      // @ts-ignore
+      oresources[tag].push(res)
     }
-    // @ts-ignore
-    orderedResources[tag].push(res)
   }
-}
+  return oresources
+})
 
 const noTagResources = computed(() => {
-  return eventResources.filter(res => res.tags.length === 0)
+  return eventResources.value.filter(res => res.tags.length === 0)
 })
 
 function getEventForDate (date: KDateApi) : KEvent  | null {
