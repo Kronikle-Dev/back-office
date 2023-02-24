@@ -13,9 +13,21 @@ const props = defineProps<{
 const emit = defineEmits(['select', 'deselect'])
 
 const tagsIds = computed(() => {
-  const allIds = [] as string[]
-  props.events.forEach(e => allIds.push(...e.tags as string[]))
-  return new Set(allIds)
+  const tagsMap = [] as {id: string, count: number}[]
+  props.events.forEach(e => {
+    e.tags?.forEach(t => {
+      let tagObj = tagsMap.find(tm => tm.id == t)
+      if (!tagObj) {
+        tagsMap.push({id: t, count: 1})
+      } else {
+        tagObj.count = tagObj.count + 1
+      }
+    })
+  })
+
+  return new Set(tagsMap.sort((a, b) => {
+    return a.count - b.count
+  }).slice(0, 6).map(tm => tm.id))
 })
 
 const tags: Ref<{$id: string, name: string}[]> = ref([])

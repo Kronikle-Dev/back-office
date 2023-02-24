@@ -25,6 +25,10 @@ interface KDateApi extends KDate {
   endDateTime: string, // ISO Date string
 }
 
+interface KDateApiAug extends KDateApi {
+  event: KEvent | null
+}
+
 interface KEvent {
   name: string,
   description: string,

@@ -74,45 +74,94 @@ if (numberOfDatesWeek > 8) {
 }
 // END Détermination
 
-state.pastEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) < beginOfToday
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) < beginOfWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) < beginOfMonth
-  }
+const augmentedDates = props.dates.map((d) => {
+  (d as KDateApiAug).event = getEventForDate(d)
+  return d
+}) as KDateApiAug[]
+
+const pastEvents = computed(() => {
+  return augmentedDates.filter(date => {
+    let hasTag = false
+    if (state.tags.length === 0) return true
+    date.event?.tags?.forEach(t => {
+      if (state.tags.includes(t)) {
+        hasTag = true
+      }
+    })
+    return hasTag
+  }).filter(date => {
+    if (state.displayType == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) < beginOfToday
+    } else if (state.displayType == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) < beginOfWeek
+    } else if (state.displayType == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) < beginOfMonth
+    }
+  })
 })
 
-state.currentEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > beginOfToday && DateTime.fromISO(date.startDateTime) < endOfToday
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > beginOfWeek && DateTime.fromISO(date.startDateTime) < endOfWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
-  }
+const currentEvents = computed(() => {
+  return augmentedDates.filter(date => {
+    let hasTag = false
+    if (state.tags.length === 0) return true
+    date.event?.tags?.forEach(t => {
+      if (state.tags.includes(t)) {
+        hasTag = true
+      }
+    })
+    return hasTag
+  }).filter(date => {
+    if (state.displayType == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > beginOfToday && DateTime.fromISO(date.startDateTime) < endOfToday
+    } else if (state.displayType == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > beginOfWeek && DateTime.fromISO(date.startDateTime) < endOfWeek
+    } else if (state.displayType == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
+    }
+  })
 })
 
-state.nextEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > beginOfTomorrow && DateTime.fromISO(date.startDateTime) < endOfTomorrow
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > beginOfNextWeek && DateTime.fromISO(date.startDateTime) < endOfNextWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
-  }
+const nextEvents = computed(() => {
+  return augmentedDates.filter(date => {
+    let hasTag = false
+    if (state.tags.length === 0) return true
+    date.event?.tags?.forEach(t => {
+      if (state.tags.includes(t)) {
+        hasTag = true
+      }
+    })
+    return hasTag
+  }).filter(date => {
+    if (state.displayType == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > beginOfTomorrow && DateTime.fromISO(date.startDateTime) < endOfTomorrow
+    } else if (state.displayType == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > beginOfNextWeek && DateTime.fromISO(date.startDateTime) < endOfNextWeek
+    } else if (state.displayType == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
+    }
+  })
 })
 
-state.futureEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > endOfTomorrow
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > endOfNextWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > endOfNextMonth
-  }
-})
+const futureEvents = computed(() => {
+  return augmentedDates.filter(date => {
+    let hasTag = false
+    if (state.tags.length === 0) return true
+    date.event?.tags?.forEach(t => {
+      if (state.tags.includes(t)) {
+        hasTag = true
+      }
+    })
+    return hasTag
+  }).filter(date => {
+    if (state.displayType == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > endOfTomorrow
+    } else if (state.displayType == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > endOfNextWeek
+    } else if (state.displayType == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > endOfNextMonth
+    }
+  })
+}) 
 
 onMounted(() => {
   document.getElementById('current-section')?.scrollIntoView()
@@ -132,28 +181,28 @@ onMounted(() => {
         :events="events">
       </TemplateExploreThemePanel>
       <div class="grow overflow-y-scroll nobar">
-        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full" v-if="state.pastEvents.length > 0">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
+        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full" v-if="pastEvents.length > 0">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
         <div class="flex flex-row flex-wrap w-full mt-16">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.pastEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of pastEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div id="current-section" v-if="state.displayType == DisplayType.DAY && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.WEEK && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.MONTH && state.currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.DAY && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.WEEK && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.MONTH && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.currentEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of currentEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div v-if="state.displayType == DisplayType.DAY && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
-        <div v-if="state.displayType == DisplayType.WEEK && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
-        <div v-if="state.displayType == DisplayType.MONTH && state.nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
+        <div v-if="state.displayType == DisplayType.DAY && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
+        <div v-if="state.displayType == DisplayType.WEEK && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
+        <div v-if="state.displayType == DisplayType.MONTH && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.nextEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of nextEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div class="font-extrabold text-4xl text-urfist-100 mt-16" v-if="state.futureEvents.length > 0">{{ $t('displays.kronikle-v3.future') }}</div>
+        <div class="font-extrabold text-4xl text-urfist-100 mt-16" v-if="futureEvents.length > 0">{{ $t('displays.kronikle-v3.future') }}</div>
         <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of state.futureEvents" :key="date.$id" :date="date" :event="getEventForDate(date)" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of futureEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
       </div>
