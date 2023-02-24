@@ -26,7 +26,7 @@ const tagsIds = computed(() => {
   })
 
   return new Set(tagsMap.sort((a, b) => {
-    return a.count - b.count
+    return b.count - a.count
   }).slice(0, 6).map(tm => tm.id))
 })
 
