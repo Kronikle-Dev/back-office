@@ -172,7 +172,7 @@ onMounted(() => {
 <template>
   <div class="bg-primary-200-kv3 h-screen flex flex-col">
     <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
-    <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
+    <div class="grow overflow-y-scroll nobar flex flex-row space-x-10 sm:space-x-32">
       <TemplateExploreThemePanel
         class="mt-6"
         @select="addTag"
@@ -181,7 +181,7 @@ onMounted(() => {
         :events="events">
       </TemplateExploreThemePanel>
       <div class="grow overflow-y-scroll nobar">
-        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-4xl text-urfist-100 w-full" v-if="pastEvents.length > 0">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
+        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-xl sm:text-4xl text-urfist-100 w-full">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
         <div class="flex flex-row flex-wrap w-full mt-16">
           <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of pastEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>

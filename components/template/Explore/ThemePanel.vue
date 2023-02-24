@@ -55,15 +55,26 @@ function relayDeselect (tag: string) {
   emit('deselect', tag)
 }
 
+const showPanel = ref(false)
+
+onBeforeMount(() => {
+  window.innerWidth < 640 ? showPanel.value = false : showPanel.value = true
+})
+
 onMounted(() => {
   qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
   qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
 })
+
 </script>
 
 <template>
   <div class="rounded-r-lg max-h-screen max-w-md">
-    <div class="bg-primary-400-kv3 py-8 px-16 rounded-tr-lg">
+    <div v-if="!showPanel" @click="showPanel = true" class="btn btn-primary btn-circle cursor-pointer bg-primary-400-kv3 fixed bottom-10 left-4 p-4  rounded-full">
+      #
+    </div>
+    <div v-if="showPanel" @click="showPanel = false" class="sm:hidden cursor-pointer btn btn-primary bg-primary-400-kv3 absolute bottom-10 left-6 p-3 text-center rounded-full btn-circle">X</div>
+    <div v-if="showPanel" class="bg-primary-400-kv3 py-8 px-16 rounded-r-lg sm:rounded-br-none">
       <div class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.our-themes') }}</div>
       <div class="flex flex-col space-y-2.5">
         <TemplateExploreThemeTagButton
@@ -77,7 +88,7 @@ onMounted(() => {
         </TemplateExploreThemeTagButton>
       </div>
     </div>
-    <div class="bg-primary-600-kv3 py-8 px-16 rounded-br-lg">
+    <div v-if="showPanel" class="hidden sm:block bg-primary-600-kv3 py-8 px-16 rounded-br-lg">
       <div class="font-semibold text-lg text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-our-program-qr') }}</div>
       <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
       <div class="underline text-primary-200-kv3 font-light text-lg mt-3">{{ qrUrlTarget }}</div>
