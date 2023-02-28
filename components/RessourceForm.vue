@@ -87,13 +87,24 @@ function addTag (newTag: string) {
 }
 
 async function addResource() {
+  function checkHttpUrl(str: string) {
+    let givenURL;
+    try {
+        givenURL = new URL(str);
+    } catch (error) {
+        console.log("error is",error)
+      return false;  
+    }
+    return givenURL.protocol === "http:" || givenURL.protocol === "https:";
+  }
+
   const newResource = {
     eventId: props.event.$id,
     name: state.name,
     description: state.description?.length > 0 ? state.description : null,
     isOwnResource: state.isOwnResource,
     resourceType: state.resourceType,
-    imageUrl: state.imageUrl?.length > 0 ? state.imageUrl : null, // ICI C'EST CASSE ! imageUrl == null URL https://zenodo.org/record/7104154#.Y-DlynbMKUk
+    imageUrl: state.imageUrl?.length > 0 && checkHttpUrl(state.imageUrl) ? state.imageUrl : null,
     imageAlt: state.imageAlt?.length > 0 ? state.imageAlt : null,
     tags: state.tags.map(t => t.name),
     author: accountData.$id,
