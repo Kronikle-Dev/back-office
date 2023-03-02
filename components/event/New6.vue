@@ -43,6 +43,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' };
             <div class="card-body">
               <h2 class="card-title">{{date.startDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.startDateTime.toLocaleTimeString(undefined, timeOptions)}})</h2>
               <p>{{date.placeName}}, {{date.placeDescription}}.<br/>{{date.endDateTime.toLocaleDateString(undefined, dateOptions)}} ({{date.endDateTime.toLocaleTimeString(undefined, timeOptions)}})</p>
+              <p>{{ date.attendanceMode }}</p>
             </div>
           </div>
         </div>

@@ -52,6 +52,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOpti
             <div class="card-body">
               <h2 class="card-title">{{new Date(date.startDateTime).toLocaleDateString(undefined, dateOptions)}} ({{new Date(date.startDateTime).toLocaleTimeString(undefined, timeOptions)}})</h2>
               <p>{{date.placeName}}, {{date.placeDescription}}.<br/>{{new Date(date.endDateTime).toLocaleDateString(undefined, dateOptions)}} ({{new Date(date.endDateTime).toLocaleTimeString(undefined, timeOptions)}})</p>
+              <p>{{ date.attendanceMode }}</p>
             </div>
           </div>
         </div>
