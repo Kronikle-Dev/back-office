@@ -96,9 +96,26 @@ const noTagResources = computed(() => {
   return eventResources.value.filter(res => res.tags.length === 0)
 })
 
+const datePlace = computed(() => {
+  switch (props.date.attendanceMode) {
+    case 'online': 
+      return useI18n().t('displays.kronikle-v3.online')
+    case 'offline':
+      return props.date.placeName
+    case 'mixed':
+      return props.date.placeName + useI18n().t('displays.kronikle-v3.and-online')
+  }
+})
+
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
+
+const augmentedDates = props.dates.map((d) => {
+  (d as KDateApiAug).event = getEventForDate(d)
+  return d
+}) as KDateApiAug[]
+
 
 function addTag (tag: string) {
   state.tags.push(tag)
@@ -195,6 +212,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
         @select="addTag"
         @deselect="removeTag"
         :display="props.display"
+        :dates="augmentedDates"
         :events="props.events">
       </TemplateExploreSearchPanel>
       <div class="grow overflow-y-scroll nobar">
@@ -226,7 +244,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
                     <path d="M8.50002 0.916687C3.82377 0.916687 0.041687 4.69877 0.041687 9.37502C0.041687 15.7188 8.50002 25.0834 8.50002 25.0834C8.50002 25.0834 16.9584 15.7188 16.9584 9.37502C16.9584 4.69877 13.1763 0.916687 8.50002 0.916687ZM8.50002 12.3959C6.83252 12.3959 5.47919 11.0425 5.47919 9.37502C5.47919 7.70752 6.83252 6.35419 8.50002 6.35419C10.1675 6.35419 11.5209 7.70752 11.5209 9.37502C11.5209 11.0425 10.1675 12.3959 8.50002 12.3959Z" fill="currentColor"/>
                   </svg>
                   <span class="font-bold text-lg text-primary-100-kv3">
-                    {{ props.date.placeName }}
+                    {{ datePlace }}
                   </span>
                 </div>
               </div>

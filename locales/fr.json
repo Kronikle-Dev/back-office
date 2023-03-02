@@ -195,7 +195,11 @@
       "index": "Table des ressources",
       "additional-resource-to-consult": "ressources supplémentaires à consulter",
       "supplementary-material": "Ressources supplémentaires",
-      "click-here": "Cliquez ici"
+      "click-here": "Cliquez ici",
+      "online": "En ligne",
+      "and-online": " et aussi en ligne",
+      "find-an-event": "Trouver un programme",
+      "find-page-on-phone-qr": "Consultez cette page sur votre téléphone"
     }
   }
 }

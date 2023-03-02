@@ -22,7 +22,7 @@ if (props.resources.length >= 5) {
 </script>
 
 <template>
-  <div class="bg-urfist-300 w-fit rounded-lg py-6 px-11">
+  <div class="bg-urfist-300 w-fit max-w-[calc(100%-16px)] px-8 overflow-x-scroll nobar rounded-lg py-6">
     <div class="font-bold text-2xl text-primary-100-kv3 mb-5">{{ label }}</div>
     <div class="flex flex-row space-x-5">
       <TemplateExploreResourceCard
@@ -58,3 +58,16 @@ if (props.resources.length >= 5) {
     </div>
   </div>
 </template>
+
+<style>
+ /* Hide scrollbar for Chrome, Safari and Opera */
+ .nobar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.nobar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+} 
+</style>
