@@ -199,7 +199,11 @@
       "online": "En ligne",
       "and-online": " et aussi en ligne",
       "find-an-event": "Trouver un programme",
-      "find-page-on-phone-qr": "Consultez cette page sur votre téléphone"
+      "find-page-on-phone-qr": "Consultez cette page sur votre téléphone",
+      "date": "Date",
+      "event-type": "Type d'événement",
+      "event-public": "Public",
+      "event-theme": "Thème"
     }
   }
 }

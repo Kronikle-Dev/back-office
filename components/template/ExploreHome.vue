@@ -97,6 +97,8 @@ const pastEvents = computed(() => {
     } else if (state.displayType == DisplayType.MONTH) {
       return DateTime.fromISO(date.startDateTime) < beginOfMonth
     }
+  }).sort((a, b) => {
+    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
   })
 })
 
@@ -118,6 +120,8 @@ const currentEvents = computed(() => {
     } else if (state.displayType == DisplayType.MONTH) {
       return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
     }
+  }).sort((a, b) => {
+    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
   })
 })
 
@@ -139,6 +143,8 @@ const nextEvents = computed(() => {
     } else if (state.displayType == DisplayType.MONTH) {
       return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
     }
+  }).sort((a, b) => {
+    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
   })
 })
 
@@ -160,6 +166,8 @@ const futureEvents = computed(() => {
     } else if (state.displayType == DisplayType.MONTH) {
       return DateTime.fromISO(date.startDateTime) > endOfNextMonth
     }
+  }).sort((a, b) => {
+    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
   })
 }) 
 

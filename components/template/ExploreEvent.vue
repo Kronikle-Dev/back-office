@@ -111,7 +111,9 @@ function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
 
-const augmentedDates = props.dates.map((d) => {
+const augmentedDates = props.dates.sort((a, b) => {
+    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
+  }).map((d) => {
   (d as KDateApiAug).event = getEventForDate(d)
   return d
 }) as KDateApiAug[]
@@ -208,7 +210,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
     <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
       <TemplateExploreSearchPanel
-        class="mt-6"
+        class="mt-6 grow-0"
         @select="addTag"
         @deselect="removeTag"
         :display="props.display"

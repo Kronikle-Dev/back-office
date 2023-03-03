@@ -13,6 +13,10 @@ const props = defineProps<{
 
 const emit = defineEmits(['select', 'deselect'])
 
+const state = reactive({
+  openPanel: false
+})
+
 const tagsIds = computed(() => {
   const allIds = [] as string[]
   props.events.forEach(e => allIds.push(...e.tags as string[]))
@@ -51,15 +55,42 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-xs flex flex-col space-y-5 items-center pb-8">
-    <div class="bg-primary-400-kv3 max-h-[65vh] overflow-y-scroll nobar py-8 px-16 rounded-r-lg">
-      <div class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
-      <div class="flex flex-col space-y-2.5">
-        <TemplateExploreEventCard
-          v-for="date of props.dates"
-          :event="date.event"
-          :date="date">
-        </TemplateExploreEventCard>
+  <div class="max-w-xs flex flex-col space-y-5 items-center pb-8 z-30">
+    <div class="bg-primary-400-kv3 max-h-[65vh] overflow-y-scroll nobar rounded-r-lg flex flex-row self-start relative">
+      <div class="absolute right-0 p-4 bg-primary-300-kv3 z-40 rounded-bl-lg cursor-pointer" @click="state.openPanel = !state.openPanel"><span>🙂</span></div>
+      <div
+        v-if="state.openPanel"
+        class="bg-primary-300-kv3 py-8 px-16 transition-all">
+        <h1 class="text-primary-900-kv3 font-extrabold text-2xl">{{ $t('displays.kronikle-v3.find-an-event') }}</h1>
+        <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.date') }}</h2>
+        <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div> 
+        <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.event-type') }}</h2>
+        <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div> 
+        <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.event-public') }}</h2>
+        <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div> 
+        <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.event-theme') }}</h2>
+        <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div> 
+      </div>
+      <div class="py-8 px-16 max-h-full overflow-y-scroll nobar"
+        :class="{'w-[43rem]': state.openPanel}">
+        <div v-if="!state.openPanel" class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
+        <div class="flex transition-all"
+          :class="{
+            'flex': !state.openPanel,
+            'flex-col': !state.openPanel,
+            'w-[14rem]': !state.openPanel,
+            'space-y-2.5': !state.openPanel,
+            'flex-row': state.openPanel,
+            'flex-wrap': state.openPanel,
+            'gap-2.5': state.openPanel,
+            'w-[28rem]': state.openPanel
+            }">
+          <TemplateExploreEventCard
+            v-for="date of props.dates"
+            :event="date.event"
+            :date="date">
+          </TemplateExploreEventCard>
+        </div>
       </div>
     </div>
     <div class="bg-urfist-200 py-8 px-8 text-center w-64 h-64 rounded-lg">
