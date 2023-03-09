@@ -40,6 +40,10 @@ const tags: Ref<{$id: string, name: string}[]> = ref([])
 const eventTypes: Ref<{$id: string, name: string}[]> = ref([])
 const publicTypes: Ref<{$id: string, name: string}[]> = ref([])
 
+//const selectedTags: string[] = ref([])
+const selectedEventTypes: Ref<string[]> = ref([])
+const selectedPublicTypes: Ref<string[]> = ref([])
+
 const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
 const qrUrlTarget = ref('')
 
@@ -92,13 +96,45 @@ watch(state, (newVal, oldVal) => {
   }
 })
 
-function relaySelect (tag: string) {
-  emit('select', tag)
+function selectEventType (etype: string) {
+  selectedEventTypes.value.push(etype)
 }
 
-function relayDeselect (tag: string) {
-  emit('deselect', tag)
+function deselectEventType (etype: string) {
+  const index = selectedEventTypes.value.indexOf(etype)
+  selectedEventTypes.value.slice(index, 1)
 }
+
+function selectPublicType (publict: string) {
+  selectedPublicTypes.value.push(publict)
+}
+
+function deselectPublicType (publict: string) {
+  const index = selectedEventTypes.value.indexOf(publict)
+  selectedPublicTypes.value.slice(index, 1)
+}
+
+const filteredDates = computed(() => {
+  return props.dates.filter(date => {
+    let hasEventType = false
+    if (selectedEventTypes.value.length === 0) return true
+    date.event?.eventType?.forEach(t => {
+      if (selectedEventTypes.value.includes(t)) {
+        hasEventType = true
+      }
+    })
+    return hasEventType
+  }).filter(date => {
+    let hasPublicType = false
+    if (selectedPublicTypes.value.length === 0) return true
+    date.event?.publicTypes?.forEach(t => {
+      if (selectedPublicTypes.value.includes(t)) {
+        hasPublicType = true
+      }
+    })
+    return hasPublicType
+  })
+})
 
 onMounted(() => {
   qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
@@ -129,11 +165,12 @@ onMounted(() => {
           <TemplateExploreEventTypeButton
             v-for="etype of eventTypes"
             :key="etype.$id"
-            @deselect="relayDeselect"
-            @select="relaySelect"
+            @deselect="deselectEventType"
+            @select="selectEventType"
             :type-name="etype.name"
             :type-id="etype.$id"
-            :add-icon="true">
+            :add-icon="true"
+            class="mb-2.5 mr-2.5">
           </TemplateExploreEventTypeButton>
         </div>
         <h2 class="text-primary-900-kv3 font-extrabold text-xl mt-4">{{ $t('displays.kronikle-v3.event-public') }}</h2>
@@ -142,12 +179,12 @@ onMounted(() => {
           <TemplateExplorePublicTypeButton
             v-for="publict of publicTypes"
             :key="publict.$id"
-            @deselect="relayDeselect"
-            @select="relaySelect"
+            @deselect="deselectPublicType"
+            @select="selectPublicType"
             :public-name="publict.name"
             :public-id="publict.$id"
             :add-icon="true"
-            class="mt-2.5">
+            class="mb-2.5 mr-2.5">
           </TemplateExplorePublicTypeButton>
         </div>
         <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.event-theme') }}</h2>
@@ -168,7 +205,7 @@ onMounted(() => {
           <nuxt-link
               :to="`/d/${display.$id}/date/${date.$id}`"
               :id="`date-card-${date.$id}`"
-              v-for="date of props.dates" >
+              v-for="date of filteredDates" >
             <TemplateExploreEventCard
               :event="date.event"
               :date="date">
