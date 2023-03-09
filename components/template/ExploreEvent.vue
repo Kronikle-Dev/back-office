@@ -213,6 +213,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
         class="mt-6 grow-0"
         @select="addTag"
         @deselect="removeTag"
+        :current-date="props.date"
         :display="props.display"
         :dates="augmentedDates"
         :events="props.events">

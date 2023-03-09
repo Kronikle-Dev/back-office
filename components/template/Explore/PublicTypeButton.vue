@@ -28,7 +28,7 @@ function toggleState () {
 </script>
 
 <template>
-  <div class="py-2 px-5 rounded-full flex flex-row space-x-2 cursor-pointer w-fit hover:bg-primary-100-kv3"
+  <div class="py-2 px-5 rounded-full flex flex-row space-x-2 cursor-pointer w-fit hover:bg-urfist-500"
         :class="{'bg-urfist-500': state.clicked, 'bg-urfist-600': !state.clicked}"
         @click="toggleState">
     <span class="font-medium text-primary-100-kv3 text-lg">{{ props.publicName }}</span>
