@@ -102,7 +102,7 @@ function selectEventType (etype: string) {
 
 function deselectEventType (etype: string) {
   const index = selectedEventTypes.value.indexOf(etype)
-  selectedEventTypes.value.slice(index, 1)
+  selectedEventTypes.value.splice(index, 1)
 }
 
 function selectPublicType (publict: string) {
@@ -111,7 +111,7 @@ function selectPublicType (publict: string) {
 
 function deselectPublicType (publict: string) {
   const index = selectedEventTypes.value.indexOf(publict)
-  selectedPublicTypes.value.slice(index, 1)
+  selectedPublicTypes.value.splice(index, 1)
 }
 
 const filteredDates = computed(() => {

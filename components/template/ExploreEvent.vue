@@ -254,6 +254,7 @@ const htmlDescription = converter.makeHtml(props.event.description)
               <div>
                 <div>
                   <TemplateExploreEventTypeButton
+                      class="mr-2.5 mt-2.5"
                     v-for="type of eventTypes"
                     :key="type.$id"
                     :type-name="type.name"
