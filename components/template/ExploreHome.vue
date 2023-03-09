@@ -53,7 +53,7 @@ const endOfTomorrow = DateTime.fromObject({day: DateTime.now().day + 1, hour: 23
 const beginOfNextWeek = DateTime.fromObject({weekNumber: DateTime.now().weekNumber + 1, weekday: 1})
 const endOfNextWeek = DateTime.fromObject({weekNumber: DateTime.now().weekNumber + 1, weekday: 7, hour: 23, minute: 59})
 const beginOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: 1})
-const endOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: DateTime.now().daysInMonth, hour: 23, minute: 59})
+const endOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: beginOfNextMonth.daysInMonth, hour: 23, minute: 59})
 
 const numberOfDatesWeek = props.dates.filter((date => {
   const dateStart = DateTime.fromISO(date.startDateTime)
