@@ -7,6 +7,13 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Kronikle",
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: '/favicon.png'
+        }
+      ],
       meta: [
         {
           name: "viewport",
