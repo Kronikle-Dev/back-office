@@ -39,7 +39,7 @@ export default defineNuxtConfig({
         {
           hid: 'og-desc',
           property: 'og:description',
-          content: 'This is a sweet post'
+          content: 'Kronikle est un outil qui vous permet d\'enrichir vos événements et de les rendre visibles'
         },
         {
           hid: 'og-image',
