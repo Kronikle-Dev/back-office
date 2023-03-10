@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { Databases, Query } from 'appwrite'
+import { Databases, Query, Avatars } from 'appwrite'
 import {DateTime} from 'luxon'
 const {$appwrite} = useNuxtApp()
 const databases = new Databases($appwrite().client)
+const avatars = new Avatars($appwrite().client)
 //@ts-ignore
 import showdown from 'showdown'
 
@@ -69,6 +70,10 @@ databases.listDocuments('kronikle', 'resource',
   ]).then(docs => {
     eventResources.value.push(...docs.documents as unknown as KResource[])
   })
+
+
+const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
+const qrUrlTarget = ref('')
 
 const resourceLabels = computed(() => {
   const labels = new Set<string>()
@@ -203,6 +208,11 @@ state.futureEvents = props.dates.filter(date => {
 
 const htmlDescription = converter.makeHtml(props.event.description)
 
+onMounted(() => {
+  qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
+  qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
+})
+
 </script>
 
 <template>
@@ -284,11 +294,18 @@ const htmlDescription = converter.makeHtml(props.event.description)
               </div>
             </div>
           </div>
-          <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md w-fit rounded-lg p-6 font-normal text-xl shrink">
-            <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>
-            <ul>
-              <li v-for="label of resourceLabels" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
-            </ul>
+          <div class="flex flex-col h-full">
+            <div class="hidden sm:block bg-urfist-200 py-8 px-8 text-center w-72 rounded-lg">
+              <div class="font-semibold text-lg leading-none text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-page-on-phone-qr') }}</div>
+              <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
+              <div class="underline text-primary-200-kv3 font-light text-lg mt-1">{{ qrUrlTarget }}</div>
+            </div>
+            <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md mt-7 w-full rounded-lg p-6 font-normal text-xl grow">
+              <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>
+              <ul>
+                <li v-for="label of resourceLabels" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
+              </ul>
+            </div>
           </div>
         </div>
           <div>

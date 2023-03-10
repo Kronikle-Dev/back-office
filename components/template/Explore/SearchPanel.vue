@@ -44,8 +44,6 @@ const publicTypes: Ref<{$id: string, name: string}[]> = ref([])
 const selectedEventTypes: Ref<string[]> = ref([])
 const selectedPublicTypes: Ref<string[]> = ref([])
 
-const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
-const qrUrlTarget = ref('')
 
 tags.value = ((await databases.listDocuments('kronikle', 'tag',
   [
@@ -137,9 +135,6 @@ const filteredDates = computed(() => {
 })
 
 onMounted(() => {
-  qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
-  qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
-
   document.getElementById(`date-card-${props.currentDate.$id}`)?.scrollIntoView()
 })
 </script>
@@ -213,11 +208,6 @@ onMounted(() => {
           </nuxt-link>
         </div>
       </div>
-    </div>
-    <div class="bg-urfist-200 py-8 px-8 text-center w-64 h-64 rounded-lg">
-      <div class="font-semibold text-lg leading-none text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-page-on-phone-qr') }}</div>
-      <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
-      <div class="underline text-primary-200-kv3 font-light text-lg mt-1">{{ qrUrlTarget }}</div>
     </div>
   </div>
 </template>
