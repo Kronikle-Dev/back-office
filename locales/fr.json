@@ -203,7 +203,9 @@
       "date": "Date",
       "event-type": "Type d'événement",
       "event-public": "Public",
-      "event-theme": "Thème"
+      "event-theme": "Thème",
+      "enter-start-date-filter": "Date de début",
+      "enter-end-date-filter": "Date de fin"
     }
   }
 }

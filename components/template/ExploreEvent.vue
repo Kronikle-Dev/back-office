@@ -241,7 +241,7 @@ onMounted(() => {
                     <path d="M19.9583 3.33335H18.75V0.916687H16.3333V3.33335H6.66667V0.916687H4.25V3.33335H3.04167C1.70042 3.33335 0.637083 4.42085 0.637083 5.75002L0.625 22.6667C0.625 23.9959 1.70042 25.0834 3.04167 25.0834H19.9583C21.2875 25.0834 22.375 23.9959 22.375 22.6667V5.75002C22.375 4.42085 21.2875 3.33335 19.9583 3.33335ZM19.9583 22.6667H3.04167V10.5834H19.9583V22.6667ZM7.875 15.4167H5.45833V13H7.875V15.4167ZM12.7083 15.4167H10.2917V13H12.7083V15.4167ZM17.5417 15.4167H15.125V13H17.5417V15.4167ZM7.875 20.25H5.45833V17.8334H7.875V20.25ZM12.7083 20.25H10.2917V17.8334H12.7083V20.25ZM17.5417 20.25H15.125V17.8334H17.5417V20.25Z" fill="currentColor"/>
                   </svg>
                   <span class="font-bold text-lg text-primary-100-kv3">
-                    {{ DateTime.fromISO(props.date.startDateTime).toLocaleString({day: '2-digit', month: 'long', year: 'numeric'}) }}
+                    {{ DateTime.fromISO(props.date.startDateTime).setLocale('fr-FR').toLocaleString({day: '2-digit', month: 'long', year: 'numeric'}) }}
                   </span>
                 </div>
                 <div class="flex flex-row space-x-1">
@@ -249,7 +249,7 @@ onMounted(() => {
                     <path d="M12.4879 0.916687C5.81794 0.916687 0.416687 6.33002 0.416687 13C0.416687 19.67 5.81794 25.0834 12.4879 25.0834C19.17 25.0834 24.5834 19.67 24.5834 13C24.5834 6.33002 19.17 0.916687 12.4879 0.916687ZM12.5 22.6667C7.15919 22.6667 2.83335 18.3409 2.83335 13C2.83335 7.65919 7.15919 3.33335 12.5 3.33335C17.8409 3.33335 22.1667 7.65919 22.1667 13C22.1667 18.3409 17.8409 22.6667 12.5 22.6667ZM13.1042 6.95835H11.2917V14.2084L17.6354 18.0146L18.5417 16.5284L13.1042 13.3021V6.95835Z" fill="currentColor"/>
                   </svg>
                   <span class="font-bold text-lg text-primary-100-kv3">
-                    {{ DateTime.fromISO(props.date.startDateTime).toLocaleString({hour: '2-digit', minute: '2-digit'}) }} - {{ DateTime.fromISO(props.date.endDateTime).toLocaleString({hour: '2-digit', minute: '2-digit'}) }}
+                    {{ DateTime.fromISO(props.date.startDateTime).setLocale('fr-FR').toLocaleString({hour: '2-digit', minute: '2-digit'}) }} - {{ DateTime.fromISO(props.date.endDateTime).setLocale('fr-FR').toLocaleString({hour: '2-digit', minute: '2-digit'}) }}
                   </span>
                 </div>
                 <div class="flex flex-row space-x-1">
