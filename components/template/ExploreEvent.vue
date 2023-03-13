@@ -217,7 +217,7 @@ onMounted(() => {
 
 <template>
   <div class="bg-urfist-800 h-screen flex flex-col">
-    <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
+    <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
       <TemplateExploreSearchPanel
         class="mt-6 grow-0"
@@ -284,13 +284,11 @@ onMounted(() => {
               <div class="text-lg">
                 <div class="font-semibold">{{ $t('displays.kronikle-v3.description') }}</div>
                 <div class="overflow-clip" :class="{'max-h-full': !state.hideDescription, 'max-h-[5.25rem]': state.hideDescription}" v-html="htmlDescription"></div>
-              </div>
-              <div>
-                <!-- FILLER -->
-              </div>
-              <div class="text-lg underline cursor-pointer">
-                <a v-if="state.hideDescription" @click="state.hideDescription = false">{{ $t('displays.kronikle-v3.click-to-expand') }}</a>
-                <a v-else @click="state.hideDescription = true">{{ $t('displays.kronikle-v3.click-to-retract') }}</a>
+                
+                <div class="text-lg underline cursor-pointer mt-4">
+                  <a v-if="state.hideDescription" @click="state.hideDescription = false">{{ $t('displays.kronikle-v3.click-to-expand') }}</a>
+                  <a v-else @click="state.hideDescription = true">{{ $t('displays.kronikle-v3.click-to-retract') }}</a>
+                </div>
               </div>
             </div>
           </div>

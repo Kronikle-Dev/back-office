@@ -179,7 +179,7 @@ onMounted(() => {
 
 <template>
   <div class="bg-primary-200-kv3 h-screen flex flex-col">
-    <TemplateExploreHeader :logo-url="'https://static.wikia.nocookie.net/valheim/images/5/52/Biome_meadows.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
+    <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-10 sm:space-x-32">
       <TemplateExploreThemePanel
         class="mt-6"
