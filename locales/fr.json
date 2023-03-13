@@ -205,7 +205,11 @@
       "event-public": "Public",
       "event-theme": "Thème",
       "enter-start-date-filter": "Date de début",
-      "enter-end-date-filter": "Date de fin"
+      "enter-end-date-filter": "Date de fin",
+      "tags-placeholder": "Saisissez un thème",
+      "select-label": "Entrée pour sélectionner le tag",
+      "selected-label": "Sélectionné",
+      "deselect-label": "Entrée pour enlever le tag"
     }
   }
 }

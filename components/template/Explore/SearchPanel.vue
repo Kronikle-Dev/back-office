@@ -2,6 +2,9 @@
 import { Databases, Query, Avatars } from 'appwrite'
 import {DateTime} from 'luxon'
 import 'v-calendar/dist/style.css';
+// @ts-ignore
+import VueMultiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.css'
 import { Ref } from 'vue';
 const {$appwrite} = useNuxtApp()
 const databases = new Databases($appwrite().client)
@@ -50,6 +53,10 @@ const publicTypes: Ref<{$id: string, name: string}[]> = ref([])
 //const selectedTags: string[] = ref([])
 const selectedEventTypes: Ref<string[]> = ref([])
 const selectedPublicTypes: Ref<string[]> = ref([])
+const selectedTags: Ref<any[]> = ref([])
+const selectedTagsIds = computed(() => {
+  return selectedTags.value.map(t => t.$id)
+})
 
 
 tags.value = ((await databases.listDocuments('kronikle', 'tag',
@@ -124,6 +131,15 @@ const filteredDates = computed(() => {
   const endDateFilter =  state.range.end ? DateTime.fromJSDate(new Date(state.range.end)).plus({hours: 24}) : null
 
   return props.dates.filter(date => {
+    let hasTag = false
+    if (selectedTagsIds.value.length === 0) return true
+    date.event?.tags?.forEach(t => {
+      if (selectedTagsIds.value.includes(t)) {
+        hasTag = true
+      }
+    })
+    return hasTag
+  }).filter(date => {
     let hasEventType = false
     if (selectedEventTypes.value.length === 0) return true
     date.event?.eventType?.forEach(t => {
@@ -286,6 +302,20 @@ watch(el, (el, _, onCleanup) => {
         </div>
         <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.event-theme') }}</h2>
         <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div> 
+        <ClientOnly>
+          <VueMultiselect
+            v-model="selectedTags"
+            :multiple="true"
+            :close-on-select="true"
+            :placeholder="$t('displays.kronikle-v3.tags-placeholder')"
+            :selectLabel="$t('displays.kronikle-v3.select-label')"
+            :selectedLabel="$t('displays.kronikle-v3.selected-label')"
+            :deselectLabel="$t('displays.kronikle-v3.deselect-label')"
+            label="name"
+            track-by="$id"
+            :options="tags">
+          </VueMultiselect>
+        </ClientOnly>
       </div>
       <div class="py-8 px-16 max-h-full overflow-y-scroll nobar dates-panel">
         <div v-if="!state.openPanel" class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
@@ -324,5 +354,44 @@ watch(el, (el, _, onCleanup) => {
 .nobar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
-} 
+}
+
+.multiselect__select {
+  height: 100%;
+}
+
+.multiselect__tags {
+  border-radius: 30px;
+}
+
+.multiselect__tag {
+  padding: 9px 24px 9px 20px;
+  border-radius: 20px;
+  background-color: #39445A;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.multiselect__tag-icon {
+  line-height: 32px;
+}
+
+.multiselect__tag-icon:after {
+  color:#EEE;
+}
+
+.multiselect--above .multiselect__content-wrapper {
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+
+.multiselect__option--highlight {
+  background-color: #39445A;
+}
+
+.multiselect__option--highlight:after {
+  background-color: #39445A;
+}
 </style>
