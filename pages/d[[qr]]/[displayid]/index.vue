@@ -83,7 +83,8 @@ if (eventIdList) {
 
 if (display.eventFilter != 'none') {
   try {
-    events.value.push(...(await databases.listDocuments('kronikle', 'event', queries )).documents as unknown[] as KEvent[])
+    const apievents = await databases.listDocuments('kronikle', 'event', queries )
+    events.value.push(...(apievents.documents as unknown[] as KEvent[]))
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)
   }
@@ -102,7 +103,7 @@ if (eventIdList != null) {
   }
 }
 
-const dates = (await databases.listDocuments('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[]
+const dates = events.value.length > 0 ? (await databases.listDocuments('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[] : []
 
 </script>
 
