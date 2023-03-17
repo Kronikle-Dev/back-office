@@ -103,7 +103,9 @@ if (eventIdList != null) {
   }
 }
 
-const dates = events.value.length > 0 ? (await databases.listDocuments('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[] : []
+console.log(JSON.stringify(events.value.map(ev => ev.$id as string)))
+
+const dates = events.value.length > 0 ? (await databases.listDocuments('kronikle', 'date', [Query.limit(100), Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[] : []
 
 </script>
 
