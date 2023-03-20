@@ -47,26 +47,26 @@ let endOfToday = DateTime.fromObject({hour: 23, minute: 59, second: 59})
 try {
   switch (display.eventFilter) {
     case 'month':
-      eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
+      eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
         Query.lessThanEqual('startDateTime', lastDayOfMonth.toString())
-      ])).documents.map((d) => d.eventId))
+      ])).map((d) => d.eventId))
       break
     case 'week':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
+      eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
         Query.lessThanEqual('startDateTime', lastDayofWeek.toString())
-      ])).documents.map(d => d.eventId))
+      ])).map(d => d.eventId))
       break
     case 'upcoming':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
+      eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
-      ])).documents.map(d => d.eventId))
+      ])).map(d => d.eventId))
       break
     case 'past':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
+      eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.lessThan('startDateTime', beginningOfToday.toString())
-      ])).documents.map(d => d.eventId))
+      ])).map(d => d.eventId))
       break
     case 'none':
       eventIdList = new Set()
@@ -98,7 +98,7 @@ if (eventIdList) {
 
 if (display.eventFilter != 'none') {
   try {
-    events.value.push(...(await databases.listDocuments('kronikle', 'event', queries )).documents as unknown[] as KEvent[])
+    events.value.push(...(await $appwrite().getAllPages('kronikle', 'event', queries )) as unknown[] as KEvent[])
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)
   }
@@ -109,15 +109,15 @@ if (eventIdList != null) {
   const supplementaryEventIds = display.events.filter(e => !eventIdList.has(e))
 
   try {
-    events.value.push( ... (await databases.listDocuments('kronikle', 'event', [
+    events.value.push( ... (await $appwrite().getAllPages('kronikle', 'event', [
       Query.equal('$id', supplementaryEventIds)
-    ])).documents as unknown[] as KEvent[])
+    ])) as unknown[] as KEvent[])
   } catch (e) {
     console.error('Failed to retrieve supplementray events : ', e)
   }
 }
 
-const dates = (await databases.listDocuments('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[]
+const dates = (await $appwrite().getAllPages('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])) as unknown as KDateApi[]
 
 </script>
 

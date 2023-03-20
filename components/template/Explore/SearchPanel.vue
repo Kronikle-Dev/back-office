@@ -59,42 +59,42 @@ const selectedTagsIds = computed(() => {
 })
 
 
-tags.value = ((await databases.listDocuments('kronikle', 'tag',
+tags.value = ((await $appwrite().getAllPages('kronikle', 'tag',
   [
     Query.equal('$id', [...tagsIds.value])
-  ])).documents as unknown as {$id: string, name: string}[])
+  ])) as unknown as {$id: string, name: string}[])
 
   
-eventTypes.value = ((await databases.listDocuments('kronikle', 'event-type',
+eventTypes.value = ((await $appwrite().getAllPages('kronikle', 'event-type',
   [
     Query.equal('$id', [...typesIds.value])
-  ])).documents as unknown as {$id: string, name: string}[])
+  ])) as unknown as {$id: string, name: string}[])
 
-publicTypes.value = ((await databases.listDocuments('kronikle', 'public-type',
+publicTypes.value = ((await $appwrite().getAllPages('kronikle', 'public-type',
   [
     Query.equal('$id', [...publicsIds.value])
-  ])).documents as unknown as {$id: string, name: string}[])
+  ])) as unknown as {$id: string, name: string}[])
 
 watch(publicsIds, async (newVal, oldVal) => {
-  publicTypes.value = (await databases.listDocuments('kronikle', 'public-type',
+  publicTypes.value = (await $appwrite().getAllPages('kronikle', 'public-type',
   [
     Query.equal('$id', [...newVal])
-  ])).documents as unknown as {$id: string, name: string}[]
+  ])) as unknown as {$id: string, name: string}[]
 })
 
 watch(typesIds, async (newVal, oldVal) => {
-  eventTypes.value = (await databases.listDocuments('kronikle', 'event-type',
+  eventTypes.value = (await $appwrite().getAllPages('kronikle', 'event-type',
   [
     Query.equal('$id', [...newVal])
-  ])).documents as unknown as {$id: string, name: string}[]
+  ])) as unknown as {$id: string, name: string}[]
 })
 
 
 watch(tagsIds, async (newVal, oldVal) => {
-  tags.value = (await databases.listDocuments('kronikle', 'tag',
+  tags.value = (await $appwrite().getAllPages('kronikle', 'tag',
   [
     Query.equal('$id', [...newVal])
-  ])).documents as unknown as {$id: string, name: string}[]
+  ])) as unknown as {$id: string, name: string}[]
 })
 
 watch(state, (newVal, oldVal) => {

@@ -19,9 +19,9 @@ if (!props.event.$id) {
 
 const htmlDescription = converter.makeHtml(props.event.description)
 
-const dates = (await databases.listDocuments('kronikle', 'date', [
+const dates = (await $appwrite().getAllPages('kronikle', 'date', [
   Query.equal('eventId', props.event.$id)
-])).documents as unknown as KDate[]
+])) as unknown as KDate[]
 
 const orderedDates = computed(() => {
   return dates.sort((a: any, b: any) => {

@@ -41,11 +41,11 @@ const state = reactive({
 
 const eventTypes = ref([] as unknown as {$id: string, name: string}[])
 
-databases.listDocuments('kronikle', 'event-type',
+$appwrite().getAllPages('kronikle', 'event-type',
   [
     Query.equal('$id', [...props.event?.eventType as string[]])
   ]).then(docs => {
-    eventTypes.value.push(...docs.documents as unknown as {$id: string, name: string}[])
+    eventTypes.value.push(...docs as unknown as {$id: string, name: string}[])
   }).catch(e => {
     console.log('Event has no type assigned')
   })
@@ -53,22 +53,22 @@ databases.listDocuments('kronikle', 'event-type',
 
 const eventTags = ref([] as unknown as {$id: string, name: string}[])
 
-databases.listDocuments('kronikle', 'tag',
+$appwrite().getAllPages('kronikle', 'tag',
   [
     Query.equal('$id', [...props.event.tags as string[]])
   ]).then(docs => {
-    eventTags.value.push(...docs.documents as unknown as {$id: string, name: string}[])
+    eventTags.value.push(...docs as unknown as {$id: string, name: string}[])
   }).catch(e => {
     console.log('Event has no tags assigned')
   })
 
 const eventResources = ref([] as KResource[])
 
-databases.listDocuments('kronikle', 'resource',
+$appwrite().getAllPages('kronikle', 'resource',
   [
     Query.equal('eventId', props.event.$id as string)
   ]).then(docs => {
-    eventResources.value.push(...docs.documents as unknown as KResource[])
+    eventResources.value.push(...docs as unknown as KResource[])
   })
 
 

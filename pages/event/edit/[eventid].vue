@@ -44,9 +44,9 @@ const newevent = reactive({
 })
 
 
-const dates = ref((await databases.listDocuments('kronikle', 'date', [
+const dates = ref((await $appwrite().getAllPages('kronikle', 'date', [
   Query.equal('eventId', event.$id as string)
-])).documents as unknown as KDate[])
+])) as unknown as KDate[])
 
 onBeforeMount (async () => {
   const account = $appwrite().account

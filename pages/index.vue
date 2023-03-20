@@ -13,14 +13,14 @@ definePageMeta({
 
 const events = ref([] as KEvent[])
 
-events.value = (await databases.listDocuments('kronikle', 'event', [
+events.value = (await $appwrite().getAllPages('kronikle', 'event', [
   Query.equal('organization', organization)
-])).documents as unknown as KEvent[]
+])) as unknown as KEvent[]
 
 $appwrite().client.subscribe(['databases.kronikle.collections.event.documents'], async () => {
-  events.value = (await databases.listDocuments('kronikle', 'event', [
+  events.value = (await $appwrite().getAllPages('kronikle', 'event', [
     Query.equal('organization', organization)
-  ])).documents as unknown as KEvent[]
+  ])) as unknown as KEvent[]
 })
 
 </script>

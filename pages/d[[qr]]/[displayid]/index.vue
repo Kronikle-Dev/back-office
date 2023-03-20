@@ -105,7 +105,12 @@ if (eventIdList != null) {
 
 console.log(JSON.stringify(events.value.map(ev => ev.$id as string)))
 
-const dates = events.value.length > 0 ? (await databases.listDocuments('kronikle', 'date', [Query.limit(100), Query.equal('eventId', events.value.map(ev => ev.$id as string))])).documents as unknown as KDateApi[] : []
+const dates = [] as KDateApi[]
+if (events.value.length > 0) {
+  dates.push(... await $appwrite().getAllPages('kronikle', 'date', [
+    Query.equal('eventId', events.value.map(ev => ev.$id as string))
+  ]) as unknown as KDateApi[])
+}
 
 </script>
 

@@ -47,10 +47,10 @@ async function importEvent(eventId: string) {
   // Get the KImportEvent Object
   const event = await $fetch(`/api/third-party/${state.organization}/event/${eventId}`)
   // Go through the tags and create the new ones
-  const tagsResponse = await databases.listDocuments('kronikle', 'tag', [
+  const tagsResponse = await $appwrite().getAllPages('kronikle', 'tag', [
     Query.equal('author', ['all', state.organization])
   ])
-  existingTags = tagsResponse.documents.map((doc): {$id: string, name: string} => {
+  existingTags = tagsResponse.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
@@ -69,10 +69,10 @@ async function importEvent(eventId: string) {
     }
   }
   // Go through the publicTypes and create the new ones
-  const publicTypesResponse = await databases.listDocuments('kronikle', 'public-type', [
+  const publicTypesResponse = await $appwrite().getAllPages('kronikle', 'public-type', [
     Query.equal('author', ['all', state.organization])
   ])
-  existingPublicTypes = publicTypesResponse.documents.map((doc): {$id: string, name: string} => {
+  existingPublicTypes = publicTypesResponse.map((doc): {$id: string, name: string} => {
     return {
       $id: doc.$id,
       name: doc.name
@@ -91,10 +91,10 @@ async function importEvent(eventId: string) {
     }
   }
   // Go through the eventTypes and create the new ones
-  const eventTypesResponse = await databases.listDocuments('kronikle', 'event-type', [
+  const eventTypesResponse = await $appwrite().getAllPages('kronikle', 'event-type', [
     Query.equal('author', ['all', state.organization])
   ])
-  existingEventTypes = eventTypesResponse.documents.map((doc): {$id: string, name: string} => {
+  existingEventTypes = eventTypesResponse.map((doc): {$id: string, name: string} => {
     return {
       $id: doc.$id,
       name: doc.name

@@ -29,24 +29,24 @@ const state = reactive({
 onMounted(() => {
   const databases = new Databases($appwrite().client)
   let promiseArray = []
-  promiseArray.push(databases.listDocuments('kronikle', 'tag').then((response) => {
-    availableTags.value = response.documents.map((doc): {$id: string, name: string} => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'tag').then((response) => {
+    availableTags.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
       }
     })
   }))
-  promiseArray.push(databases.listDocuments('kronikle', 'public-type').then((response) => {
-    availablePublicTypes.value = response.documents.map((doc): {$id: string, name: string} => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'public-type').then((response) => {
+    availablePublicTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
       }
     })
   }))
-  promiseArray.push(databases.listDocuments('kronikle', 'event-type').then((response) => {
-    availableEventTypes.value = response.documents.map((doc): {$id: string, name: string} => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'event-type').then((response) => {
+    availableEventTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name

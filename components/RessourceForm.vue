@@ -18,17 +18,17 @@ const props = defineProps<{
 
 const resources = ref([] as KResource[])
 
-resources.value = (await databases.listDocuments('kronikle', 'resource', [
+resources.value = (await $appwrite().getAllPages('kronikle', 'resource', [
   Query.equal('organization', organization),
   Query.equal('eventId', props.event.$id as string)
-])).documents as unknown as KResource[]
+])) as unknown as KResource[]
 
 $appwrite().client.subscribe(['databases.kronikle.collections.resource.documents'], async () => {
   console.log('refresh resources')
-  resources.value = (await databases.listDocuments('kronikle', 'resource', [
+  resources.value = (await $appwrite().getAllPages('kronikle', 'resource', [
     Query.equal('organization', organization),
     Query.equal('eventId', props.event.$id as string)
-  ])).documents as unknown as KResource[]
+  ])) as unknown as KResource[]
 })
 
 const state = reactive({
