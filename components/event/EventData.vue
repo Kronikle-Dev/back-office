@@ -30,6 +30,11 @@ const orderedDates = computed(() => {
 })
 const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' } as DateTimeFormatOptions
 const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOptions
+
+const deleteEvent = async () => {
+  await databases.deleteDocument('kronikle', 'event', props.event.$id)
+  navigateTo('/')
+}
 </script>
 
 <template>
@@ -38,6 +43,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOpti
       <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
+      <div class="absolute top-4 right-4 btn btn-primary btn-outline" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
       <figure><img :src="props.event.imageUrl" alt="Event image" /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>

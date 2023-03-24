@@ -16,7 +16,7 @@ const newevent = reactive({
   author: '',
   originId: '',
   imageId: '',
-  imageUrl: '',
+  imageUrl: null,
   price: null,
   url: null,
   tags: [],

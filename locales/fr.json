@@ -24,7 +24,8 @@
       "subtitle": "Retrouvez ici la liste des événements"
     },
     "card": {
-      "edit": "Éditer l'événement"
+      "edit": "Éditer l'événement",
+      "delete": "Supprimer l'événement"
     },
     "new": {
       "title": "Nouvel événement"
