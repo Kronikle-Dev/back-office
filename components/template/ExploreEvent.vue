@@ -120,7 +120,11 @@ const augmentedDates = props.dates.sort((a, b) => {
     return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
   }).map((d) => {
   (d as KDateApiAug).event = getEventForDate(d)
-  return d
+  if (d != null) {
+    return d
+  } else {
+    return
+  }
 }) as KDateApiAug[]
 
 
@@ -209,8 +213,8 @@ state.futureEvents = props.dates.filter(date => {
 const htmlDescription = converter.makeHtml(props.event.description)
 
 onMounted(() => {
-  qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
-  qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
+  qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}/date/${props.date.$id}`
+  qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}/date/${props.date.$id}`).toString()
 })
 
 </script>
@@ -296,7 +300,7 @@ onMounted(() => {
             <div class="hidden sm:block bg-urfist-200 py-8 px-8 text-center w-72 rounded-lg">
               <div class="font-semibold text-lg leading-none text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-page-on-phone-qr') }}</div>
               <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
-              <div class="underline text-primary-200-kv3 font-light text-lg mt-1">{{ qrUrlTarget }}</div>
+              <!--<div class="underline text-primary-200-kv3 font-light text-lg mt-1">{{ qrUrlTarget }}</div>-->
             </div>
             <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md mt-7 w-full rounded-lg p-6 font-normal text-xl grow">
               <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>

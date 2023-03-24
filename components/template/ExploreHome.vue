@@ -76,7 +76,11 @@ if (numberOfDatesWeek > 8) {
 
 const augmentedDates = props.dates.map((d) => {
   (d as KDateApiAug).event = getEventForDate(d)
-  return d
+  if (d != null) {
+    return d
+  } else {
+    return
+  }
 }) as KDateApiAug[]
 
 const pastEvents = computed(() => {
