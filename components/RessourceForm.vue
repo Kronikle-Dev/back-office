@@ -104,7 +104,7 @@ async function addResource() {
     description: state.description?.length > 0 ? state.description : null,
     isOwnResource: state.isOwnResource,
     resourceType: state.resourceType,
-    imageUrl: state.imageUrl?.length > 0 && checkHttpUrl(state.imageUrl) ? state.imageUrl : null,
+    imageUrl: state.imageUrl?.length > 0 && checkHttpUrl(state.imageUrl) && !state.imageUrl.includes(' ') ? state.imageUrl : null,
     imageAlt: state.imageAlt?.length > 0 ? state.imageAlt : null,
     tags: state.tags.map(t => t.name),
     author: accountData.$id,
