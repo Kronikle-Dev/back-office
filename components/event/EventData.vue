@@ -43,7 +43,7 @@ const deleteEvent = async () => {
       <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
-      <div class="absolute top-4 right-4 btn btn-primary btn-outline" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
+      <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
       <figure><img :src="props.event.imageUrl" alt="Event image" /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>

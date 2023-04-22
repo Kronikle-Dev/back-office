@@ -21,7 +21,7 @@
   "event": {
     "index": {
       "title": "Événements",
-      "subtitle": "Retrouvez ici la liste des événements"
+      "subtitle": "Retrouvez ici l'entièreté de votre programmation"
     },
     "card": {
       "edit": "Éditer l'événement",
