@@ -83,8 +83,8 @@ if (eventIdList) {
 
 if (display.eventFilter != 'none') {
   try {
-    const apievents = await databases.listDocuments('kronikle', 'event', queries )
-    events.value.push(...(apievents.documents as unknown[] as KEvent[]))
+    const apievents = await $appwrite().getAllPages('kronikle', 'event', queries )
+    events.value.push(...(apievents as unknown[] as KEvent[]))
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)
   }
@@ -95,9 +95,9 @@ if (eventIdList != null) {
   const supplementaryEventIds = display.events.filter(e => !eventIdList.has(e))
 
   try {
-    events.value.push( ... (await databases.listDocuments('kronikle', 'event', [
+    events.value.push( ... (await $appwrite().getAllPages('kronikle', 'event', [
       Query.equal('$id', supplementaryEventIds)
-    ])).documents as unknown[] as KEvent[])
+    ])) as unknown[] as KEvent[])
   } catch (e) {
     console.error('Failed to retrieve supplementray events : ', e)
   }
