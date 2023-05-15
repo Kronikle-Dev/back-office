@@ -58,43 +58,71 @@ const selectedTagsIds = computed(() => {
   return selectedTags.value.map(t => t.$id)
 })
 
-
-tags.value = ((await $appwrite().getAllPages('kronikle', 'tag',
-  [
-    Query.equal('$id', [...tagsIds.value])
-  ])) as unknown as {$id: string, name: string}[])
-
+if (tagsIds.value.size > 0) {
+  try {
+    tags.value = ((await $appwrite().getAllPages('kronikle', 'tag',
+      [
+        Query.equal('$id', [...tagsIds.value])
+      ])) as unknown as {$id: string, name: string}[])
+  } catch (e) {
+    console.error(e)
+  }
+}
   
-eventTypes.value = ((await $appwrite().getAllPages('kronikle', 'event-type',
-  [
-    Query.equal('$id', [...typesIds.value])
-  ])) as unknown as {$id: string, name: string}[])
+if (typesIds.value.size > 0) {
+  try {
+    eventTypes.value = ((await $appwrite().getAllPages('kronikle', 'event-type',
+    [
+      Query.equal('$id', [...typesIds.value])
+    ])) as unknown as {$id: string, name: string}[])
+  } catch (e) {
+    console.error(e)
+  }
+}
 
-publicTypes.value = ((await $appwrite().getAllPages('kronikle', 'public-type',
-  [
-    Query.equal('$id', [...publicsIds.value])
-  ])) as unknown as {$id: string, name: string}[])
+if (publicsIds.value.size > 0) {
+  try {
+    publicTypes.value = ((await $appwrite().getAllPages('kronikle', 'public-type',
+      [
+        Query.equal('$id', [...publicsIds.value])
+      ])) as unknown as {$id: string, name: string}[])
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 watch(publicsIds, async (newVal, oldVal) => {
-  publicTypes.value = (await $appwrite().getAllPages('kronikle', 'public-type',
-  [
-    Query.equal('$id', [...newVal])
-  ])) as unknown as {$id: string, name: string}[]
+  try {
+    publicTypes.value = (await $appwrite().getAllPages('kronikle', 'public-type',
+    [
+      Query.equal('$id', [...newVal])
+    ])) as unknown as {$id: string, name: string}[]
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 watch(typesIds, async (newVal, oldVal) => {
-  eventTypes.value = (await $appwrite().getAllPages('kronikle', 'event-type',
-  [
-    Query.equal('$id', [...newVal])
-  ])) as unknown as {$id: string, name: string}[]
+  try {
+    eventTypes.value = (await $appwrite().getAllPages('kronikle', 'event-type',
+    [
+      Query.equal('$id', [...newVal])
+    ])) as unknown as {$id: string, name: string}[]
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 
 watch(tagsIds, async (newVal, oldVal) => {
-  tags.value = (await $appwrite().getAllPages('kronikle', 'tag',
-  [
-    Query.equal('$id', [...newVal])
-  ])) as unknown as {$id: string, name: string}[]
+  try {
+    tags.value = (await $appwrite().getAllPages('kronikle', 'tag',
+    [
+      Query.equal('$id', [...newVal])
+    ])) as unknown as {$id: string, name: string}[]
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 watch(state, (newVal, oldVal) => {

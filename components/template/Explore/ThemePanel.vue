@@ -59,21 +59,37 @@ const selectedTags: Ref<any[]> = ref([])
 const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
 const qrUrlTarget = ref('')
 
-tags.value = ((await databases.listDocuments('kronikle', 'tag',
-  [
-    Query.equal('$id', [...tagsIds.value])
-  ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
+if (tagsIds.value.size > 0) {
+  try {
+    tags.value = ((await databases.listDocuments('kronikle', 'tag',
+      [
+        Query.equal('$id', [...tagsIds.value])
+      ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
+  } catch (e) {
+    console.log(e)
+  }
+}
 
-allTags.value = ((await databases.listDocuments('kronikle', 'tag',
-  [
-    Query.equal('$id', [...allTagsIds.value])
-  ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
+if (allTagsIds.value.size > 0) {
+  try {
+    allTags.value = ((await databases.listDocuments('kronikle', 'tag',
+      [
+        Query.equal('$id', [...allTagsIds.value])
+      ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 watch(tagsIds, async (newVal, oldVal) => {
-  tags.value = (await databases.listDocuments('kronikle', 'tag',
-  [
-    Query.equal('$id', [...newVal])
-  ])).documents as unknown as {$id: string, name: string}[]
+  try {
+    tags.value = (await databases.listDocuments('kronikle', 'tag',
+    [
+      Query.equal('$id', [...newVal])
+    ])).documents as unknown as {$id: string, name: string}[]
+  } catch (e) {
+    console.log(e)
+  }
 })
 
 function relaySelect (tag: string) {
