@@ -97,6 +97,10 @@ const orderedResources = computed(() => {
   return oresources
 })
 
+const orderedResourcesKeys = computed(() => {
+  return Object.keys(orderedResources.value).sort()
+})
+
 const noTagResources = computed(() => {
   return eventResources.value.filter(res => res.tags.length === 0)
 })
@@ -305,16 +309,16 @@ onMounted(() => {
             <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md mt-7 w-full rounded-lg p-6 font-normal text-xl grow">
               <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>
               <ul>
-                <li v-for="label of resourceLabels" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
+                <li v-for="label of orderedResourcesKeys" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
               </ul>
             </div>
           </div>
         </div>
           <div>
-            <TemplateExploreResourceFolder v-for="(value, key) in orderedResources"
+            <TemplateExploreResourceFolder v-for="key in orderedResourcesKeys"
                 :key="key"
                 :id="key"
-                :resources="value"
+                :resources="orderedResources[key]"
                 :label="key"
                 class="mt-10">
             </TemplateExploreResourceFolder>

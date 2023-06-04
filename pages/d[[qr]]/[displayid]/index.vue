@@ -65,16 +65,21 @@ try {
   console.error('Failed to retrieve eventIdList : ', e)
 }
 
+/* 
+There is NO Contain query in Appwrite, so we have to do it manually (https://discord.com/channels/564160730845151244/564161855862603789/1060730532574548071)
 const tagQueries = display.tagFilter.map(tagId => Query.search('tags', tagId))
 const publicQueries = display.publicFilter.map(publicId => Query.search('publicTypes', publicId))
 const typeQueries = display.typeFilter.map(typeId => Query.search('eventType', typeId))
+*/
 
 const events = ref([] as KEvent[])
 
 const queries = [
+  /*
   ...tagQueries,
   ...publicQueries,
   ...typeQueries
+  */
 ]
 
 if (eventIdList) {
@@ -84,7 +89,11 @@ if (eventIdList) {
 if (display.eventFilter != 'none') {
   try {
     const apievents = await $appwrite().getAllPages('kronikle', 'event', queries )
-    events.value.push(...(apievents as unknown[] as KEvent[]))
+    events.value.push(...(apievents as unknown[] as KEvent[]).filter(e => {
+      return e.tags.some(t => display.tagFilter.includes(t)) ||
+        e.publicTypes.some(p => display.publicFilter.includes(p)) ||
+        e.eventType.some(t => display.typeFilter.includes(t))
+    }))
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)
   }
@@ -116,7 +125,7 @@ if (events.value.length > 0) {
 
 <template>
   <div>
-    <TemplateBasic v-if="qr || display.template === 'basic'" :events="events"></TemplateBasic>
-    <TemplateExploreHome v-if="!qr && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates"></TemplateExploreHome>
+    <!--<<TemplateBasic v-if="qr || display.template === 'basic'" :events="events"></TemplateBasic>-->
+    <TemplateExploreHome v-if="display.template === 'explore-v3'" :events="events" :display="display" :dates="dates"></TemplateExploreHome>
   </div>
 </template>

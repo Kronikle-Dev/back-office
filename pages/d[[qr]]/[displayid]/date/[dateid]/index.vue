@@ -79,17 +79,19 @@ try {
 } catch (e) {
   console.error('Failed to retrieve eventIdList : ', e)
 }
-
+/*
 const tagQueries = display.tagFilter.map(tagId => Query.search('tags', tagId))
 const publicQueries = display.publicFilter.map(publicId => Query.search('publicTypes', publicId))
 const typeQueries = display.typeFilter.map(typeId => Query.search('eventType', typeId))
-
+*/
 const events = ref([] as KEvent[])
 
 const queries = [
+  /*
   ...tagQueries,
   ...publicQueries,
   ...typeQueries
+  */
 ]
 
 if (eventIdList) {
@@ -98,7 +100,11 @@ if (eventIdList) {
 
 if (display.eventFilter != 'none') {
   try {
-    events.value.push(...(await $appwrite().getAllPages('kronikle', 'event', queries )) as unknown[] as KEvent[])
+    events.value.push(...((await $appwrite().getAllPages('kronikle', 'event', queries )) as unknown[] as KEvent[]).filter(e => {
+      return e.tags.some(t => display.tagFilter.includes(t)) ||
+        e.publicTypes.some(p => display.publicFilter.includes(p)) ||
+        e.eventType.some(t => display.typeFilter.includes(t))
+    }))
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)
   }
@@ -123,7 +129,7 @@ const dates = (await $appwrite().getAllPages('kronikle', 'date', [Query.equal('e
 
 <template>
   <div>
-    <TemplateBasicEvent v-if="qr || display.template === 'basic'" :events="events" :event="event"></TemplateBasicEvent>
-    <TemplateExploreEvent v-if="!qr && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event" :date="date"></TemplateExploreEvent>
+    <!--<TemplateBasicEvent v-if="qr || display.template === 'basic'" :events="events" :event="event"></TemplateBasicEvent>-->
+    <TemplateExploreEvent v-if="display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event" :date="date"></TemplateExploreEvent>
   </div>
 </template>

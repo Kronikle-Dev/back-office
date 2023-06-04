@@ -102,7 +102,7 @@ const templates = [
 const filters = [
   {
     code: 'none',
-    name: 'Aucun'
+    name: 'Aucun sauf les événements distincts sélectionnés'
   },
   {
     code: 'all',
