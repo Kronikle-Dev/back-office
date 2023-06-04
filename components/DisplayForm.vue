@@ -199,6 +199,9 @@ const originUrl = window.location.origin
       <option v-for="filter of filters" :value="filter.code" :key="filter.code">{{ filter.name }}</option>
     </select>
     <label class="label">
+      <span class="label-text">{{$t('display.form.additionnal-filter')}}</span>
+    </label>
+    <label class="label">
       <span class="label-text">{{$t('display.form.tag-filter')}}</span>
     </label>
     <VueMultiselect
