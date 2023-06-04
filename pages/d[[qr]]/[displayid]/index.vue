@@ -90,6 +90,9 @@ if (display.eventFilter != 'none') {
   try {
     const apievents = await $appwrite().getAllPages('kronikle', 'event', queries )
     events.value.push(...(apievents as unknown[] as KEvent[]).filter(e => {
+      if (display.tagFilter.length == 0 && display.publicFilter.length == 0 && display.typeFilter.length == 0) {
+        return true
+      }
       return e.tags.some(t => display.tagFilter.includes(t)) ||
         e.publicTypes.some(p => display.publicFilter.includes(p)) ||
         e.eventType.some(t => display.typeFilter.includes(t))
