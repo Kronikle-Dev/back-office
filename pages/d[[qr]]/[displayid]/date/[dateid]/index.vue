@@ -103,10 +103,15 @@ if (display.eventFilter != 'none') {
     events.value.push(...((await $appwrite().getAllPages('kronikle', 'event', queries )) as unknown[] as KEvent[]).filter(e => {
       if (display.tagFilter.length == 0 && display.publicFilter.length == 0 && display.typeFilter.length == 0) {
         return true
+      } else if (!display.excludeFilters) {
+        return e.tags.some(t => display.tagFilter.includes(t)) ||
+          e.publicTypes.some(p => display.publicFilter.includes(p)) ||
+          e.eventType.some(t => display.typeFilter.includes(t))
+      } else {
+        return !e.tags.some(t => display.tagFilter.includes(t)) &&
+          !e.publicTypes.some(p => display.publicFilter.includes(p)) &&
+          !e.eventType.some(t => display.typeFilter.includes(t))
       }
-      return e.tags.some(t => display.tagFilter.includes(t)) ||
-        e.publicTypes.some(p => display.publicFilter.includes(p)) ||
-        e.eventType.some(t => display.typeFilter.includes(t))
     }))
   } catch (e) {
     console.error('Failed to retrieve events from filter : ', e)

@@ -95,5 +95,6 @@ interface KDisplay {
   publicFilter: string[],
   typeFilter: string[],
   tagFilter: string[],
+  excludeFilters: boolean,
   organization: string,
 }

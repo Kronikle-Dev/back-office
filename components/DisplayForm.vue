@@ -76,6 +76,7 @@ const state = reactive({
   publicFilter: [] as {$id: string, name: string | undefined}[],
   typeFilter: [] as {$id: string, name: string | undefined}[],
   tagFilter: [] as {$id: string, name: string | undefined}[],
+  excludeFilters: false,
 })
 
 if (props.display) {
@@ -86,6 +87,7 @@ if (props.display) {
   state.publicFilter = props.display.publicFilter.map((e: string) => ({$id: e}))
   state.typeFilter = props.display.typeFilter.map((e: string) => ({$id: e}))
   state.tagFilter = props.display.tagFilter.map((e: string) => ({$id: e}))
+  state.excludeFilters = props.display.excludeFilters
 }
 
 const templates = [
@@ -142,6 +144,7 @@ async function addDisplay() {
     publicFilter: state.publicFilter.map(pf => pf.$id),
     typeFilter: state.typeFilter.map(tf => tf.$id),
     tagFilter: state.tagFilter.map(tf => tf.$id),
+    excludeFilters: state.excludeFilters,
     organization: organization,
   }
   try {
@@ -190,7 +193,7 @@ const originUrl = window.location.origin
       <option disabled selected>Who shot first?</option>
       <option v-for="template of templates" :value="template.code" :key="template.code">{{ template.name }}</option>
     </select>
-    <h2>{{ $t('display.form.filter-title') }}</h2>
+    <h2>{{ $t('display.form.date-filter-title') }}</h2>
     <label class="label">
       <span class="label-text">{{$t('display.form.date-label')}}</span>
     </label>
@@ -198,6 +201,7 @@ const originUrl = window.location.origin
       <option disabled selected>Who shot first?</option>
       <option v-for="filter of filters" :value="filter.code" :key="filter.code">{{ filter.name }}</option>
     </select>
+    <h2>{{ $t('display.form.filter-title') }}</h2>
     <label class="label">
       <span class="label-text">{{$t('display.form.additionnal-filter')}}</span>
     </label>
@@ -234,6 +238,12 @@ const originUrl = window.location.origin
       track-by="$id"
       label="name">
     </VueMultiselect>
+    <div class="form-control">
+      <label class="label cursor-pointer justify-start space-x-4">
+        <input v-model="state.excludeFilters" type="checkbox" class="checkbox" />
+        <span class="label-text">{{$t('display.form.exclude-filters')}}</span> 
+      </label>
+    </div>
     <h2>{{ $t('display.form.pick-events-title') }}</h2>
     <label class="label">
       <span class="label-text">{{$t('display.form.pick-events')}}</span>
