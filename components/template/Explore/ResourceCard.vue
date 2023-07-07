@@ -14,7 +14,10 @@ const props = defineProps<{
         class="max-h-[200px] rounded"/>
       <div class="flex flex-row space-x-2.5">
         <TemplateExploreResourceTypeIcon class="self-center" :resource="props.resource"></TemplateExploreResourceTypeIcon>
-        <div class="mt-2.5 font-medium text-lg text-primary-100-kv3">{{ props.resource.name }}</div>
+        <div class="flex flex-col">
+          <div class="mt-2.5 font-medium text-lg text-primary-100-kv3">{{ props.resource.name }}</div>
+          <div class="mt-2.5 font-light text-base text-primary-100-kv3">{{ props.resource.description }}</div>
+        </div>
       </div>
     </div>
   </a>
