@@ -54,6 +54,8 @@
       "delete": "Supprimer",
       "cancel": "Annuler",
       "reinstate": "Rétablir",
+      "definitive-delete": "Supprimer définitivement",
+      "keep-at-least-one-date": "Vous devez garder au moins une date",
       "clone": "Cloner"
     },
     "newthree": {

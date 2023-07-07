@@ -21,7 +21,7 @@ const rules = {
   description: {
     required,
     minLength: minLength(1),
-    maxLength: maxLength(2000),
+    maxLength: maxLength(3000),
   },
 }
 
@@ -60,7 +60,7 @@ async function next () {
     <label class="label">
       <span v-if="v$.description.$error && v$.description.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.description.$error && v$.description.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 1})}}</span>
-      <span v-if="v$.description.$error && v$.description.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 2000})}}</span>
+      <span v-if="v$.description.$error && v$.description.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 3000})}}</span>
     </label>
     <div class="flex flex-row w-full space-x-4">
       <button class="btn btn-outline btn-primary mt-4 grow" @click="emit('prev')">{{$t('form.previous')}}</button>

@@ -50,23 +50,23 @@ try {
       eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
         Query.lessThanEqual('startDateTime', lastDayOfMonth.toString())
-      ])).map((d) => d.eventId))
+      ])).map((d: {eventId: string}) => d.eventId))
       break
     case 'week':
       eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
         Query.lessThanEqual('startDateTime', lastDayofWeek.toString())
-      ])).map(d => d.eventId))
+      ])).map((d: {eventId: string}) => d.eventId))
       break
     case 'upcoming':
       eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
-      ])).map(d => d.eventId))
+      ])).map((d: {eventId: string}) => d.eventId))
       break
     case 'past':
       eventIdList = new Set((await $appwrite().getAllPages('kronile', 'date', [
         Query.lessThan('startDateTime', beginningOfToday.toString())
-      ])).map(d => d.eventId))
+      ])).map((d: {eventId: string}) => d.eventId))
       break
     case 'none':
       eventIdList = new Set()
@@ -104,13 +104,13 @@ if (display.eventFilter != 'none') {
       if (display.tagFilter.length == 0 && display.publicFilter.length == 0 && display.typeFilter.length == 0) {
         return true
       } else if (!display.excludeFilters) {
-        return e.tags.some(t => display.tagFilter.includes(t)) ||
-          e.publicTypes.some(p => display.publicFilter.includes(p)) ||
-          e.eventType.some(t => display.typeFilter.includes(t))
+        return e.tags?.some(t => display.tagFilter.includes(t)) ||
+          e.publicTypes?.some(p => display.publicFilter.includes(p)) ||
+          e.eventType?.some(t => display.typeFilter.includes(t))
       } else {
-        return !e.tags.some(t => display.tagFilter.includes(t)) &&
-          !e.publicTypes.some(p => display.publicFilter.includes(p)) &&
-          !e.eventType.some(t => display.typeFilter.includes(t))
+        return !e.tags?.some(t => display.tagFilter.includes(t)) &&
+          !e.publicTypes?.some(p => display.publicFilter.includes(p)) &&
+          !e.eventType?.some(t => display.typeFilter.includes(t))
       }
     }))
   } catch (e) {

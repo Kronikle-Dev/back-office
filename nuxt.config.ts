@@ -56,7 +56,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      appwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle-prod'
+      appwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle'
     }
   },
   // @ts-ignore

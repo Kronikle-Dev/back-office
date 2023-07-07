@@ -6,6 +6,7 @@ import {ID} from 'appwrite'
 import { DateTimeFormatOptions } from '@intlify/core-base'
 import { Databases } from 'appwrite'
 const {$appwrite} = useNuxtApp()
+const {t} = useI18n()
 
 const databases = new Databases($appwrite().client)
 
@@ -136,6 +137,20 @@ function cancelDate (id: string | undefined) {
     databases.updateDocument('kronikle', 'date', id as string, {
       status: 'canceled'
     })
+  }
+}
+
+function deleteDateFromAppwrite(id: string | undefined) {
+  if (!id) return
+  if (state.dates.length < 2) {
+    alert(t('event.newtwo.keep-at-least-one-date'))
+    return
+  }
+  try {
+    databases.deleteDocument('kronikle', 'date', id as string)
+    state.dates = state.dates.filter((date: any) => date.$id !== id)
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -282,6 +297,7 @@ function cloneDate(date: any) {
         <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span> 
         <span v-else class="indicator-item badge badge-primary cursor-pointer" @click="cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
         <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span> 
+        <span v-if="date.status == 'canceled'" class="indicator-item indicator-start indicator-bottom badge badge-primary cursor-pointer" @click="deleteDateFromAppwrite(date.$id)">{{$t('event.newtwo.definitive-delete')}}</span> 
         <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span> 
         <div class="card w-64 bg-white shadow not-prose" :class="{'card-bordered border-4 border-error': date.status == 'canceled'}">
           <span v-if="date.status == 'canceled'" class="absolute t-0 l-0 text-error -rotate-45 -translate-x-8">CANCELLED</span>
