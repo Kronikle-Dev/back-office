@@ -25,24 +25,24 @@ const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
   const databases = new Databases($appwrite().client)
-  $appwrite().getAllPages('kronikle', 'tag').then((response) => {
-    availableTags.value = response.map((doc): {$id: string, name: string} => {
+  $appwrite().getAllPages('kronikle', 'tag').then((response: any[]) => {
+    availableTags.value = response.map((doc: { $id: any; name: any }): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
       }
     })
   })
-  $appwrite().getAllPages('kronikle', 'public-type').then((response) => {
-    availablePublicTypes.value = response.map((doc): {$id: string, name: string} => {
+  $appwrite().getAllPages('kronikle', 'public-type').then((response: any[]) => {
+    availablePublicTypes.value = response.map((doc: { $id: any; name: any }): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
       }
     })
   })
-  $appwrite().getAllPages('kronikle', 'event-type').then((response) => {
-    availableEventTypes.value = response.map((doc): {$id: string, name: string} => {
+  $appwrite().getAllPages('kronikle', 'event-type').then((response: any[]) => {
+    availableEventTypes.value = response.map((doc: { $id: any; name: any }): {$id: string, name: string} => {
       return {
         $id: doc.$id,
         name: doc.name
