@@ -192,7 +192,7 @@ async function importEvent(eventId: string) {
         <div class="font-bold">{{event.name}}</div>
         <div v-for="date of event.date" :key="date" class="text-sm">{{(new Date(date)).toLocaleDateString()}}</div>
       </div>
-      <div v-if="state.importedEventsIds.includes(event.id)">{{$t('event.import.already-imported')}}</div>
+      <div v-if="state.importedEventsIds.includes(event.id)" class="shrink-0">{{$t('event.import.already-imported')}}</div>
     </div>
     <!-- Put this part before </body> tag -->
     <input type="checkbox" id="my-modal" class="modal-toggle" v-model="state.importing" />
