@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases } from 'appwrite'
+import { Databases, Teams, Permission, Role } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 
 definePageMeta({
@@ -28,14 +28,13 @@ const newevent = reactive({
 const dates = ref([] as Array<any>)
 
 onBeforeMount (async () => {
-  const account = $appwrite().account
-  console.log(account)
-  const prefs = await account.getPrefs()
-  if (!prefs.organization) {
+  const teams = new Teams($appwrite().client)
+  const myTeams = await teams.list()
+  if (myTeams.teams.length === 0) {
     return
-  } else {
-    newevent.organization = prefs.organization
   }
+  const myTeamId = myTeams.teams[0].$id
+  newevent.organization = myTeamId
 })
 
 function assignFragment(fragment:any) {
@@ -56,13 +55,21 @@ async function publish () {
   newevent.updateDate = new Date().toISOString()
 
   const databases = new Databases($appwrite().client)
-  const inserted = await databases.createDocument('kronikle', 'event', 'unique()', newevent)
+  const inserted = await databases.createDocument('kronikle', 'event', 'unique()', newevent, [
+    Permission.delete(Role.team(newevent.organization)),
+    Permission.update(Role.team(newevent.organization)),
+    Permission.read(Role.any()),
+  ])
   for (const d of dates.value) {
     if (d.new) {
       d.eventId = inserted.$id
       delete d['$id']
       delete d['new']
-      datesPromises.push(databases.createDocument('kronikle', 'date', 'unique()', d))
+      datesPromises.push(databases.createDocument('kronikle', 'date', 'unique()', d, [
+        Permission.delete(Role.team(newevent.organization)),
+        Permission.update(Role.team(newevent.organization)),
+        Permission.read(Role.any()),
+      ]))
     }
   }
 

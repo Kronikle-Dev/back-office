@@ -3,8 +3,8 @@ import {Client, Account, Query, Databases, Models} from 'appwrite'
 export default defineNuxtPlugin((nuxtApp) => { 
     const config = useRuntimeConfig()
     const client = new Client()
-        .setEndpoint('https://appwrite.kronikle.eu/v1') // Your API Endpoint
-        .setProject(config.public.appwriteProject);
+        .setEndpoint(config.public.AppwriteEndpoint) // Your API Endpoint
+        .setProject(config.public.AppwriteProject);
     const account = new Account(client);
     
     // Singleton Class for Appwrite

@@ -56,20 +56,16 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      appwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle'
+      AppwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle',
+      AppwriteEndpoint: "https://appwrite.kronikle.eu/v1",
     }
   },
   // @ts-ignore
   i18n: {
-    vueI18n: {
-      legacy: false,
-      locale: 'fr',
-      messages: {
-        fr: require('./locales/fr.json'),
-      }
-    }
+    vueI18n: './nuxt-i18n.js',
   },
   build: {
+    // @ts-ignore
     extend(config, ctx) {
       if (ctx.isDev) {
         config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'

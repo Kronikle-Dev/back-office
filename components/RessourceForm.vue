@@ -1,15 +1,22 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { required, requiredUnless, url } from '@vuelidate/validators'
-import { Databases, Query } from 'appwrite'
+import { Databases, Query, Teams, Permission, Role } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 const {$appwrite} = useNuxtApp()
 
 const databases = new Databases($appwrite().client)
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
+
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 const accountData = await $appwrite().account.get()
 
 const props = defineProps<{
@@ -68,7 +75,9 @@ watch(resourceUrl, async (newUrl, oldUrl) => {
   if (isUrlCorrect) {
     const result = await $fetch(`/api/open-graph?url=${resourceUrl.value}`)
     if (!result.error) {
+      // @ts-ignore
       state.name = result.og?.ogTitle || ''
+      // @ts-ignore
       state.imageUrl = result.og?.ogImage?.url || ''
       state.html = result?.html || ''
     }
@@ -113,7 +122,11 @@ async function addResource() {
     html: state.html
   }
   try {
-    const result = await databases.createDocument('kronikle', 'resource', 'unique()', newResource)
+    const result = await databases.createDocument('kronikle', 'resource', 'unique()', newResource, [
+      Permission.delete(Role.team(organization)),
+      Permission.update(Role.team(organization)),
+      Permission.read(Role.any()),
+    ])
     resourceUrl.value = ''
     state.name = ''
     state.description = ''

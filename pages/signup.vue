@@ -38,6 +38,7 @@ async function login () {
   try {
     const resp = await account.createEmailSession(state.email, state.password)
     state.loading = false
+    console.log(resp)
     await navigateTo('/')
   } catch (error) {
     state.loading = false

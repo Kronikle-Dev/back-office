@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { required, requiredUnless, url } from '@vuelidate/validators'
-import { Databases, Query, Permission, Role } from 'appwrite'
+import { Databases, Teams, Query, Permission, Role } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
@@ -15,9 +15,14 @@ const props = defineProps({
 })
 
 const databases = new Databases($appwrite().client)
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
-const accountData = await $appwrite().account.get()
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 
 const availableTags = ref([] as Array<{$id: string, name: string}>)
 const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
@@ -25,7 +30,6 @@ const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 const availableEvents = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
-  const databases = new Databases($appwrite().client)
   let promiseArray = []
   promiseArray.push($appwrite().getAllPages('kronikle', 'tag').then((response) => {
     availableTags.value = response.map((doc): {$id: string, name: string} => {
@@ -151,7 +155,11 @@ async function addDisplay() {
     if (props.display) {
       const result = await databases.updateDocument('kronikle', 'display', props.display.$id, newDisplay)
     } else {
-      const result = await databases.createDocument('kronikle', 'display', 'unique()', newDisplay)
+      const result = await databases.createDocument('kronikle', 'display', 'unique()', newDisplay, [
+        Permission.delete(Role.team(organization)),
+        Permission.update(Role.team(organization)),
+        Permission.read(Role.any()),
+      ])
     }
     navigateTo('/display')
   } catch (e) {

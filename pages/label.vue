@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases, Query, Permission, Role } from 'appwrite'
+import { Databases, Teams, Query, Permission, Role } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 
 definePageMeta({
@@ -9,9 +9,14 @@ definePageMeta({
 
 
 const databases = new Databases($appwrite().client)
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
-const accountData = await $appwrite().account.get()
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 
 const availableTags = ref([] as Array<{$id: string, name: string}>)
 const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
@@ -59,7 +64,11 @@ async function addTag () {
   const obj = await databases.createDocument('kronikle', 'tag', 'unique()', {
     name: state.newTag,
     author: organization
-  })
+  }, [
+    Permission.delete(Role.team(organization)),
+    Permission.update(Role.team(organization)),
+    Permission.read(Role.any()),
+  ])
   availableTags.value.push({
     $id: obj.$id,
     name: state.newTag
@@ -72,7 +81,11 @@ async function addPublic () {
   const obj = await databases.createDocument('kronikle', 'public-type', 'unique()', {
     name: state.newPublicType,
     author: organization
-  })
+  }, [
+    Permission.delete(Role.team(organization)),
+    Permission.update(Role.team(organization)),
+    Permission.read(Role.any()),
+  ])
   availablePublicTypes.value.push({
     $id: obj.$id,
     name: state.newPublicType
@@ -85,7 +98,11 @@ async function addType () {
   const obj = await databases.createDocument('kronikle', 'event-type', 'unique()', {
     name: state.newEventType,
     author: organization
-  })
+  }, [
+    Permission.delete(Role.team(organization)),
+    Permission.update(Role.team(organization)),
+    Permission.read(Role.any()),
+  ])
   availableEventTypes.value.push({
     $id: obj.$id,
     name: state.newEventType

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases, Permission, Role, Query } from 'appwrite'
+import { Databases, Teams, Permission, Role, Query } from 'appwrite'
 import { organizationId } from '~~/server/api/third-party/sygefor-33/SygeforImporterConfig';
 const {$appwrite} = useNuxtApp()
 
@@ -11,20 +11,29 @@ definePageMeta({
 const state = reactive({
   query: '',
   organization: 'none',
-  importing: false
+  importing: false,
+  importedEventsIds: [] as string[]
 })
 
 const { data: events, pending, refresh, error } = await useFetch(() => `/api/third-party/${state.organization}/list?query=${state.query}`)
 
 onBeforeMount (async () => {
-  const account = $appwrite().account
-  console.log(account)
-  const prefs = await account.getPrefs()
-  if (!prefs.organization) {
+  const teams = new Teams($appwrite().client)
+  const myTeams = await teams.list()
+  if (myTeams.teams.length === 0) {
     return
-  } else {
-    state.organization = prefs.organization
   }
+  const myTeamId = myTeams.teams[0].$id
+  state.organization = myTeamId
+  $appwrite().getAllPages('kronikle', 'event', [
+    Query.equal('organization', state.organization)
+  ]).then((response) => {
+    state.importedEventsIds = response.map((doc): string => {
+      return doc.originId
+    })
+  }).catch((err) => {
+    console.log(err)
+  })
 })
 
 async function search () {
@@ -45,7 +54,14 @@ async function importEvent(eventId: string) {
   state.importing = true
 
   // Get the KImportEvent Object
-  const event = await $fetch(`/api/third-party/${state.organization}/event/${eventId}`)
+  let event = {} as KImportEvent
+  try {
+    // @ts-ignore
+    event = (await $fetch(`/api/third-party/${state.organization}/event/${eventId}`)) as KImportEvent
+  } catch (err: any) {
+    console.log(err.error)
+    return
+  }
   // Go through the tags and create the new ones
   const tagsResponse = await $appwrite().getAllPages('kronikle', 'tag', [
     Query.equal('author', ['all', state.organization])
@@ -64,7 +80,11 @@ async function importEvent(eventId: string) {
       const tagObj = await databases.createDocument('kronikle', 'tag', 'unique()', {
         name: tag,
         author: state.organization
-      })
+      }, [
+        Permission.delete(Role.team(state.organization)),
+        Permission.update(Role.team(state.organization)),
+        Permission.read(Role.any()),
+      ])
       tagIds.push(tagObj.$id)
     }
   }
@@ -86,7 +106,11 @@ async function importEvent(eventId: string) {
       const obj = await databases.createDocument('kronikle', 'public-type', 'unique()', {
         name: publicType,
         author: state.organization
-      })
+      }, [
+        Permission.delete(Role.team(state.organization)),
+        Permission.update(Role.team(state.organization)),
+        Permission.read(Role.any()),
+      ])
       publicTypesIds.push(obj.$id)
     }
   }
@@ -108,7 +132,11 @@ async function importEvent(eventId: string) {
       const obj = await databases.createDocument('kronikle', 'event-type', 'unique()', {
         name: eventType,
         author: state.organization
-      })
+      }, [
+        Permission.delete(Role.team(state.organization)),
+        Permission.update(Role.team(state.organization)),
+        Permission.read(Role.any()),
+      ])
       eventTypesIds.push(obj.$id)
     }
   }
@@ -119,18 +147,26 @@ async function importEvent(eventId: string) {
     tags: tagIds,
     publicTypes: publicTypesIds,
     eventType: eventTypesIds
-  })
+  }, [
+    Permission.delete(Role.team(state.organization)),
+    Permission.update(Role.team(state.organization)),
+    Permission.read(Role.any()),
+  ])
   // Create the Dates with the correct eventId
   let datesPromises = [] as Array<Promise<any>>
   for (const d of event.dates) {
     d.eventId = eventObj.$id
-    datesPromises.push(databases.createDocument('kronikle', 'date', 'unique()', d as any))
+    datesPromises.push(databases.createDocument('kronikle', 'date', 'unique()', d as any, [
+      Permission.delete(Role.team(state.organization)),
+      Permission.update(Role.team(state.organization)),
+      Permission.read(Role.any()),
+    ]))
   }
   // Redirect to /event/:eventId
   Promise.all(datesPromises).then(() => {
     state.importing = false
     console.log('import OK')
-    //navigateTo('/')
+    navigateTo('/event/' + eventObj.$id)
   })
 }
 
@@ -147,13 +183,16 @@ async function importEvent(eventId: string) {
     <input v-model="state.query" type="text" :placeholder="$t('event.import.name-placeholder')" class="input input-bordered bg-white w-full" @keypress.enter="search">
     <div class="my-4" v-if="pending">Chargement...</div>
     <div 
-      @click="importEvent(event.id)"
+      @click="state.importedEventsIds.includes(event.id) ? null : importEvent(event.id)"
       v-for="event of events"
       :key="event.id"
-      class="my-3 bg-white card shadow py-2 px-4 cursor-pointer hover:shadow-lg"
+      class="my-3 bg-white card shadow py-2 px-4 cursor-pointer hover:shadow-lg flex flex-row justify-between items-center"
       :class="{'bg-base-100': pending, 'text-base-200': pending}">
-      <div class="font-bold">{{event.name}}</div>
-      <div v-for="date of event.date" :key="date" class="text-sm">{{(new Date(date)).toLocaleDateString()}}</div>
+      <div>
+        <div class="font-bold">{{event.name}}</div>
+        <div v-for="date of event.date" :key="date" class="text-sm">{{(new Date(date)).toLocaleDateString()}}</div>
+      </div>
+      <div v-if="state.importedEventsIds.includes(event.id)">{{$t('event.import.already-imported')}}</div>
     </div>
     <!-- Put this part before </body> tag -->
     <input type="checkbox" id="my-modal" class="modal-toggle" v-model="state.importing" />
