@@ -1,10 +1,19 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
-import { Databases } from 'appwrite'
+import { Databases, Query, Teams } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 const {$appwrite} = useNuxtApp()
+
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 
 
 const emit = defineEmits(['next', 'prev'])
@@ -24,7 +33,9 @@ const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 onMounted(() => {
   const databases = new Databases($appwrite().client)
   let promiseArray = []
-  promiseArray.push($appwrite().getAllPages('kronikle', 'tag').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'tag', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availableTags.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
@@ -32,7 +43,9 @@ onMounted(() => {
       }
     })
   }))
-  promiseArray.push($appwrite().getAllPages('kronikle', 'public-type').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'public-type', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availablePublicTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
@@ -40,7 +53,9 @@ onMounted(() => {
       }
     })
   }))
-  promiseArray.push($appwrite().getAllPages('kronikle', 'event-type').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'event-type', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availableEventTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,

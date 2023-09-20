@@ -34,7 +34,9 @@ const state = reactive({
 onMounted(() => {
   const databases = new Databases($appwrite().client)
   let promiseArray = []
-  promiseArray.push($appwrite().getAllPages('kronikle', 'tag').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'tag', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availableTags.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
@@ -42,7 +44,9 @@ onMounted(() => {
       }
     })
   }))
-  promiseArray.push($appwrite().getAllPages('kronikle', 'public-type').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'public-type', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availablePublicTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
@@ -50,7 +54,9 @@ onMounted(() => {
       }
     })
   }))
-  promiseArray.push($appwrite().getAllPages('kronikle', 'event-type').then((response) => {
+  promiseArray.push($appwrite().getAllPages('kronikle', 'event-type', [
+    Query.equal('author', organization)
+  ]).then((response) => {
     availableEventTypes.value = response.map((doc): {$id: string, name: string} => {
       return {
         $id: doc.$id,
