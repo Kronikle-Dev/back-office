@@ -66,7 +66,8 @@ async function login () {
       <label class="label">
         <span v-if="v$.password.$error && v$.password.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       </label>
-      <div class="flex flex-row w-full space-x-4">
+      <div class="flex flex-row items-center w-full space-x-4">
+        <nuxt-link to="/signup" class="link link-secondary font-semibold mt-4">{{$t('login.signup')}}</nuxt-link>
         <button class="btn btn-primary mt-4 grow" :class="{'loading': state.loading}" @click="login">{{$t('login.login')}}</button>
       </div>
     </div>

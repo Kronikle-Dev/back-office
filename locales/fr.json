@@ -15,8 +15,19 @@
     "email-placeholder": "Entrez votre email",
     "password": "Mot de passe",
     "password-placeholder": "***",
-    "signup": "Créer un compte",
+    "signup": "Je n'ai pas encore de compte",
     "login": "Connexion"
+  },
+  "signup": {
+    "title": "Créer un compte",
+    "email": "Email",
+    "email-placeholder": "jeanne@culturetco.fr",
+    "password": "Mot de passe",
+    "password-placeholder": "*****",
+    "name": "Nom de votre entreprise ou structure",
+    "name-placeholder": "Culture & co.",
+    "signup": "Créer un compte",
+    "login": "J'ai déjà un compte"
   },
   "event": {
     "index": {
