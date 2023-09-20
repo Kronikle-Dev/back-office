@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases } from 'appwrite'
+import { Databases, Teams } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 const route = useRoute()
 
@@ -12,8 +12,14 @@ const eventid = route.params.eventid as string
 const databases = new Databases($appwrite().client)
 let event = null as unknown as KEvent
 
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 
 try {
   event = (await databases.getDocument('kronikle', 'event', eventid)) as unknown as KEvent
