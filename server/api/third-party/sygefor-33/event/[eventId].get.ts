@@ -33,9 +33,30 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
       } else if (isPresentiel) {
         attendanceMode = 'offline'
       }
+      let beginHour = 0
+      let beginMinute = 0
+      let endHour = 0
+      let endMinute = 0
+      if (!session.hourBegin && session.schedule) {
+        beginHour = Number.parseInt(session.schedule.split('-')[0].split('h')[0])
+        beginMinute = Number.parseInt(session.schedule.split('-')[0].split('h')[1])
+      }
+      if (!session.hourEnd && session.schedule) {
+        endHour = Number.parseInt(session.schedule.split('-')[1].split('h')[0])
+        endMinute = Number.parseInt(session.schedule.split('-')[1].split('h')[1])
+      }
+      if (session.hourBegin) {
+        beginHour = DateTime.fromISO(session.hourBegin).hour
+        beginMinute = DateTime.fromISO(session.hourBegin).minute
+      }
+      if (session.hourEnd) {
+        endHour = DateTime.fromISO(session.hourEnd).hour
+        endMinute = DateTime.fromISO(session.hourEnd).minute
+      }
 
-      const startDateTime = DateTime.fromISO(session.dateBegin).set({hour: DateTime.fromISO(session.hourBegin).hour, minute: DateTime.fromISO(session.hourBegin).minute})
-      const endDateTime = DateTime.fromISO(session.dateEnd).set({hour: DateTime.fromISO(session.hourEnd).hour, minute: DateTime.fromISO(session.hourEnd).minute})
+
+      const startDateTime = DateTime.fromISO(session.dateBegin).set({hour: beginHour || 0, minute: beginMinute || 0})
+      const endDateTime = DateTime.fromISO(session.dateEnd).set({hour: endHour || 0, minute: endMinute || 0})
 
       return {
         eventId: '',
@@ -90,7 +111,6 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
 
   } catch (e) {
     console.error(e)
-    console.log(event)
     return {
       event: null,
       dates: [],
