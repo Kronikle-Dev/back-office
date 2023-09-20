@@ -1,5 +1,5 @@
 
-import turndown from 'turndown'
+//import turndown from 'turndown'
 import { DateTime } from 'luxon'
 
 export default defineEventHandler(async (event): Promise<KImportEvent>  => {
@@ -51,9 +51,10 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
     })
 
     const rawDescription = event.program || event.objectives || ''
-    const turndownService = new turndown()
-    const parsedDescription = turndownService.turndown(rawDescription)
-
+    //const turndownService = new turndown()
+    //const parsedDescription = turndownService.turndown(rawDescription)
+    const parsedDescription = rawDescription
+    
     return {
       event: {
         name: event.name,
