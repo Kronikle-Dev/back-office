@@ -1,5 +1,5 @@
-import * as typography from "@tailwindcss/typography"
-import * as daisyui from "daisyui"
+import typography from "@tailwindcss/typography"
+import daisyui from "daisyui"
 
 module.exports = {
   plugins: [
