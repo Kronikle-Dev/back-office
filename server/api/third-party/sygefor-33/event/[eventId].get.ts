@@ -1,6 +1,7 @@
 
-import turndown from 'turndown'
+//import turndown from 'turndown'
 import { DateTime } from 'luxon'
+import { NodeHtmlMarkdown } from 'node-html-markdown'
 
 export default defineEventHandler(async (event): Promise<KImportEvent>  => {
   // @ts-ignore
@@ -51,9 +52,14 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
     })
 
     const rawDescription = event.program || event.objectives || ''
-    const turndownService = new turndown()
-    const parsedDescription = turndownService.turndown(rawDescription)
-    //const parsedDescription = rawDescription
+    //const turndownService = new turndown()
+    //const parsedDescription = turndownService.turndown(rawDescription)
+    const parsedDescription = NodeHtmlMarkdown.translate(
+      /* html */ rawDescription, 
+      /* options (optional) */ {}, 
+      /* customTranslators (optional) */ undefined,
+      /* customCodeBlockTranslators (optional) */ undefined
+    );
 
     return {
       event: {
