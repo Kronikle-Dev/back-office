@@ -90,6 +90,7 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
 
   } catch (e) {
     console.error(e)
+    console.log(event)
     return {
       event: null,
       dates: [],
