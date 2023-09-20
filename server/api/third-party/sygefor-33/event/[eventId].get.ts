@@ -1,9 +1,9 @@
 
-import config from '../SygeforImporterConfig.js'
 import turndown from 'turndown'
 import { DateTime } from 'luxon'
 
 export default defineEventHandler(async (event): Promise<KImportEvent>  => {
+  // @ts-ignore
   const eventId = event.context.params.eventId
 
   let nbevents = 0

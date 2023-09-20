@@ -71,5 +71,5 @@ export default defineNuxtConfig({
         config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'
       }
     }
-  }
+  },
 })
