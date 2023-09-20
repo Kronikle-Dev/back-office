@@ -21,7 +21,7 @@
   "signup": {
     "title": "Créer un compte",
     "email": "Email",
-    "email-placeholder": "jeanne@culturetco.fr",
+    "email-placeholder": "Entrez votre email",
     "password": "Mot de passe",
     "password-placeholder": "*****",
     "name": "Nom de votre entreprise ou structure",
