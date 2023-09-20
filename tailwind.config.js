@@ -1,7 +1,10 @@
+import * as typography from "@tailwindcss/typography"
+import * as daisyui from "daisyui"
+
 module.exports = {
   plugins: [
-    require("@tailwindcss/typography"),
-    require('daisyui')
+    typography,
+    daisyui,
   ],
   theme: {
     colors: {
