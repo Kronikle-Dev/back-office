@@ -42,6 +42,7 @@ async function signup () {
     const respCreation = await account.create('unique()', state.email, state.password, state.name)
     const resp = await account.createEmailSession(state.email, state.password)
     const respTeam = await teams.create('unique()', state.name)
+    const respVer = await account.createVerification('https://localhost:3000/verify')
     state.loading = false
     await navigateTo('/')
   } catch (error) {
@@ -64,11 +65,11 @@ async function signup () {
         <span v-if="v$.email.$error && v$.email.email.$invalid" class="label-text-alt text-error">{{$t('validation.email')}}</span>
         <span v-if="v$.email.$error && v$.email.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       </label>
-      <label class="label">
+      <label class="label mt-4">
         <span class="label-text">{{$t('signup.name')}}</span>
       </label>
       <input v-model="state.name" type="text" :placeholder="$t('signup.name-placeholder')" class="input input-bordered bg-white w-full" />
-      <label class="label">
+      <label class="label mt-4">
         <span class="label-text">{{$t('signup.password')}}</span>
       </label>
       <input v-model="state.password" type="password" :placeholder="$t('signup.password-placeholder')" class="input input-bordered bg-white w-full" />

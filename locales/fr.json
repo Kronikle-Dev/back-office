@@ -29,6 +29,18 @@
     "signup": "Créer un compte",
     "login": "J'ai déjà un compte"
   },
+  "verify": {
+    "title": "Félicitations 🎉",
+    "text": "Votre compte a bien été vérifié, vous pouvez désormais accéder à l'application.",
+    "login": "Se connecter",
+    "title-error": "Oups 😔",
+    "text-error": "Votre compte n'a pas pu être vérifié, contactez-nous !",
+    "email-link-error": "Envoyez nous un email."
+  },
+  "profile": {
+    "title": "Mon compte",
+    "subtitle": "Vous pouvez modifier les informations de votre compte ici"
+  },
   "event": {
     "index": {
       "title": "Événements",

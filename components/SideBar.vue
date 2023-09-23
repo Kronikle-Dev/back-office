@@ -48,15 +48,13 @@
         <span class="hidden lg:inline" :title="$t('sidebar.displays')">{{$t('sidebar.displays')}}</span>
       </NuxtLink>
     </li>
-    <div class="tooltip tooltip-right" :data-tip="$t('sidebar.to-come')">
     <li>
-      <NuxtLink>
+      <NuxtLink to="/profile">
         <svg class="h-5 w-5" viewBox="0 0 24 24">
           <path fill="currentColor" d="M6,17C6,15 10,13.9 12,13.9C14,13.9 18,15 18,17V18H6M15,9A3,3 0 0,1 12,12A3,3 0 0,1 9,9A3,3 0 0,1 12,6A3,3 0 0,1 15,9M3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3H5C3.89,3 3,3.9 3,5Z" />
       </svg>
         <span class="hidden lg:inline" :title="$t('sidebar.profile')">{{$t('sidebar.profile')}}</span>
       </NuxtLink>
     </li>
-    </div>
   </ul>
 </template>
