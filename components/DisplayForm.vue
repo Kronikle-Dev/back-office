@@ -5,6 +5,15 @@ import { Databases, Teams, Query, Permission, Role } from 'appwrite'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+import { Storage } from 'appwrite'
+
+import vueFilePond from "vue-filepond"
+import "filepond/dist/filepond.min.css"
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+
 const {$appwrite} = useNuxtApp()
 
 const props = defineProps({
@@ -23,6 +32,8 @@ if (myTeams.teams.length === 0) {
 }
 const myTeamId = myTeams.teams[0].$id
 organization = myTeamId
+
+const isPremium = (await $appwrite().account?.get()).labels?.includes('premium')
 
 const availableTags = ref([] as Array<{$id: string, name: string}>)
 const availablePublicTypes = ref([] as Array<{$id: string, name: string}>)
@@ -81,6 +92,8 @@ const state = reactive({
   typeFilter: [] as {$id: string, name: string | undefined}[],
   tagFilter: [] as {$id: string, name: string | undefined}[],
   excludeFilters: false,
+  logoId: '',
+  logoUrl: ''
 })
 
 if (props.display) {
@@ -92,6 +105,42 @@ if (props.display) {
   state.typeFilter = props.display.typeFilter.map((e: string) => ({$id: e}))
   state.tagFilter = props.display.tagFilter.map((e: string) => ({$id: e}))
   state.excludeFilters = props.display.excludeFilters
+  state.logoId = props.display.logoId
+  state.logoUrl = props.display.logoUrl
+}
+
+const FilePond = vueFilePond(
+  FilePondPluginFileValidateType,
+  FilePondPluginImagePreview,
+  FilePondPluginFileValidateSize
+)
+
+const imageToLoad = ref([] as Array<string>)
+
+const serverObj = {
+  // @ts-ignore
+  process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+    const storage = new Storage($appwrite().client)
+    if (typeof(file) === 'string') {
+      // Image has been loaded from URL
+      load(file)
+    } else if (file instanceof File) {
+      try {
+        const resp = await storage.createFile('display-logo', 'unique()', file)
+        const thumbnailId = resp.$id
+        const thumbnailUrl = await storage.getFilePreview('display-logo', thumbnailId)
+        state.logoId = thumbnailId
+        state.logoUrl = thumbnailUrl.href
+        load(thumbnailUrl)
+      } catch (e) {
+        console.error(e)
+        error(e)
+      }
+    } else {
+      load(file)
+    }
+  },
+  fetch: null,
 }
 
 const templates = [
@@ -150,6 +199,8 @@ async function addDisplay() {
     tagFilter: state.tagFilter.map(tf => tf.$id),
     excludeFilters: state.excludeFilters,
     organization: organization,
+    logoId: state.logoId,
+    logoUrl: state.logoUrl
   }
   try {
     if (props.display) {
@@ -201,6 +252,39 @@ const originUrl = window.location.origin
       <option disabled selected>Who shot first?</option>
       <option v-for="template of templates" :value="template.code" :key="template.code">{{ template.name }}</option>
     </select>
+    <label class="label mt-8">
+      <span class="label-text">{{$t('display.form.display-logo')}}</span>
+    </label>
+    <ClientOnly>
+    <div v-if="!isPremium" class="tooltip tooltip-right w-full" :data-tip="$t('display.form.premium-only')">
+      <FilePond
+        ref="pond"
+        class="mt-9 cursor-pointer"
+        credits="false"
+        allowMultiple="false"
+        accepted-file-types="image/jpeg, image/png"
+        max-file-size="5MB"
+        disabled="true"
+        :label-idle="$t('display.form.display-logo-placeholder')"
+        :server="serverObj"
+        :files="imageToLoad"
+        v-model="state.logoUrl"
+      />
+      </div>
+      <FilePond
+        v-if="isPremium"
+        ref="pond"
+        class="mt-9 cursor-pointer"
+        credits="false"
+        allowMultiple="false"
+        accepted-file-types="image/jpeg, image/png"
+        max-file-size="5MB"
+        :label-idle="$t('display.form.display-logo-placeholder')"
+        :server="serverObj"
+        :files="imageToLoad"
+        v-model="state.logoUrl"
+      />
+    </ClientOnly>
     <h2>{{ $t('display.form.date-filter-title') }}</h2>
     <label class="label">
       <span class="label-text">{{$t('display.form.date-label')}}</span>

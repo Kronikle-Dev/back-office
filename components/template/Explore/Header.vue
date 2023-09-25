@@ -5,7 +5,7 @@ const props = defineProps(['logoUrl', 'corpName', 'display', 'showBack'])
 <template>
   <div class="w-full bg-primary-100-kv3 flex justify-between flex-row px-4 sm:px-16 pt-5 pb-4">
     <div class="flex flex-row space-x-6">
-      <img :src="logoUrl" class="h-14 self-end" alt="Logo"/>
+      <img v-if="display.logoUrl && display.logoUrl.length > 0" :src="display.logoUrl" class="h-14 self-end" alt="Logo"/>
       <span class="font-black text-xl sm:text-4xl text-urfist-500 self-end"><!--{{ corpName }} -->{{ display.name }}</span>
     </div>
     <div class="flex" v-if="showBack">
