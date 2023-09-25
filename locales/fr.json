@@ -134,6 +134,8 @@
       "description-label": "Description",
       "description-placeholder": "Vous pouvez décrire en détail la resource, quel intérêt elle représente, etc.",
       "url-label": "URL",
+      "file-label": "Fichier",
+      "file-placeholder": "Cliquer ou glisser-déposer un fichier ici (28mo max)",
       "url-placeholder": "https://example.fr",
       "tags": "Catégories",
       "tags-placeholder": "Arts et Culture, Musique, etc..."

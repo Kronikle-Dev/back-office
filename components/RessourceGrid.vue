@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { Databases, Query } from 'appwrite'
+import { Databases, Query, Storage } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 
+const storage = new Storage($appwrite().client)
 const databases = new Databases($appwrite().client)
 const prefs = await $appwrite().account.getPrefs()
 const organization = prefs.organization
@@ -19,7 +20,6 @@ resources.value = (await $appwrite().getAllPages('kronikle', 'resource', [
 ])) as unknown as KResource[]
 
 $appwrite().client.subscribe(['databases.kronikle.collections.resource.documents'], async () => {
-  console.log('refresh resources')
   resources.value = (await $appwrite().getAllPages('kronikle', 'resource', [
     Query.equal('organization', organization),
     Query.equal('eventId', props.event.$id as string)
@@ -27,6 +27,13 @@ $appwrite().client.subscribe(['databases.kronikle.collections.resource.documents
 })
 
 async function deleteResource (resource: KResource) {
+  if (resource.isOwnResource) {
+    // find the fileId using a regex which is between '/files/' and '/view'
+    const fileId = resource.url?.match(/(?<=\/files\/)(.*)(?=\/view)/g)?.[0]
+    if (fileId) {
+      await storage.deleteFile('resource-file', fileId)
+    }
+  }
   const deletionRes = await databases.deleteDocument('kronikle', 'resource', resource.$id as string)
 }
 

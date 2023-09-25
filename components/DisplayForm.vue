@@ -41,6 +41,11 @@ const availableEventTypes = ref([] as Array<{$id: string, name: string}>)
 const availableEvents = ref([] as Array<{$id: string, name: string}>)
 
 onMounted(() => {
+
+  if (state.logoUrl && state.logoUrl.length > 0) {
+    imageToLoad.value = [state.logoUrl]
+  }
+
   let promiseArray = []
   promiseArray.push($appwrite().getAllPages('kronikle', 'tag').then((response) => {
     availableTags.value = response.map((doc): {$id: string, name: string} => {
