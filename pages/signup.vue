@@ -4,6 +4,7 @@ import {useVuelidate} from '@vuelidate/core'
 import { required, email, minLength } from '@vuelidate/validators'
 import { Teams } from 'appwrite'
 const {$appwrite} = useNuxtApp()
+const config = useRuntimeConfig()
 
 definePageMeta({
   layout: "blank",
@@ -26,6 +27,9 @@ const rules = {
     required,
     minLength: minLength(8),
   },
+  name: {
+    required,
+  },
 }
 
 const v$ = useVuelidate(rules, state)
@@ -42,7 +46,7 @@ async function signup () {
     const respCreation = await account.create('unique()', state.email, state.password, state.name)
     const resp = await account.createEmailSession(state.email, state.password)
     const respTeam = await teams.create('unique()', state.name)
-    const respVer = await account.createVerification('https://localhost:3000/verify')
+    const respVer = await account.createVerification(`${config.public.Hostname}/verify`)
     state.loading = false
     await navigateTo('/')
   } catch (error) {
@@ -69,6 +73,9 @@ async function signup () {
         <span class="label-text">{{$t('signup.name')}}</span>
       </label>
       <input v-model="state.name" type="text" :placeholder="$t('signup.name-placeholder')" class="input input-bordered bg-white w-full" />
+      <label class="label">
+        <span v-if="v$.name.$error && v$.name.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
+      </label>
       <label class="label mt-4">
         <span class="label-text">{{$t('signup.password')}}</span>
       </label>

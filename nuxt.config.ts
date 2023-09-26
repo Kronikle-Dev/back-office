@@ -58,6 +58,7 @@ export default defineNuxtConfig({
     public: {
       AppwriteProject: process.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle',
       AppwriteEndpoint: "https://appwrite.kronikle.eu/v1",
+      Hostname: process.env.NUXT_PUBLIC_APPWRITE_PROJECT ? 'https://app.kronikle.eu' : 'http://localhost:3000',
     }
   },
   // @ts-ignore

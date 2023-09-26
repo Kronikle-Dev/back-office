@@ -16,6 +16,7 @@
     "password": "Mot de passe",
     "password-placeholder": "***",
     "signup": "Je n'ai pas encore de compte",
+    "recovery": "J'ai perdu mon mot de passe 😭",
     "login": "Connexion"
   },
   "signup": {
@@ -28,6 +29,21 @@
     "name-placeholder": "Culture & co.",
     "signup": "Créer un compte",
     "login": "J'ai déjà un compte"
+  },
+  "recovery": {
+    "title": "Réinitialisation de mot de passe",
+    "email": "Email",
+    "email-placeholder": "Entrez votre email",
+    "recover": "Réinitialiser mon mot de passe",
+    "error": "Une erreur est survenue, veuillez réessayer plus tard.",
+    "ok-title": "Un email vous a été envoyé",
+    "ok-text": "Vous allez recevoir un email avec un lien pour réinitialiser votre mot de passe.",
+    "setnew-title": "Choisissez un nouveau mot de passe",
+    "setnew-text": "Vous pouvez maintenant choisir un nouveau mot de passe.",
+    "setnew": "Choisir un nouveau mot de passe",
+    "password": "Mot de passe",
+    "password-placeholder": "*****",
+    "recovery": "Valider mon nouveau mot de passe"
   },
   "verify": {
     "title": "Félicitations 🎉",
