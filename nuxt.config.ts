@@ -4,6 +4,14 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
   ],
+  routeRules: {
+    '/*': {
+      ssr: false,
+    },
+    '/d/*': {
+      ssr: true,
+    },
+  },
   app: {
     head: {
       title: "Kronikle",
