@@ -97,8 +97,6 @@ const serverObj = {
       // Image has been loaded from URL
       load(file)
     } else if (file instanceof File) {
-      state.isOwnResource = true
-      state.isUrlResource = false
       state.isLoading = true
       try {
         const resp = await storage.createFile('resource-file', 'unique()', file)
@@ -106,15 +104,13 @@ const serverObj = {
         const thumbnailUrl = await storage.getFilePreview('resource-file', thumbnailId)
         //state.logoId = thumbnailId
         //state.logoUrl = thumbnailUrl.href
-        resourceUrl.value = (await storage.getFileView('resource-file', thumbnailId)).toString()
+        resourceUrl.value = resourceUrl.value.length > 0 ? resourceUrl.value : (await storage.getFileView('resource-file', thumbnailId)).toString()
         state.fileId = thumbnailId
         state.imageUrl = thumbnailUrl.href
         state.isLoading = false
         load(thumbnailUrl)
       } catch (e) {
         state.isLoading = false
-        state.isOwnResource = true
-        state.isUrlResource = true
         console.error(e)
         error(e)
       }
@@ -144,13 +140,6 @@ watch(resourceUrl, async (newUrl, oldUrl) => {
   if (!state.isUrlResource) {
     return
   }
-  if (newUrl.length > 0) {
-    state.isOwnResource = false
-    state.isUrlResource = true
-  } else {
-    state.isOwnResource = true
-    state.isUrlResource = true
-  }
   const isUrlCorrect = await vurl$.value.$validate()
   if (isUrlCorrect) {
     state.isLoading = true
@@ -161,7 +150,7 @@ watch(resourceUrl, async (newUrl, oldUrl) => {
         // @ts-ignore
         state.name = result.og?.ogTitle || ''
         // @ts-ignore
-        state.imageUrl = result.og?.ogImage?.url || ''
+        state.imageUrl = state.imageUrl.length > 0 ? state.imageUrl : result.og?.ogImage?.url || ''
         state.html = result?.html || ''
       }
     } catch (e) {
