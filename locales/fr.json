@@ -55,7 +55,8 @@
   },
   "profile": {
     "title": "Mon compte",
-    "subtitle": "Vous pouvez modifier les informations de votre compte ici"
+    "subtitle": "Vous pouvez modifier les informations de votre compte ici",
+    "logout": "Se déconnecter"
   },
   "event": {
     "index": {
