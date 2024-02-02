@@ -20,8 +20,9 @@ definePageMeta({
 })
 
 function logout() {
-  account.deleteSession('current')
-  router.push('/')
+  account.deleteSession('current').then(() => {
+    router.push('/login')
+  })
 }
 
 </script>
