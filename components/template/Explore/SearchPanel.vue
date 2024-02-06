@@ -18,7 +18,7 @@ const props = defineProps<{
   display: KDisplay,
 }>()
 
-const emit = defineEmits(['select', 'deselect'])
+const emit = defineEmits(['select', 'deselect', 'hideSidePanel'])
 
 const state = reactive({
   openPanel: false,
@@ -242,16 +242,21 @@ watch(el, (el, _, onCleanup) => {
 
 <template>
   <div class="max-w-xs flex flex-col space-y-5 items-center pb-8 z-30">
-    <div class="bg-primary-400-kv3 rounded-r-lg flex flex-row self-start relative"
+    <div class="bg-primary-400-kv3 rounded-r-lg flex flex-row self-start relative w-fit"
       :class="{
-        'max-h-[65vh]': !state.openPanel,
+        'md:max-h-[65vh]': !state.openPanel,
+        'max-h-[85svh]': !state.openPanel,
         'h-fit': state.openPanel
         }">
-      <div  class="absolute right-0 p-4 bg-primary-300-kv3 z-40 rounded-bl-lg rounded-tr-lg cursor-pointer"
-            @click="state.openPanel = !state.openPanel"><span>🔍</span></div>
+      <div  class="absolute right-0 p-4 bg-primary-300-kv3 z-40 md:rounded-bl-lg rounded-tr-lg cursor-pointer"
+            @click="state.openPanel = !state.openPanel"><span>🔍</span>
+      </div>
+      <div  class="absolute md:hidden right-0 top-[56px] p-4 bg-primary-300-kv3 z-40 rounded-bl-lg cursor-pointer"
+            @click="$emit('hideSidePanel')"><span>❌</span>
+      </div>
       <div
         v-if="state.openPanel"
-        class="bg-primary-300-kv3 py-8 px-16 transition-all  w-[465px] h-fit settings-panel">
+        class="bg-primary-300-kv3 py-8 px-2 md:px-16 transition-all w-[80vw] md:w-[465px] h-fit settings-panel">
         <h1 class="text-primary-900-kv3 font-extrabold text-2xl">{{ $t('displays.kronikle-v3.find-an-event') }}</h1>
         <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.date') }}</h2>
         <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div>
@@ -287,6 +292,7 @@ watch(el, (el, _, onCleanup) => {
               placeholder="31-08-2023"
               @focus="onFocus"
             >{{ endDate }}</button>
+            <span class="ml-2 cursor-pointer" v-if="state.range.start || state.range.end" @click="state.range.start = null as unknown as string ; state.range.end = null as unknown as string">❌</span>
           </label>
 
           <div class="dropdown-content mt-3">
@@ -345,17 +351,16 @@ watch(el, (el, _, onCleanup) => {
           </VueMultiselect>
         </ClientOnly>
       </div>
-      <div class="py-8 px-16 max-h-full overflow-y-scroll nobar dates-panel">
+      <div class="py-8 px-2 md:px-16 max-h-full overflow-y-scroll nobar dates-panel">
         <div v-if="!state.openPanel" class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
-        <div class="flex grow transition-all"
+        <div class="flex grow transition-all w-[14rem]"
           :class="{
             'flex-col': !state.openPanel,
-            'w-[14rem]': !state.openPanel,
             'space-y-2.5': !state.openPanel,
             'flex-row': state.openPanel,
             'flex-wrap': state.openPanel,
             'gap-2.5': state.openPanel,
-            'w-[28rem]': state.openPanel
+            'md:w-[28rem]': state.openPanel
             }">
           <nuxt-link
               :to="`/d/${display.$id}/date/${date.$id}`"

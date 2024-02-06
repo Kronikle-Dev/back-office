@@ -9,7 +9,7 @@ const props = defineProps<{
 
 <template>
   <div class="flex flex-col h-fit w-52 bg-primary-700-kv3 hover:bg-primary-900-kv3 rounded-lg cursor-pointer" v-if="event">
-    <img class="h-28 rounded-t-lg object-cover" :src="event.imageUrl"/>
+    <img class="h-28 rounded-t-lg object-cover" :src="event.imageUrl" loading="lazy"/>
     <div class="p-2.5">
       <div class="font-semibold text-lg text-primary-100-kv3">{{ event.name }}</div>
       <div class="font-normal text-lg text-primary-100-kv3 flex flex-row items-center space-x-1">

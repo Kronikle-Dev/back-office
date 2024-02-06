@@ -23,8 +23,8 @@ if (props.resources.length >= 5) {
 
 <template>
   <div class="bg-urfist-300 w-fit max-w-[calc(100%-16px)] px-8 overflow-x-scroll nobar rounded-lg py-6">
-    <div class="font-bold text-2xl text-primary-100-kv3 mb-5">{{ label }}</div>
-    <div class="flex flex-row space-x-5">
+    <div class="font-bold text-2xl text-primary-100-kv3 mb-5 sticky left-4 md:relative">{{ label }}</div>
+    <div class="flex flex-row">
       <TemplateExploreResourceCard
         v-for="res of shownResources"
         :key="res.$id"
