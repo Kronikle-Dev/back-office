@@ -221,14 +221,18 @@ onMounted(() => {
   qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}/date/${props.date.$id}`).toString()
 })
 
+const hideSidePanel = ref(true)
+
 </script>
 
 <template>
   <div class="bg-urfist-800 h-screen flex flex-col">
     <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
-    <div class="grow overflow-y-scroll nobar flex flex-row space-x-32">
+    <div class="grow overflow-y-scroll nobar flex flex-row p-4 md:p-0 md:space-x-32 relative">
       <TemplateExploreSearchPanel
-        class="mt-6 grow-0"
+        class="-mt-2 -ml-4 md:mt-6 md:ml-0 grow-0 md:block relative"
+        :class="{'hidden': hideSidePanel}"
+        @hide-side-panel="hideSidePanel = true"
         @select="addTag"
         @deselect="removeTag"
         :current-date="props.date"
@@ -236,13 +240,13 @@ onMounted(() => {
         :dates="augmentedDates"
         :events="props.events">
       </TemplateExploreSearchPanel>
-      <div class="grow overflow-y-scroll nobar">
-        <div class="pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
+      <div v-show="hideSidePanel" class="grow overflow-y-scroll nobar">
+        <div class="hidden md:block pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
         <div class="flex flex-row flex-wrap space-y-7 items-end">
-          <div class="rounded-lg p-7 mr-7 bg-urfist-200 max-w-2xl">
+          <div class="rounded-lg p-7 md:mr-7 bg-urfist-200 max-w-2xl">
             <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
-            <div class="grid grid-cols-2 gap-x-5 gap-y-5 mt-5">
-              <img :src="props.event.imageUrl"/>
+            <div class="grid grid-rows-2 md:grid-cols-2 gap-x-5 gap-y-5 mt-5">
+              <img class="max-h-[150px] md:max-h-none rounded" loading="lazy" :src="props.event.imageUrl"/>
               <div class="flex flex-col space-y-2.5">
                 <div class="flex flex-row space-x-1">
                   <svg class="text-primary-200-kv3 w-5 min-w-[1.25rem]" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -329,6 +333,12 @@ onMounted(() => {
                 class="mt-10">
             </TemplateExploreResourceFolder>
           </div>
+      </div>
+      <div
+        class="absolute left-0 top-2 md:hidden p-4 bg-primary-300-kv3 z-40 rounded-br-lg rounded-tr-lg cursor-pointer"
+        v-show="hideSidePanel"
+        @click="hideSidePanel = false">
+        <span>🔍</span>
       </div>
     </div>
   </div>
