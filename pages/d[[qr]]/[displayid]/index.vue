@@ -34,23 +34,27 @@ try {
     case 'month':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
-        Query.lessThanEqual('startDateTime', lastDayOfMonth.toString())
+        Query.lessThanEqual('startDateTime', lastDayOfMonth.toString()),
+        Query.equal('organization', display.organization)
       ])).documents.map((d) => d.eventId))
       break
     case 'week':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
+      eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
-        Query.lessThanEqual('startDateTime', lastDayofWeek.toString())
+        Query.lessThanEqual('startDateTime', lastDayofWeek.toString()),
+        Query.equal('organization', display.organization)
       ])).documents.map(d => d.eventId))
       break
     case 'upcoming':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
+      eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
+        Query.equal('organization', display.organization)
       ])).documents.map(d => d.eventId))
       break
     case 'past':
-      eventIdList = new Set((await databases.listDocuments('kronile', 'date', [
-        Query.lessThan('startDateTime', beginningOfToday.toString())
+      eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
+        Query.lessThan('startDateTime', beginningOfToday.toString()),
+        Query.equal('organization', display.organization)
       ])).documents.map(d => d.eventId))
       break
     case 'none':
@@ -75,6 +79,7 @@ const typeQueries = display.typeFilter.map(typeId => Query.search('eventType', t
 const events = ref([] as KEvent[])
 
 const queries = [
+  Query.equal('organization', display.organization)
   /*
   ...tagQueries,
   ...publicQueries,
@@ -113,7 +118,8 @@ if (eventIdList != null) {
 
   try {
     events.value.push( ... (await $appwrite().getAllPages('kronikle', 'event', [
-      Query.equal('$id', supplementaryEventIds)
+      Query.equal('$id', supplementaryEventIds),
+      Query.equal('organization', display.organization)
     ])) as unknown[] as KEvent[])
   } catch (e) {
     console.error('Failed to retrieve supplementray events : ', e)

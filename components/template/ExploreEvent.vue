@@ -31,45 +31,14 @@ useHead({
 
 const state = reactive({
   tags: [] as string[],
-  displayType: DisplayType.MONTH,
-  pastEvents: [] as KDateApi[],
-  currentEvents: [] as KDateApi[],
-  nextEvents: [] as KDateApi[],
-  futureEvents: [] as KDateApi[],
   hideDescription: true
 })
 
 const eventTypes = ref([] as unknown as {$id: string, name: string}[])
 
-$appwrite().getAllPages('kronikle', 'event-type',
-  [
-    Query.equal('$id', [...props.event?.eventType as string[]])
-  ]).then(docs => {
-    eventTypes.value.push(...docs as unknown as {$id: string, name: string}[])
-  }).catch(e => {
-    console.log('Event has no type assigned')
-  })
-
-
 const eventTags = ref([] as unknown as {$id: string, name: string}[])
 
-$appwrite().getAllPages('kronikle', 'tag',
-  [
-    Query.equal('$id', [...props.event.tags as string[]])
-  ]).then(docs => {
-    eventTags.value.push(...docs as unknown as {$id: string, name: string}[])
-  }).catch(e => {
-    console.log('Event has no tags assigned')
-  })
-
 const eventResources = ref([] as KResource[])
-
-$appwrite().getAllPages('kronikle', 'resource',
-  [
-    Query.equal('eventId', props.event.$id as string)
-  ]).then(docs => {
-    eventResources.value.push(...docs as unknown as KResource[])
-  })
 
 
 const qrUrl = ref(avatars.getQR(`https://app.kronikle.eu/dq/${props.display.$id}`).toString())
@@ -120,16 +89,18 @@ function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
 
-const augmentedDates = props.dates.sort((a, b) => {
-    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
-  }).map((d) => {
-  (d as KDateApiAug).event = getEventForDate(d)
-  if (d != null) {
-    return d
-  } else {
-    return
-  }
-}) as KDateApiAug[]
+const augmentedDates = computed(() => {
+  return props.dates.sort((a, b) => {
+      return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
+    }).map((d) => {
+    (d as KDateApiAug).event = getEventForDate(d)
+    if (d != null) {
+      return d
+    } else {
+      return
+    }
+  }) as KDateApiAug[]
+})
 
 
 function addTag (tag: string) {
@@ -155,68 +126,109 @@ const endOfNextWeek = DateTime.fromObject({weekNumber: DateTime.now().weekNumber
 const beginOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: 1})
 const endOfNextMonth = DateTime.fromObject({month: DateTime.now().month + 1, day: DateTime.now().daysInMonth, hour: 23, minute: 59})
 
-const numberOfDatesWeek = props.dates.filter((date => {
-  const dateStart = DateTime.fromISO(date.startDateTime)
-  return dateStart >= beginOfWeek && dateStart <= endOfWeek
-})).length
+const numberOfDatesWeek = computed(() => {
+  return props.dates.filter((date => {
+    const dateStart = DateTime.fromISO(date.startDateTime)
+    return dateStart >= beginOfWeek && dateStart <= endOfWeek
+  })).length
+})
 
-const numberOfDatesMonth = props.dates.filter((date => {
-  const dateStart = DateTime.fromISO(date.startDateTime)
-  return dateStart >= beginOfMonth && dateStart <= endOfMonth
-})).length
+const numberOfDatesMonth = computed(() => {
+  return props.dates.filter((date => {
+    const dateStart = DateTime.fromISO(date.startDateTime)
+    return dateStart >= beginOfMonth && dateStart <= endOfMonth
+  })).length
+})
 
-if (numberOfDatesMonth > 8) {
-  state.displayType = DisplayType.WEEK
-}
+const displayType = computed(() => {
+  if (numberOfDatesWeek.value > 8) {
+    return DisplayType.DAY
+  } else if (numberOfDatesMonth.value > 8) {
+    return DisplayType.WEEK
+  } else {
+    return DisplayType.MONTH
+  }
+})
 
-if (numberOfDatesWeek > 8) {
-  state.displayType = DisplayType.DAY
-}
 // END Détermination
 
-state.pastEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) < beginOfToday
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) < beginOfWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) < beginOfMonth
-  }
+const pastEvents = computed(() => {
+  return props.dates.filter(date => {
+    if (displayType.value == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) < beginOfToday
+    } else if (displayType.value == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) < beginOfWeek
+    } else if (displayType.value == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) < beginOfMonth
+    }
+  })
 })
 
-state.currentEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > beginOfToday && DateTime.fromISO(date.startDateTime) < endOfToday
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > beginOfWeek && DateTime.fromISO(date.startDateTime) < endOfWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
-  }
+const currentEvents = computed(() => {
+  return props.dates.filter(date => {
+    if (displayType.value == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > beginOfToday && DateTime.fromISO(date.startDateTime) < endOfToday
+    } else if (displayType.value == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > beginOfWeek && DateTime.fromISO(date.startDateTime) < endOfWeek
+    } else if (displayType.value == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > beginOfMonth && DateTime.fromISO(date.startDateTime) < endOfMonth
+    }
+  })
 })
 
-state.nextEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > beginOfTomorrow && DateTime.fromISO(date.startDateTime) < endOfTomorrow
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > beginOfNextWeek && DateTime.fromISO(date.startDateTime) < endOfNextWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
-  }
+const nextEvents = computed(() => {
+  return props.dates.filter(date => {
+    if (displayType.value == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > beginOfTomorrow && DateTime.fromISO(date.startDateTime) < endOfTomorrow
+    } else if (displayType.value == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > beginOfNextWeek && DateTime.fromISO(date.startDateTime) < endOfNextWeek
+    } else if (displayType.value == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > beginOfNextMonth && DateTime.fromISO(date.startDateTime) < endOfNextMonth
+    }
+  })
 })
 
-state.futureEvents = props.dates.filter(date => {
-  if (state.displayType == DisplayType.DAY) {
-    return DateTime.fromISO(date.startDateTime) > endOfTomorrow
-  } else if (state.displayType == DisplayType.WEEK) {
-    return DateTime.fromISO(date.startDateTime) > endOfNextWeek
-  } else if (state.displayType == DisplayType.MONTH) {
-    return DateTime.fromISO(date.startDateTime) > endOfNextMonth
-  }
+const futureEvents = computed(() => {
+  return props.dates.filter(date => {
+    if (displayType.value == DisplayType.DAY) {
+      return DateTime.fromISO(date.startDateTime) > endOfTomorrow
+    } else if (displayType.value == DisplayType.WEEK) {
+      return DateTime.fromISO(date.startDateTime) > endOfNextWeek
+    } else if (displayType.value == DisplayType.MONTH) {
+      return DateTime.fromISO(date.startDateTime) > endOfNextMonth
+    }
+  })
 })
 
 const htmlDescription = converter.makeHtml(props.event.description)
 
 onMounted(() => {
+
+  $appwrite().getAllPages('kronikle', 'event-type',
+    [
+      Query.equal('$id', [...props.event?.eventType as string[]])
+    ]).then(docs => {
+      eventTypes.value.push(...docs as unknown as {$id: string, name: string}[])
+    }).catch(e => {
+      console.log('Event has no type assigned')
+    })
+
+  $appwrite().getAllPages('kronikle', 'tag',
+    [
+      Query.equal('$id', [...props.event.tags as string[]])
+    ]).then(docs => {
+      eventTags.value.push(...docs as unknown as {$id: string, name: string}[])
+    }).catch(e => {
+      console.log('Event has no tags assigned')
+    })
+
+  $appwrite().getAllPages('kronikle', 'resource',
+    [
+      Query.equal('eventId', props.event.$id as string)
+    ]).then(docs => {
+      eventResources.value.push(...docs as unknown as KResource[])
+    })
+
   qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}/date/${props.date.$id}`
   qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}/date/${props.date.$id}`).toString()
 })

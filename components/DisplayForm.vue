@@ -98,7 +98,7 @@ const state = reactive({
   tagFilter: [] as {$id: string, name: string | undefined}[],
   excludeFilters: false,
   logoId: '',
-  logoUrl: ''
+  logoUrl: null as string | null
 })
 
 if (props.display) {
