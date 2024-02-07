@@ -34,6 +34,14 @@ const state = reactive({
   hideDescription: true
 })
 
+const navigationStarted = ref(false)
+
+const router = useRouter()
+router.beforeResolve((to, from, next) => {
+  navigationStarted.value = true
+  next()
+})
+
 const eventTypes = ref([] as unknown as {$id: string, name: string}[])
 
 const eventTags = ref([] as unknown as {$id: string, name: string}[])
@@ -239,6 +247,9 @@ const hideSidePanel = ref(true)
 
 <template>
   <div class="bg-urfist-800 h-screen flex flex-col">
+    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 z-50 rounded bg-neutral-100 drop-shadow-lg">
+      <img src="/loader.gif" class="w-10 h-10"/>
+    </div>
     <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row p-4 md:p-0 md:space-x-32 relative">
       <TemplateExploreSearchPanel
