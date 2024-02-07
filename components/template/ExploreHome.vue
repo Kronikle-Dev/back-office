@@ -28,6 +28,14 @@ const state = reactive({
   futureEvents: [] as KDateApi[]
 })
 
+const navigationStarted = ref(false)
+
+const router = useRouter()
+router.beforeResolve((to, from, next) => {
+  navigationStarted.value = true
+  next()
+})
+
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return props.events.find((e) => e.$id == date.eventId) || null
 }
@@ -182,7 +190,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-primary-200-kv3 h-screen flex flex-col">
+  <div class="bg-primary-200-kv3 h-screen flex flex-col relative">
+    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 z-50 rounded bg-neutral-100 drop-shadow-lg">
+      <img src="/loader.gif" class="w-10 h-10"/>
+    </div>
     <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
     <div class="grow overflow-y-scroll nobar flex flex-row space-x-10 sm:space-x-32">
       <TemplateExploreThemePanel
