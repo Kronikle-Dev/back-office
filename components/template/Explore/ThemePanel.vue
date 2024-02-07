@@ -63,7 +63,8 @@ if (tagsIds.value.size > 0) {
   try {
     tags.value = ((await databases.listDocuments('kronikle', 'tag',
       [
-        Query.equal('$id', [...tagsIds.value])
+        Query.equal('$id', [...tagsIds.value]),
+        Query.equal('author', props.display.organization)
       ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
   } catch (e) {
     console.log(e)
@@ -74,7 +75,8 @@ if (allTagsIds.value.size > 0) {
   try {
     allTags.value = ((await databases.listDocuments('kronikle', 'tag',
       [
-        Query.equal('$id', [...allTagsIds.value])
+        Query.equal('$id', [...allTagsIds.value]),
+        Query.equal('author', props.display.organization)
       ])).documents as unknown as {$id: string, name: string}[]).slice(0, 6)
   } catch (e) {
     console.log(e)
@@ -85,7 +87,8 @@ watch(tagsIds, async (newVal, oldVal) => {
   try {
     tags.value = (await databases.listDocuments('kronikle', 'tag',
     [
-      Query.equal('$id', [...newVal])
+      Query.equal('$id', [...newVal]),
+      Query.equal('author', props.display.organization)
     ])).documents as unknown as {$id: string, name: string}[]
   } catch (e) {
     console.log(e)
