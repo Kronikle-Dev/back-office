@@ -121,7 +121,7 @@ async function addType () {
 
 
 <template>
-  <div class="max-w-xl mx-auto prose">
+  <div class="max-w-xl mx-auto prose pb-12">
     <h2>{{$t('label.title')}}</h2>
     <p>{{$t('label.subtitle')}}</p>
     <h3 class="mt-8">{{ $t('label.tag-title') }}</h3>

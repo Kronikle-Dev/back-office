@@ -40,8 +40,8 @@ async function signup () {
     return
   }
   function getLanguageFirstTwoChars () {
-    // if locale is french, return 'fr', otherwhise return 'en'
-    if (navigator.language === 'fr-FR') {
+    // if locale first two characters are 'fr', return 'fr', otherwhise return 'en'
+    if (navigator.language.substring(0, 2) === 'fr') {
       return 'fr'
     } else {
       return 'en'

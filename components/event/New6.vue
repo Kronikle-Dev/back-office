@@ -27,8 +27,6 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' };
 
 <template>
   <div>
-    <h1>{{$t('event.newsix.title')}}</h1>
-    <p>{{$t('event.newsix.subtitle')}}</p>
     <div class="card bg-white not-prose">
       <figure><img :src="props.event.imageUrl" alt="Event image" /></figure>
       <div class="card-body">
@@ -37,7 +35,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' };
         <div>
           <span v-for="tag of props.event.tags" :key="tag">#{{availableTags.find((t) => t.$id === tag)?.name}} </span>
         </div>
-        <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mb-10">
+        <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mt-4">
         <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
           <div class="card w-64 bg-white shadow not-prose">
             <div class="card-body">
@@ -50,7 +48,7 @@ const timeOptions = { hour: 'numeric', minute: 'numeric' };
       </div>
       </div>
     </div>
-    <div class="flex flex-row w-full space-x-4">
+    <div class="flex flex-row w-full space-x-4 pb-8">
       <button class="btn btn-outline btn-primary mt-4 grow" @click="emit('prev')">{{$t('form.previous')}}</button>
       <button class="btn btn-primary mt-4 grow" @click="emit('next')">{{$t('form.finish')}}</button>
     </div>
