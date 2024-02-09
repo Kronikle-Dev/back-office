@@ -1,11 +1,17 @@
 <script lang="ts" setup>
-import { Databases, Query, Storage } from 'appwrite'
+import { Databases, Query, Storage, Teams } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 
 const storage = new Storage($appwrite().client)
 const databases = new Databases($appwrite().client)
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
 
 const props = defineProps<{
   event: KEvent,
