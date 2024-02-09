@@ -39,8 +39,17 @@ async function signup () {
   if (!formValid) {
     return
   }
+  function getLanguageFirstTwoChars () {
+    // if locale is french, return 'fr', otherwhise return 'en'
+    if (navigator.language === 'fr-FR') {
+      return 'fr'
+    } else {
+      return 'en'
+    }
+  }
   state.loading = true
   const account = $appwrite().account
+  $appwrite().client.setLocale(getLanguageFirstTwoChars())
   const teams = new Teams($appwrite().client)
   try {
     const respCreation = await account.create('unique()', state.email, state.password, state.name)
