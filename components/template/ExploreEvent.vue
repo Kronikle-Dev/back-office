@@ -268,7 +268,7 @@ const hideSidePanel = ref(true)
         <div class="flex flex-row flex-wrap space-y-7 items-end">
           <div class="rounded-lg p-7 md:mr-7 bg-urfist-200 max-w-2xl">
             <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
-            <div class="grid grid-rows-2 md:grid-cols-2 gap-x-5 gap-y-5 mt-5">
+            <div class="grid grid-auto-rows md:grid-cols-2 gap-x-5 gap-y-5 mt-5">
               <img class="max-h-[150px] md:max-h-none rounded" loading="lazy" :src="props.event.imageUrl"/>
               <div class="flex flex-col space-y-2.5">
                 <div class="flex flex-row space-x-1">
