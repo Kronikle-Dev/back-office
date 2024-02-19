@@ -38,7 +38,9 @@ const navigationStarted = ref(false)
 
 const router = useRouter()
 router.beforeResolve((to, from, next) => {
-  navigationStarted.value = true
+  if (to.path.includes(from.path)) {
+    navigationStarted.value = true
+  }
   next()
 })
 
