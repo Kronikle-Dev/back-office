@@ -4,7 +4,7 @@
         <a href="https://kronikle.eu" class="btn btn-primary btn-outline absolute top-12 left-1/2 -translate-x-1/2 bg-white">← Kronikle</a>
         <div    id="wrap"
                 class="rounded-xl z-10 lg:w-[960px] w-[260px] transition-all">
-            <iframe id="frame" class="lg:w-[1920px] w-[520px] transition-all" src="https://app.kronikle.eu/d/641193948254288dfcd0"></iframe>
+            <iframe id="frame" class="lg:w-[1920px] w-[520px] transition-all" src="https://app.kronikle.eu/d/63f376bac97be9f615bd"></iframe>
         </div>
     </div>
 </template>
@@ -13,6 +13,9 @@
     #wrap { height: 540px; padding: 0; overflow: hidden; }
     #frame { height: 1080px; border: 0px; }
     #frame {
+        zoom: 0.5;
+        transform: scale(0.5);
+        transform-origin: 0 0;
         -ms-zoom: 0.5;
         -moz-transform: scale(0.5);
         -moz-transform-origin: 0 0;
