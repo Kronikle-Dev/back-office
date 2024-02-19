@@ -13,9 +13,6 @@
     #wrap { height: 540px; padding: 0; overflow: hidden; }
     #frame { height: 1080px; border: 0px; }
     #frame {
-        zoom: 0.5;
-        transform: scale(0.5);
-        transform-origin: 0 0;
         -ms-zoom: 0.5;
         -moz-transform: scale(0.5);
         -moz-transform-origin: 0 0;
