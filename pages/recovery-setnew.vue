@@ -63,7 +63,10 @@ async function recovery () {
         <span v-if="v$.password.$error && v$.password.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 8})}}</span>
       </label>
       <div class="flex flex-row w-full space-x-4">
-        <button class="btn btn-primary mt-4 grow" :class="{'loading': state.loading}" @click="recovery">{{$t('recovery.recovery')}}</button>
+        <button class="btn btn-primary mt-4 grow" @click="recovery">
+          <span v-if="state.loading" class="loading"></span>
+          {{$t('recovery.recovery')}}
+        </button>
       </div>
     </div>
     <div v-if="state.error" class="toast toast-end">

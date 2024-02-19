@@ -58,7 +58,10 @@ async function recovery () {
         <span v-if="v$.email.$error && v$.email.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       </label>
       <div class="flex flex-row w-full space-x-4">
-        <button class="btn btn-primary mt-4 grow" :class="{'loading': state.loading}" @click="recovery">{{$t('recovery.recover')}}</button>
+        <button class="btn btn-primary mt-4 grow" @click="recovery">
+          <span v-if="!state.loading">{{$t('recovery.recover')}}</span>
+          {{$t('recovery.recover')}}
+        </button>
       </div>
     </div>
     <div v-if="state.error" class="toast toast-end">

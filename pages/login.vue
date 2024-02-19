@@ -68,7 +68,10 @@ async function login () {
       </label>
       <div class="flex flex-row items-center w-full space-x-4">
         <nuxt-link to="/signup" class="link link-secondary font-semibold mt-4">{{$t('login.signup')}}</nuxt-link>
-        <button class="btn btn-primary mt-4 grow" :class="{'loading': state.loading}" @click="login">{{$t('login.login')}}</button>
+        <button class="btn btn-primary mt-4 grow" @click="login">
+          <span v-if="state.loading" class="loading"></span>
+          {{$t('login.login')}}
+        </button>
       </div>
       <div class="flex flex-row items-center w-full space-x-4">
         <nuxt-link to="/recovery" class="link link-secondary font-semibold mt-4">{{$t('login.recovery')}}</nuxt-link>
