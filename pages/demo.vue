@@ -5,7 +5,7 @@ const showDesktop = ref(true)
 <template>
     <div class="flex flex-col space-y-2 items-center w-[100svw] h-[100svh] justify-center">
         <img src="/demo-bg.jpg" class="w-full h-full absolute object-cover"/>
-        <a href="https://kronikle.eu" class="btn btn-primary btn-outline absolute top-12 left-1/2 -translate-x-1/2 bg-white">← Kronikle</a>
+        <a href="https://kronikle.eu" class="btn btn-primary btn-outline z-10 bg-white">← Kronikle</a>
         <div class="hidden lg:block z-10">
             <div class="form-control">
                 <label class="label cursor-pointer">
