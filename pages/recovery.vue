@@ -59,7 +59,7 @@ async function recovery () {
       </label>
       <div class="flex flex-row w-full space-x-4">
         <button class="btn btn-primary mt-4 grow" @click="recovery">
-          <span v-if="!state.loading">{{$t('recovery.recover')}}</span>
+          <span v-if="!state.loading"></span>
           {{$t('recovery.recover')}}
         </button>
       </div>
