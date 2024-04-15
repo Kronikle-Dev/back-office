@@ -93,6 +93,7 @@ async function signup () {
         <span v-if="v$.password.$error && v$.password.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
         <span v-if="v$.password.$error && v$.password.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 8})}}</span>
       </label>
+      <label class="italic" v-html="$t('signup.consent')"></label>
       <div class="flex flex-row w-full space-x-4">
         <nuxt-link to="/login" class="link link-secondary font-semibold mt-4">{{$t('signup.login')}}</nuxt-link>
         <button class="btn btn-primary mt-4 grow" @click="signup">
