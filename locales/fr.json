@@ -27,6 +27,7 @@
     "password-placeholder": "*****",
     "name": "Nom de votre entreprise ou structure",
     "name-placeholder": "Culture & co.",
+    "consent": "En créant mon compte, j'accepte les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGU.pdf\" target=\"_blank\">conditions générales d'utilisation</a> ainsi que les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGV.pdf\" target=\"_blank\">conditions générales de vente</a>",
     "signup": "Créer un compte",
     "login": "J'ai déjà un compte"
   },
