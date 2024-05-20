@@ -36,8 +36,8 @@ async function downloadPDF () {
     const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
     const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
     const dateString = `${startDate.toLocaleDateString('fr', {month: 'long', year: 'numeric', day: '2-digit'})} - ${startDate.toLocaleTimeString('fr', {hour: '2-digit'})}${startDate.toLocaleTimeString('fr', {minute: '2-digit'})}`
-    const truncatedDescription = props.event.description.length > 130 ? props.event.description.substring(0, 130) + '...' : props.event.description
-    const truncatedName = props.event.name.length > 64 ? props.event.name.substring(0, 64) + '...' : props.event.name
+    const truncatedDescription = props.event.description.length > 130 ? props.event.description.replace(/(\r\n|\n|\r)/gm, "").substring(0, 130) + '...' : props.event.description.replace(/(\r\n|\n|\r)/gm, "")
+    const truncatedName = props.event.name.length > 64 ? props.event.name.replace(/(\r\n|\n|\r)/gm, "").substring(0, 64) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
     var doc = new jsPDF("landscape")
 
     for (let i = 0 ; i < 6 ; i++) {
