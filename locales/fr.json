@@ -70,7 +70,12 @@
     },
     "card": {
       "edit": "Éditer l'événement",
-      "delete": "Supprimer l'événement"
+      "delete": "Supprimer l'événement",
+      "print": "Imprimer un support",
+      "print-com-support": "Imprimer un support de communication pour votre événement",
+      "select-date": "Choisir une date",
+      "select-format": "Choisir un type d'impression",
+      "select-display": "Choisir un affichage"
     },
     "new": {
       "title": "Nouvel événement"

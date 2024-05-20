@@ -14,9 +14,15 @@ definePageMeta({
   layout: "display",
 })
 
-const displayPromise = databases.getDocument('kronikle', 'display', displayid)
+const displayPromise = databases.getDocument('kronikle', 'display', displayid).catch(e => {
+  console.error('Bad date id : ', e)
+  navigateTo(`/d${route.params.qr}/error`)
+})
 
-const datePromise = databases.getDocument('kronikle', 'date', dateid)
+const datePromise = databases.getDocument('kronikle', 'date', dateid).catch(e => {
+  console.error('Bad date id : ', e)
+  navigateTo(`/d${route.params.qr}/error`)
+})
 
 try {
   display = (await displayPromise) as unknown as KDisplay
