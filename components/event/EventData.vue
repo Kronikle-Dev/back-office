@@ -35,6 +35,11 @@ const deleteEvent = async () => {
   await databases.deleteDocument('kronikle', 'event', props.event.$id)
   navigateTo('/')
 }
+
+function closePrintModale () {
+  //@ts-ignore
+  document.querySelector('#printModale').close()
+}
 </script>
 
 <template>
@@ -67,7 +72,7 @@ const deleteEvent = async () => {
       </div>
     </div>
     <dialog id="printModale" class="modal">
-      <PrintForm :event="event"></PrintForm>
+      <PrintForm :event="event" @close="closePrintModale"></PrintForm>
     </dialog>
   </div>
 </template>

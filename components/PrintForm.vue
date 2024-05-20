@@ -143,10 +143,7 @@ async function downloadPDF () {
         <div v-show="!canGenerate" class="label mt-4 label-text">Veuillez remplir tous les champs pour générer le PDF</div>
         <div class="modal-action">
             <a class="btn btn-primary" @click="downloadPDF">Générer le PDF</a>
-            <form method="dialog ">
-                <!-- if there is a button in form, it will close the modal -->
-                <button class="btn">Fermer</button>
-            </form>
+            <a class="btn btn-primary" @click="$emit('close')">Fermer</a>
         </div>
     </div>
 </template>
