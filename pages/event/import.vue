@@ -167,6 +167,10 @@ async function importEvent(eventId: string) {
     state.importing = false
     console.log('import OK')
     navigateTo('/event/' + eventObj.$id)
+  }).catch(e => {
+    console.log('import KO')
+    console.log(e)
+    state.importing = false
   })
 }
 
