@@ -184,7 +184,16 @@ const futureEvents = computed(() => {
 }) 
 
 onMounted(() => {
-  document.getElementById('current-section')?.scrollIntoView()
+  function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+  if (!inIframe()) {
+    document.getElementById('current-section')?.scrollIntoView()
+  }
 })
 
 </script>
