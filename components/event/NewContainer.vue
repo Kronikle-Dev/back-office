@@ -55,6 +55,13 @@ onMounted(() => {
 
 <template>
   <div>
+    <ul class="steps pl-0">
+      <li class="step step-primary">{{$t('event.new.step-one')}}</li>
+      <li class="step" :class="{'step-primary': step>= 1}">{{$t('event.new.step-two')}}</li>
+      <li class="step" :class="{'step-primary': step>= 2}">{{$t('event.new.step-three')}}</li>
+      <li class="step" :class="{'step-primary': step>= 3}">{{$t('event.new.step-four')}}</li>
+      <li class="step" :class="{'step-primary': step>= 4}">{{$t('event.new.step-five')}}</li>
+    </ul>
     <h1 class="h1">{{props.event.name.length > 0 ? props.event.name : $t('event.new.title')}}</h1>
     <EventNew1
       v-if="step == 0"

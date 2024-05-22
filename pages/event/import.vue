@@ -15,6 +15,8 @@ const state = reactive({
   importedEventsIds: [] as string[]
 })
 
+const isPremium = (await $appwrite().account?.get()).labels?.includes('premium')
+
 const { data: events, pending, refresh, error } = await useFetch(() => `/api/third-party/${state.organization}/list?query=${state.query}`)
 
 onBeforeMount (async () => {
@@ -181,10 +183,18 @@ async function importEvent(eventId: string) {
   <div class="max-w-xl mx-auto prose">
     <h2>{{$t('event.import.title')}}</h2>
     <p>{{$t('event.import.subtitle')}} {{state.organization}}</p>
+    <div v-if="!isPremium" class="card bg-white my-4">
+      <div class="card-body">
+        <p>{{$t('event.import.subtitle-premium')}} </p>
+        <div class="card-actions justify-end">
+          <nuxt-link to="/event/new" class="btn btn-primary">{{ $t('event.import.new-event') }}</nuxt-link>
+        </div>
+      </div>
+    </div>
     <label class="label">
       <span class="label-text">{{$t('event.import.name-label')}}</span>
     </label>
-    <input v-model="state.query" type="text" :placeholder="$t('event.import.name-placeholder')" class="input input-bordered bg-white w-full" @keypress.enter="search">
+    <input v-model="state.query" type="text" :disabled="!isPremium" :placeholder="$t('event.import.name-placeholder')" class="input input-bordered bg-white w-full" @keypress.enter="search">
     <div class="my-4" v-if="pending">Chargement...</div>
     <div 
       @click="state.importedEventsIds.includes(event.id) ? null : importEvent(event.id)"
