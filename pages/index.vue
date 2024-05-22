@@ -100,7 +100,9 @@ function navigateToEvent (simpleCalendarEvent: any) {
 <template>
   <div class="max-w-[50rem] mx-auto prose">
     <h2>{{$t('event.index.title')}}</h2>
-    <p>{{$t('event.index.subtitle')}}</p>
+    <div class="flex flex-row justify-between">
+      <p>{{$t('event.index.subtitle')}} </p><nuxt-link to="/event/new" class="btn btn-primary">{{ $t('event.index.create-event') }}</nuxt-link>
+    </div>
     <div class="my-3 flex flex-col grow">
       <CalendarView
         class="theme-default card shadow rounded-lg"

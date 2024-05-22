@@ -66,7 +66,8 @@
   "event": {
     "index": {
       "title": "Événements",
-      "subtitle": "Retrouvez ici l'entièreté de votre programmation"
+      "subtitle": "Retrouvez ici l'entièreté de votre programmation",
+      "create-event": "Créer un événement"
     },
     "card": {
       "edit": "Éditer l'événement",
@@ -78,7 +79,12 @@
       "select-display": "Choisir un affichage"
     },
     "new": {
-      "title": "Nouvel événement"
+      "title": "Nouvel événement",
+      "step-one": "Base",
+      "step-two": "Dates",
+      "step-three": "Image",
+      "step-four": "Catégories",
+      "step-five": "Précisions"
     },
     "newone": {
       "title": "Les informations de base",
@@ -147,6 +153,8 @@
     "import": {
       "title": "Importer un événement",
       "subtitle": "Importer un événement depuis votre outils d'agenda, vous faites partie de l'organisation : ",
+      "subtitle-premium": "L'importation d'événements à partir d'un de vos logiciels d'agenda est une fonctionnalité réservée aux utilisateurs ayant souscrit à un abonnement payant. Vous pouvez tout de même ajouter des événements manuellement.",
+      "new-event": "Créer un événement manuellement",
       "name-label": "Nom de l'événement",
       "name-placeholder": "Entrez ici le nom de l'événement que vous souhaitez importer",
       "importing": "Import en cours.",
