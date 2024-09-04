@@ -54,9 +54,30 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
         endMinute = DateTime.fromISO(session.hourEnd).minute
       }
 
+      const startDay = DateTime.fromISO(session.dateBegin).day
+      const startMonth = DateTime.fromISO(session.dateBegin).month
+      const startYear = DateTime.fromISO(session.dateBegin).year
+      const endDay = DateTime.fromISO(session.dateEnd).day
+      const endMonth = DateTime.fromISO(session.dateEnd).month
+      const endYear = DateTime.fromISO(session.dateEnd).year
 
-      const startDateTime = DateTime.fromISO(session.dateBegin).set({hour: beginHour || 0, minute: beginMinute || 0})
-      const endDateTime = DateTime.fromISO(session.dateEnd).set({hour: endHour || 0, minute: endMinute || 0})
+      // build the startDateTime and endDateTime from the individual date and time components
+      const startDateTime =  DateTime.fromObject({
+        year: startYear,
+        month: startMonth,
+        day: startDay,
+        hour: beginHour || 0,
+        minute: beginMinute || 0,
+      }, {zone: 'Europe/Paris'})
+
+      const endDateTime = DateTime.fromObject({
+        year: endYear,
+        month: endMonth,
+        day: endDay,
+        hour: endHour || 0,
+        minute: endMinute || 0,
+      }, {zone: 'Europe/Paris'})
+      
 
       return {
         eventId: '',

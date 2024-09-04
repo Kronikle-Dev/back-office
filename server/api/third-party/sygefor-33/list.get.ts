@@ -4,7 +4,7 @@ import config from './SygeforImporterConfig.js'
 export default defineEventHandler(async (event) : Promise<ThirdPartyEvent[] | any> => {
   let queryObject = ''
   const query = getQuery(event)
-  const queryString = query.query
+  const queryString = query.query as string
 
   if (queryString && queryString.length > 0) {
     queryObject = `
