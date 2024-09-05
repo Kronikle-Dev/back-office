@@ -52,12 +52,26 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
         endMinute = Number.parseInt(session.schedule.split('-')[1].split('h')[1])
       }
       if (session.hourBegin) {
-        beginHour = DateTime.fromISO(session.hourBegin).hour
-        beginMinute = DateTime.fromISO(session.hourBegin).minute
+        //beginHour = DateTime.fromISO(session.hourBegin).hour
+        //beginMinute = DateTime.fromISO(session.hourBegin).minute
+        // using the regex .*T(\d\d):(\d\d):(\d\d) extract beginHour and beginMinute
+        const regex = /.*T(\d\d):(\d\d):(\d\d)/
+        const match = regex.exec(session.hourBegin)
+        if (match) {
+          beginHour = Number.parseInt(match[1])
+          beginMinute = Number.parseInt(match[2])
+        }
       }
       if (session.hourEnd) {
-        endHour = DateTime.fromISO(session.hourEnd).hour
-        endMinute = DateTime.fromISO(session.hourEnd).minute
+        //endHour = DateTime.fromISO(session.hourEnd).hour
+        //endMinute = DateTime.fromISO(session.hourEnd).minute
+        // using the regex .*T(\d\d):(\d\d):(\d\d) extract beginHour and beginMinute
+        const regex = /.*T(\d\d):(\d\d):(\d\d)/
+        const match = regex.exec(session.hourEnd)
+        if (match) {
+          endHour = Number.parseInt(match[1])
+          endMinute = Number.parseInt(match[2])
+        }
       }
 
       const startDay = DateTime.fromISO(session.dateBegin).day
@@ -84,7 +98,6 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
         minute: endMinute || 0,
       }, {zone: 'Europe/Paris'})
       
-
       return {
         eventId: '',
         startDateTime: startDateTime.toJSDate(),
