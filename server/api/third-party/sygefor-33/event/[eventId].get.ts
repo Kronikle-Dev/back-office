@@ -23,7 +23,13 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
       if (session.rooms.find((room: any) => room.slug.includes('virtual'))) {
         isDistanciel = true
       }
+      if (session.organizationalMode?.name == 'Distanciel') {
+        isDistanciel = true
+      }
       if (session.rooms.find((room: any) => room.slug.includes('physical'))) {
+        isPresentiel = true
+      }
+      if (session.organizationalMode?.name == 'Présentiel') {
         isPresentiel = true
       }
       if (isDistanciel && isPresentiel) {
