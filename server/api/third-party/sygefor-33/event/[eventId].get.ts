@@ -83,6 +83,22 @@ export default defineEventHandler(async (event): Promise<KImportEvent>  => {
         hour: endHour || 0,
         minute: endMinute || 0,
       }, {zone: 'Europe/Paris'})
+
+      // console.log the raw values for debugging
+      console.log(JSON.stringify({
+        year: startYear,
+        month: startMonth,
+        day: startDay,
+        hour: beginHour || 0,
+        minute: beginMinute || 0,
+      }))
+      console.log(JSON.stringify({
+        year: endYear,
+        month: endMonth,
+        day: endDay,
+        hour: endHour || 0,
+        minute: endMinute || 0,
+      }))
       
 
       return {
