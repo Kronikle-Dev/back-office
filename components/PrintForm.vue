@@ -87,19 +87,22 @@ async function downloadPDF () {
         for (let i = 0 ; i < 2 ; i++) {
             doc.setDrawColor(240, 240, 240)
             doc.rect(15+135*i, 15, 135, 180)
-            doc.setFillColor(180, 40, 40)
+            doc.setFillColor(242, 159, 32)
             doc.rect(15+135*i, 20, 46, 1, "F")
             doc.rect(15+135*i, 22, 92, 1, "F")
             doc.setFontSize(18)
             doc.setFont("helvetica", "bold")
-            doc.text(truncatedName, 40+135*i, 32, {maxWidth:100})
+            doc.text(truncatedName, 40+135*i, 32, {maxWidth:70})
             doc.setFontSize(9)
             doc.setFont("helvetica", "italic")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
+            doc.setFont("helvetica", "regular")
+            doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 145, {maxWidth:35})
             doc.setFontSize(24)
             doc.setFont("helvetica", "bold")
             doc.text(dateString, 20+135*i, 28, {angle: 270, maxWidth:123})
-            coverUrl ? doc.addImage(coverUrl.href, "JPEG", 20+135*i, 135, 55, 55) : null
+            coverUrl?.href ? doc.addImage(coverUrl.href, "JPEG", 20+135*i, 135, 55, 55) : null
+            (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoUrl ? doc.addImage((displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoUrl, "JPEG", 20+135*i, 20, 35, 35) : null
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
         doc.save(`bookmark-${props.event.$id}.pdf`);

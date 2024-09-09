@@ -97,4 +97,5 @@ interface KDisplay {
   tagFilter: string[],
   excludeFilters: boolean,
   organization: string,
+  logoUrl: string,
 }
