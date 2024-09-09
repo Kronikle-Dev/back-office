@@ -96,13 +96,35 @@ async function downloadPDF () {
             doc.setFontSize(9)
             doc.setFont("helvetica", "italic")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
-            doc.setFont("helvetica", "regular")
-            doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 145, {maxWidth:35})
+            doc.setFontSize(8)
+            doc.setFont("helvetica", "normal")
+            doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 150, {maxWidth:35})
             doc.setFontSize(24)
             doc.setFont("helvetica", "bold")
             doc.text(dateString, 20+135*i, 28, {angle: 270, maxWidth:123})
-            coverUrl?.href ? doc.addImage(coverUrl.href, "JPEG", 20+135*i, 135, 55, 55) : null
-            (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoUrl ? doc.addImage((displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoUrl, "JPEG", 20+135*i, 20, 35, 35) : null
+            if (coverUrl?.href) {
+                doc.addImage(coverUrl.href, "JPEG", 20 + 135 * i, 135, 55, 55)
+            }
+            const selectedDisplayLogoId = (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoId;
+            const selectedDisplayLogoUrl = await storage.getFilePreview(
+                'display-logo',
+                selectedDisplayLogoId,
+                350, // width (optional)
+                200, // height (optional)
+                'center', // gravity (optional)
+                100, // quality (optional)
+                0, // borderWidth (optional)
+                'fff', // borderColor (optional)
+                0, // borderRadius (optional)
+                1, // opacity (optional)
+                0, // rotation (optional)
+                'fff', // background (optional)
+                'png'// output (optional)
+            )
+
+            if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
+                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 35, 20)
+            }
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
         doc.save(`bookmark-${props.event.$id}.pdf`);
