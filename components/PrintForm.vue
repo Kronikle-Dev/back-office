@@ -87,19 +87,44 @@ async function downloadPDF () {
         for (let i = 0 ; i < 2 ; i++) {
             doc.setDrawColor(240, 240, 240)
             doc.rect(15+135*i, 15, 135, 180)
-            doc.setFillColor(180, 40, 40)
+            doc.setFillColor(242, 159, 32)
             doc.rect(15+135*i, 20, 46, 1, "F")
             doc.rect(15+135*i, 22, 92, 1, "F")
             doc.setFontSize(18)
             doc.setFont("helvetica", "bold")
-            doc.text(truncatedName, 40+135*i, 32, {maxWidth:100})
+            doc.text(truncatedName, 40+135*i, 32, {maxWidth:70})
             doc.setFontSize(9)
             doc.setFont("helvetica", "italic")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
+            doc.setFontSize(8)
+            doc.setFont("helvetica", "normal")
+            doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 150, {maxWidth:35})
             doc.setFontSize(24)
             doc.setFont("helvetica", "bold")
             doc.text(dateString, 20+135*i, 28, {angle: 270, maxWidth:123})
-            coverUrl ? doc.addImage(coverUrl.href, "JPEG", 20+135*i, 135, 55, 55) : null
+            if (coverUrl?.href) {
+                doc.addImage(coverUrl.href, "JPEG", 20 + 135 * i, 135, 55, 55)
+            }
+            const selectedDisplayLogoId = (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoId;
+            const selectedDisplayLogoUrl = await storage.getFilePreview(
+                'display-logo',
+                selectedDisplayLogoId,
+                350, // width (optional)
+                200, // height (optional)
+                'center', // gravity (optional)
+                100, // quality (optional)
+                0, // borderWidth (optional)
+                'fff', // borderColor (optional)
+                0, // borderRadius (optional)
+                1, // opacity (optional)
+                0, // rotation (optional)
+                'fff', // background (optional)
+                'png'// output (optional)
+            )
+
+            if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
+                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 35, 20)
+            }
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
         doc.save(`bookmark-${props.event.$id}.pdf`);
