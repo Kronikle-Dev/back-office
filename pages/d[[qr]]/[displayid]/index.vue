@@ -33,28 +33,24 @@ try {
   switch (display.eventFilter) {
     case 'month':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
-        Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
-        Query.lessThanEqual('startDateTime', lastDayOfMonth.toString()),
-        Query.equal('organization', display.organization)
+        Query.greaterThanEqual('startDateTime', firstDayOfMonth.toISO() as string),
+        Query.lessThanEqual('startDateTime', lastDayOfMonth.toISO() as string),
       ])).documents.map((d) => d.eventId))
       break
     case 'week':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
-        Query.lessThanEqual('startDateTime', lastDayofWeek.toString()),
-        Query.equal('organization', display.organization)
+        Query.lessThanEqual('startDateTime', lastDayofWeek.toISO() as string),
       ])).documents.map(d => d.eventId))
       break
     case 'upcoming':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
-        Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
-        Query.equal('organization', display.organization)
+        Query.greaterThanEqual('endDateTime', beginningOfToday.toISO() as string),
       ])).documents.map(d => d.eventId))
       break
     case 'past':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
-        Query.lessThan('startDateTime', beginningOfToday.toString()),
-        Query.equal('organization', display.organization)
+        Query.lessThan('startDateTime', beginningOfToday.toISO() as string),
       ])).documents.map(d => d.eventId))
       break
     case 'none':
@@ -98,13 +94,13 @@ if (display.eventFilter != 'none') {
       if (display.tagFilter.length == 0 && display.publicFilter.length == 0 && display.typeFilter.length == 0) {
         return true
       } else if (!display.excludeFilters) {
-        return e.tags.some(t => display.tagFilter.includes(t)) ||
-          e.publicTypes.some(p => display.publicFilter.includes(p)) ||
-          e.eventType.some(t => display.typeFilter.includes(t))
+        return (e.tags ?? []).some(t => display.tagFilter.includes(t)) ||
+          (e.publicTypes ?? []).some(p => display.publicFilter.includes(p)) ||
+          (e.eventType ?? []).some(t => display.typeFilter.includes(t))
       } else {
-        return !e.tags.some(t => display.tagFilter.includes(t)) &&
-          !e.publicTypes.some(p => display.publicFilter.includes(p)) &&
-          !e.eventType.some(t => display.typeFilter.includes(t))
+        return !(e.tags ?? []).some(t => display.tagFilter.includes(t)) &&
+          !(e.publicTypes ?? []).some(p => display.publicFilter.includes(p)) &&
+          !(e.eventType ?? []).some(t => display.typeFilter.includes(t))
       }
     }))
   } catch (e) {
