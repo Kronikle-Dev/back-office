@@ -37,6 +37,48 @@ const orderedDates = computed(() => {
   })
 })
 
+// Inspired by https://stackoverflow.com/a/74977142
+function removeMarkdown(markdown: string): string {
+    // Replace bold text with plain text
+    markdown = markdown.replace(/\*\*(.+?)\*\*/g, (match, p1) => p1 ?? "");
+    markdown = markdown.replace(/__(.+?)__/g, (match, p1) => p1 ?? "");
+
+    // Replace italicized text with plain text
+    markdown = markdown.replace(/_(.+?)_/g, (match, p1) => p1 ?? '');
+    markdown = markdown.replace(/\*(.+?)\*/g, (match, p1) => p1 ?? '');
+
+    // Replace strikethrough text with plain text
+    markdown = markdown.replace(/~~(.+?)~~/g, (match, p1) => p1 ?? '');
+
+    // Replace inline code blocks with plain text
+    markdown = markdown.replace(/`(.+?)`/g, (match, p1) => p1 ?? '');
+
+    // Replace code blocks with plain text
+    markdown = markdown.replace(/```[\s\S]*?```/g, (match, p1) => p1 ?? '');
+    markdown = markdown.replace(/```[\s\S]*?```/g, (match, p1) => p1 ?? '');
+
+    // Remove links
+    markdown = markdown.replace(/\[(.+?)\]\((.+?)\)/g, (match, p1) => p1 ?? '');
+
+    // Remove images
+    markdown = markdown.replace(/!\[(.+?)\]\((.+?)\)/g, (match, p1) => p1 ?? '');
+
+    // Remove headings
+    markdown = markdown.replace(/^#+\s+(.+?)\s*$/gm, (match, p1) => p1 ?? '');
+    markdown = markdown.replace(/^\s*=+\s*$/gm, (match, p1) => p1 ??'');
+    markdown = markdown.replace(/^\s*-+\s*$/gm, (match, p1) => p1 ?? '');
+
+    // Remove blockquotes
+    markdown = markdown.replace(/^\s*>\s+(.+?)\s*$/gm, (match, p1) => p1 ?? '');
+
+    // Remove lists
+    //markdown = markdown.replace(/^\s*[\*\+-]\s+(.+?)\s*$/gm, (match, p1) => p1 ?? '');
+    //markdown = markdown.replace(/^\s*\d+\.\s+(.+?)\s*$/gm, (match, p1) => p1 ?? '');
+
+
+    return markdown;
+}
+
 async function downloadPDF () {
     if (selectedDate.value === null || selectedDisplay.value === null || selectedFormat.value === null) {
         return
@@ -76,8 +118,8 @@ async function downloadPDF () {
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit'})}${startDate.toLocaleTimeString('fr', {minute: '2-digit'})}`
-        const truncatedDescription = props.event.description
-        console.log(truncatedDescription)
+        const truncatedDescription = removeMarkdown(props.event.description)
+        //console.log(truncatedDescription)
         const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
 
         //const htmlDescription = converter.makeHtml(props.event.description)
@@ -118,9 +160,9 @@ async function downloadPDF () {
                 200, // height (optional)
                 'center', // gravity (optional)
                 100, // quality (optional)
-                0, // borderWidth (optional)
-                'fff', // borderColor (optional)
-                0, // borderRadius (optional)
+                5, // borderWidth (optional)
+                'f29f20', // borderColor (optional)
+                5, // borderRadius (optional)
                 1, // opacity (optional)
                 0, // rotation (optional)
                 'f29f20', // background (optional)
