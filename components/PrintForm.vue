@@ -137,7 +137,7 @@ async function downloadPDF () {
             doc.setFont("helvetica", "bold")
             doc.text(truncatedName, 40+135*i, 32, {maxWidth:70})
             doc.setFontSize(9)
-            doc.setFont("helvetica", "italic")
+            doc.setFont("helvetica", "normal")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
             doc.setFillColor(255, 255, 255)
             doc.rect(40+135*i, 141, 100, 100, "F")
@@ -156,8 +156,9 @@ async function downloadPDF () {
             const selectedDisplayLogoUrl = await storage.getFilePreview(
                 'display-logo',
                 selectedDisplayLogoId,
-                350, // width (optional)
-                200, // height (optional)
+                // Here, we should get the original image size
+                306, // width (optional)
+                161, // height (optional)
                 'center', // gravity (optional)
                 100, // quality (optional)
                 5, // borderWidth (optional)
@@ -170,7 +171,8 @@ async function downloadPDF () {
             )
 
             if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
-                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 35, 20)
+                // Here, we should get the original image size too
+                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30, 16)
             }
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
