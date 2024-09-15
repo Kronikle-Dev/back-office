@@ -79,6 +79,19 @@ function removeMarkdown(markdown: string): string {
     return markdown;
 }
 
+function getImageSize(url: string): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = (error) => {
+            reject(error);
+        };
+        img.src = url;
+    });
+}
+
 async function downloadPDF () {
     if (selectedDate.value === null || selectedDisplay.value === null || selectedFormat.value === null) {
         return
@@ -156,9 +169,8 @@ async function downloadPDF () {
             const selectedDisplayLogoUrl = await storage.getFilePreview(
                 'display-logo',
                 selectedDisplayLogoId,
-                // Here, we should get the original image size
-                306, // width (optional)
-                161, // height (optional)
+                0, // width (optional)
+                0, // height (optional)
                 'center', // gravity (optional)
                 100, // quality (optional)
                 5, // borderWidth (optional)
@@ -171,8 +183,16 @@ async function downloadPDF () {
             )
 
             if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
-                // Here, we should get the original image size too
-                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30, 16)
+                // Here, we should get the original image size, an then resize it to fit in the box of 30x16 if the width is bigger than the height or less if the height is bigger than the width
+                const imageSize = await getImageSize(selectedDisplayLogoUrl.href)
+                const width = imageSize.width
+                const height = imageSize.height
+                const ratio = width / height
+                if (ratio > 1) {
+                    doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30, 30 / ratio)
+                } else {
+                    doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30 * ratio, 30)
+                }
             }
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
