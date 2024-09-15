@@ -77,16 +77,17 @@ async function downloadPDF () {
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit'})}${startDate.toLocaleTimeString('fr', {minute: '2-digit'})}`
         const truncatedDescription = props.event.description
+        console.log(truncatedDescription)
         const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
 
         //const htmlDescription = converter.makeHtml(props.event.description)
-        var doc = new jsPDF("landscape")
+        var doc = new jsPDF({
+            orientation: "landscape",
+        })
 
         //console.log(htmlDescription)
 
         for (let i = 0 ; i < 2 ; i++) {
-            doc.setDrawColor(240, 240, 240)
-            doc.rect(15+135*i, 15, 135, 180)
             doc.setFillColor(242, 159, 32)
             doc.rect(15+135*i, 20, 46, 1, "F")
             doc.rect(15+135*i, 22, 92, 1, "F")
@@ -96,6 +97,10 @@ async function downloadPDF () {
             doc.setFontSize(9)
             doc.setFont("helvetica", "italic")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
+            doc.setFillColor(255, 255, 255)
+            doc.rect(40+135*i, 141, 100, 100, "F")
+            doc.setDrawColor(240, 240, 240)
+            doc.rect(15+135*i, 15, 135, 180)
             doc.setFontSize(8)
             doc.setFont("helvetica", "normal")
             doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 150, {maxWidth:35})
@@ -118,7 +123,7 @@ async function downloadPDF () {
                 0, // borderRadius (optional)
                 1, // opacity (optional)
                 0, // rotation (optional)
-                'fff', // background (optional)
+                'f29f20', // background (optional)
                 'png'// output (optional)
             )
 
