@@ -130,7 +130,7 @@ async function downloadPDF () {
         const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, 'center', 0, 0, '000', 10)
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
-        const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit'})}${startDate.toLocaleTimeString('fr', {minute: '2-digit'})}`
+        const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`
         const truncatedDescription = removeMarkdown(props.event.description)
         //console.log(truncatedDescription)
         const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
@@ -158,7 +158,7 @@ async function downloadPDF () {
             doc.rect(15+135*i, 15, 135, 180)
             doc.setFontSize(8)
             doc.setFont("helvetica", "normal")
-            doc.text("Flashez moi pour retrouver tout le programme !", 110+135*i, 150, {maxWidth:35})
+            doc.text("Flashez moi pour accéder aux ressources de cet événement !", 111+135*i, 146, {maxWidth:35})
             doc.setFontSize(24)
             doc.setFont("helvetica", "bold")
             doc.text(dateString, 20+135*i, 28, {angle: 270, maxWidth:123})
