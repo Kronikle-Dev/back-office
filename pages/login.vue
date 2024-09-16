@@ -40,9 +40,14 @@ async function login () {
     state.loading = false
     await navigateTo('/')
   } catch (error) {
-    state.loading = false
-    state.error = error
-    console.log(error)
+    // @ts-ignore
+    if ((error?.message as string).includes('Creation of a session is prohibited when a session is active')) {
+      await navigateTo('/')
+    } else {
+      state.loading = false
+      state.error = error
+      console.log(error)
+    }
   }
 }
 </script>
