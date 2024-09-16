@@ -17,7 +17,8 @@
     "password-placeholder": "***",
     "signup": "Je n'ai pas encore de compte",
     "recovery": "J'ai perdu mon mot de passe 😭",
-    "login": "Connexion"
+    "login": "Connexion",
+    "error": "Une erreur est survenue"
   },
   "signup": {
     "title": "Créer un compte",
