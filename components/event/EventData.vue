@@ -32,7 +32,7 @@ const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' } as DateTi
 const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOptions
 
 const deleteEvent = async () => {
-  await databases.deleteDocument('kronikle', 'event', props.event.$id)
+  await databases.deleteDocument('kronikle', 'event', props.event.$id as string)
   navigateTo('/')
 }
 
@@ -50,7 +50,7 @@ function closePrintModale () {
       </NuxtLink>
       <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
       <button onclick="printModale.showModal()" class="absolute top-20 left-4 btn btn-primary">{{ $t('event.card.print') }}</button>
-      <figure><img :src="props.event.imageUrl" class="rounded-t-2xl" alt="Event image" /></figure>
+      <figure><img :src="props.event.imageUrl" class="rounded-t-2xl h-72 w-full bg-urfist-300" alt="." /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>
         <div v-html="htmlDescription"></div>

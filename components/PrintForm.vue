@@ -9,6 +9,8 @@ const converter = new showdown.Converter()
 
 const avatars = new Avatars($appwrite().client)
 
+const isPremium = (await $appwrite().account?.get()).labels?.includes('premium')
+
 const props = defineProps<{
   event: KEvent,
 }>()
@@ -140,8 +142,6 @@ async function downloadPDF () {
             orientation: "landscape",
         })
 
-        //console.log(htmlDescription)
-
         for (let i = 0 ; i < 2 ; i++) {
             doc.setFillColor(242, 159, 32)
             doc.rect(15+135*i, 20, 46, 1, "F")
@@ -153,7 +153,7 @@ async function downloadPDF () {
             doc.setFont("helvetica", "normal")
             doc.text(truncatedDescription, 40+135*i, 56, {maxWidth:100})
             doc.setFillColor(255, 255, 255)
-            doc.rect(40+135*i, 141, 100, 100, "F")
+            doc.rect(40+135*i, 133, 100, 100, "F")
             doc.setDrawColor(240, 240, 240)
             doc.rect(15+135*i, 15, 135, 180)
             doc.setFontSize(8)
@@ -197,7 +197,75 @@ async function downloadPDF () {
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
         }
         doc.save(`bookmark-${props.event.$id}.pdf`);
+    } else if (selectedFormat.value === 'poster') {
+        const storage = new Storage($appwrite().client)
+        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, 'center', 0, 0, '000', 10)
+        const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
+        const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
+        const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`
+        const truncatedDescription = removeMarkdown(props.event.description)
+        //console.log(truncatedDescription)
+        const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
+
+        //const htmlDescription = converter.makeHtml(props.event.description)
+        var doc = new jsPDF({
+            orientation: "portrait",
+        })
+
+        doc.setFillColor(242, 159, 32)
+        doc.rect(15, 20, 46, 1, "F")
+        doc.rect(15, 22, 92, 1, "F")
+        doc.setFontSize(24)
+        doc.setFont("helvetica", "bold")
+        doc.text(truncatedName, 40, 34, {maxWidth:115})
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "normal")
+        doc.text(truncatedDescription, 40, 56, {maxWidth:140})
+        doc.setFillColor(255, 255, 255)
+        doc.rect(40, 206, 140, 150, "F")
+        doc.setFontSize(8)
+        doc.setFont("helvetica", "normal")
+        doc.text("Flashez moi pour accéder aux ressources de cet événement !", 161, 230, {maxWidth:35})
+        doc.setFontSize(24)
+        doc.setFont("helvetica", "bold")
+        doc.text(dateString, 20, 28, {angle: 270, maxWidth:123})
+        if (coverUrl?.href) {
+            doc.addImage(coverUrl.href, "JPEG", 20, 210, 65, 65)
+        }
+        const selectedDisplayLogoId = (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoId;
+        const selectedDisplayLogoUrl = await storage.getFilePreview(
+            'display-logo',
+            selectedDisplayLogoId,
+            0, // width (optional)
+            0, // height (optional)
+            'center', // gravity (optional)
+            100, // quality (optional)
+            5, // borderWidth (optional)
+            'f29f20', // borderColor (optional)
+            5, // borderRadius (optional)
+            1, // opacity (optional)
+            0, // rotation (optional)
+            'f29f20', // background (optional)
+            'png'// output (optional)
+        )
+
+        if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
+            // Here, we should get the original image size, an then resize it to fit in the box of 30x16 if the width is bigger than the height or less if the height is bigger than the width
+            const imageSize = await getImageSize(selectedDisplayLogoUrl.href)
+            const width = imageSize.width
+            const height = imageSize.height
+            const ratio = width / height
+            if (ratio > 1) {
+                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 160, 20, 30, 30 / ratio)
+            } else {
+                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 160, 20, 30 * ratio, 30)
+            }
+        }
+        doc.addImage(qrUrl, "PNG", 160, 240, 35, 35)
+    
+        doc.save(`bookmark-${props.event.$id}.pdf`);
     } 
+
     console.log('Download PDF')
 }
 
@@ -222,7 +290,8 @@ async function downloadPDF () {
             </div>
             <select v-model="selectedFormat" class="select select-bordered w-full max-w-xs">
                 <option selected value="bookmark">Marque page</option>
-                <option selected value="flyer">Flyer</option>
+                <option :disabled="!isPremium" value="flyer">Flyer {{ isPremium ? '' : ' - Premium ✨' }}</option>
+                <option :disabled="!isPremium" value="poster">Poster {{ isPremium ? '' : ' - Premium ✨' }}</option>
             </select>
         </label>
         <label class="form-control w-full max-w-xs">
