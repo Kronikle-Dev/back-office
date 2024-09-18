@@ -50,7 +50,7 @@ function closePrintModale () {
       </NuxtLink>
       <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
       <button onclick="printModale.showModal()" class="absolute top-20 left-4 btn btn-primary">{{ $t('event.card.print') }}</button>
-      <figure><img :src="props.event.imageUrl" class="rounded-t-2xl h-72 w-full bg-urfist-300" alt="." /></figure>
+      <figure><img :src="props.event.imageUrl" class="rounded-t-2xl min-h-[250px] w-full bg-urfist-300" alt="." /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>
         <div v-html="htmlDescription"></div>
