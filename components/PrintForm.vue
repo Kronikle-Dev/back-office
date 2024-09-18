@@ -220,7 +220,7 @@ async function downloadPDF () {
         doc.text(truncatedName, 40, 34, {maxWidth:115})
         doc.setFontSize(10)
         doc.setFont("helvetica", "normal")
-        doc.text(truncatedDescription, 40, 56, {maxWidth:140})
+        doc.text(truncatedDescription, 40, 62, {maxWidth:140})
         doc.setFillColor(255, 255, 255)
         doc.rect(40, 206, 140, 150, "F")
         doc.setFontSize(8)
