@@ -254,7 +254,7 @@ const originUrl = window.location.origin
       <span class="label-text">{{$t('display.form.template-label')}}</span>
     </label>
     <select v-model="state.template" class="select select-bordered w-full max-w-xs">
-      <option disabled selected>Who shot first?</option>
+      <option disabled selected>{{ $t('display.form.select-template') }}</option>
       <option v-for="template of templates" :value="template.code" :key="template.code">{{ template.name }}</option>
     </select>
     <label class="label mt-8">
@@ -295,7 +295,7 @@ const originUrl = window.location.origin
       <span class="label-text">{{$t('display.form.date-label')}}</span>
     </label>
     <select v-model="state.eventFilter" class="select select-bordered w-full max-w-xs">
-      <option disabled selected>Who shot first?</option>
+      <option disabled selected>{{ $t('display.form.select-date-filter') }}</option>
       <option v-for="filter of filters" :value="filter.code" :key="filter.code">{{ filter.name }}</option>
     </select>
     <h2>{{ $t('display.form.filter-title') }}</h2>

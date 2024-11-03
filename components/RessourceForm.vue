@@ -226,9 +226,11 @@ async function addResource() {
 
 <template>
   <div class="p-4">
+    <h3 class="font-bold mb-4">{{ $t('resource.form.title') }}</h3>
     <div class="card w-96 bg-white shadow-xl" v-if="state.name.length > 0 || resourceUrl.length > 0 || state.description.length > 0 || state.imageUrl.length > 0 || state.tags.length > 0 ">
       <figure v-if="state.imageUrl?.length > 0"><img :src="state.imageUrl" :alt="state.imageAlt" /></figure>
       <div class="card-body overflow-hidden">
+        <span class="italic font-light text-primary-400-kv3">{{ $t('resource.form.preview') }}</span>
         <h2 class="card-title"
           v-if="state.name.length > 0">
           {{state.name}}

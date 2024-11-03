@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases, Query, Teams } from 'appwrite'
+import { Databases, Query, Teams, Permission, Role } from 'appwrite'
 import { CalendarView, CalendarViewHeader } from "vue-simple-calendar"
 import "~~/node_modules/vue-simple-calendar/dist/style.css"
 import "~~/node_modules/vue-simple-calendar/dist/css/default.css"
@@ -22,6 +22,8 @@ const myTeamId = myTeams.teams[0].$id
 organization = myTeamId
 
 let showDate = ref(new Date())
+let showTutorial = ref(false)
+let isTestEventCreating = ref(false)
 
 definePageMeta({
   middleware: ["auth"],
@@ -40,6 +42,15 @@ if (events.value.length > 0) {
     Query.equal('eventId', events.value.map(ev => ev.$id as string))
   ]) as unknown as KDateApi[])
 }
+
+onMounted(async () => {
+  if(typeof Storage !== 'undefined') {
+    if (localStorage.getItem('tutorial') === 'true') {
+      showTutorial.value = true
+      localStorage.removeItem('tutorial')
+    }
+  }
+})
 
 function getEventForDate (date: KDateApi) : KEvent  | null {
   return events.value.find((e) => e.$id == date.eventId) || null
@@ -95,6 +106,64 @@ function navigateToEvent (simpleCalendarEvent: any) {
   navigateTo(simpleCalendarEvent.url)
 }
 
+async function createTestEvent () {
+  const newevent = {
+    name: 'Test de Kronikle',
+    description: 'Kronikle vous permet de gérer votre agenda, d\'enrichir vos événements avec des ressources documentaires de votre choix et de publier le tout en ligne et sur des affichages publics.',
+    creationDate: new Date().toISOString(),
+    updateDate: new Date().toISOString(),
+    status: 'published',
+    author: 'Kronikle',
+    originId: '',
+    imageId: '',
+    imageUrl: null,
+    price: null,
+    url: null,
+    tags: [],
+    publicTypes: [],
+    eventType: [],
+    organization: organization
+  }
+
+  const d = {
+    eventId: '',
+    status: 'valid',
+    startDateTime: new Date((new Date()).setMinutes(0)),
+    endDateTime: new Date((new Date((new Date()).setTime((new Date()).getTime() + 3600000))).setMinutes(0)),
+    placeName: 'Salle bleue',
+    placeDescription: 'Rez-de-chaussée, à droite',
+    maxAttendeeCapacity: 30,
+    mandatoryRegistration: false,
+    accessibility: 'Accessible aux personnes à mobilité réduite',
+    attendanceMode: 'offline'
+  }
+  let datesPromises = [] as Array<Promise<any>>
+
+  newevent.creationDate = new Date().toISOString()
+  newevent.updateDate = new Date().toISOString()
+
+  const databases = new Databases($appwrite().client)
+  isTestEventCreating.value = true
+  const inserted = await databases.createDocument('kronikle', 'event', 'unique()', newevent, [
+    Permission.delete(Role.team(newevent.organization)),
+    Permission.update(Role.team(newevent.organization)),
+    Permission.read(Role.any()),
+  ])
+
+  d.eventId = inserted.$id
+  datesPromises.push(databases.createDocument('kronikle', 'date', 'unique()', d, [
+    Permission.delete(Role.team(newevent.organization)),
+    Permission.update(Role.team(newevent.organization)),
+    Permission.read(Role.any()),
+  ]))
+
+  Promise.all(datesPromises).then(() => {
+    isTestEventCreating.value = false
+    localStorage.setItem('event-tutorial', 'true')
+    navigateTo(`/event/${inserted.$id}`)
+  })
+}
+
 </script>
 
 <template>
@@ -117,6 +186,23 @@ function navigateToEvent (simpleCalendarEvent: any) {
         </template>
       </CalendarView>
     </div>
+    <dialog id="my_modal_2" class="modal" :class="{'modal-open': showTutorial}">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">{{ $t('tutorial.welcome.title') }}</h3>
+        <p class="py-4">{{ $t('tutorial.welcome.text-1') }}</p>
+        <p class="py-4">{{ $t('tutorial.welcome.text-2') }}</p>
+        <p class="py-4">{{ $t('tutorial.welcome.text-3') }}</p>
+        <div class="flex flex-col space-y-2">
+          <button @click="showTutorial = false" class="btn btn-primary btn-outline">{{ $t('tutorial.welcome.close') }}</button>
+          <a href="mailto:contact@kronikle.eu" class="btn btn-primary btn-outline">{{ $t('tutorial.welcome.button-discuss') }}</a>
+          <nuxt-link to="/event/new" class="btn btn-primary">{{ $t('tutorial.welcome.button-create-event') }}</nuxt-link>
+          <button @click="createTestEvent" class="btn btn-primary">
+            <span v-if="isTestEventCreating" class="loading loading-spinner"></span>
+            {{ $t('tutorial.welcome.button-create-test-event') }}
+          </button>
+        </div>
+      </div>
+    </dialog>
     <!--
     <NuxtLink
         v-for="event of events"

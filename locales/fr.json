@@ -34,7 +34,8 @@
     "nom-placeholder": "Dupont",
     "consent": "En créant mon compte, j'accepte les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGU.pdf\" target=\"_blank\">conditions générales d'utilisation</a> ainsi que les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGV.pdf\" target=\"_blank\">conditions générales de vente</a>",
     "signup": "Créer un compte",
-    "login": "J'ai déjà un compte"
+    "login": "J'ai déjà un compte",
+    "error":"Une erreur est survenue, vous pouvez envoyer un email à alix@kronikle.eu"
   },
   "recovery": {
     "title": "Réinitialisation de mot de passe",
@@ -63,6 +64,27 @@
     "title": "Mon compte",
     "subtitle": "Vous pouvez modifier les informations de votre compte ici",
     "logout": "Se déconnecter"
+  },
+  "tutorial": {
+    "welcome": {
+      "title": "Bienvenue sur Kronikle",
+      "text-1": "Kronikle vous permet de gérer vos événements et de les afficher sur des écrans dédiés.",
+      "text-2": "Vous pouvez ajouter des événements manuellement ou en créer un de test (pas ne panique, vous pourrez le supprimer).",
+      "text-3": "Vous pouvez aussi importer des événements depuis votre outil d'agenda avec la version pro, discutons-en !",
+      "button-create-event": "Créer un événement manuellement",
+      "button-create-test-event": "Créer un événement test",
+      "button-discuss": "Discuter de la version pro",
+      "close": "Fermer"
+    },
+    "event": {
+      "title": "Votre premier événement",
+      "text-1": "Vous voici sur la page de votre premier événement, vous pouvez le modifier à votre guise.",
+      "text-2": "📑 Ajouter des ressources documentaires à votre événement : lien vers un site, ou un texte de votre crû",
+      "text-3": "✏️ Modifier ou supprimer cet événement à tout moment.",
+      "text-4": "📱 Vous pouvez aussi configurer un écran pour afficher vos événements",
+      "button-create-display": "Créer un affichage",
+      "close": "J'ai compris"
+    }
   },
   "event": {
     "index": {
@@ -165,6 +187,7 @@
   "resource": {
     "add": "Ajouter la ressource",
     "form": {
+      "title": "Ajouter une ressource",
       "name-label": "Nom",
       "name-placeholder": "Nom de la resource",
       "description-label": "Description",
@@ -174,7 +197,8 @@
       "file-placeholder": "Cliquer ou glisser-déposer un fichier ici (28mo max)",
       "url-placeholder": "https://example.fr",
       "tags": "Catégories",
-      "tags-placeholder": "Arts et Culture, Musique, etc..."
+      "tags-placeholder": "Arts et Culture, Musique, etc...",
+      "preview" : "Aperçu"
     }
   },
   "display": {
@@ -189,10 +213,12 @@
       "name-label": "Nom de l'affichage",
       "name-placeholder": "Entrez ici un nom qui vous permettra de distinguer cet affichage parmi les autres",
       "template-label": "Modèle d'affichage",
+      "select-template": "Sélectionnez un modèle d'affichage",
       "display-logo": "Logo de votre institution",
       "display-logo-placeholder": "Cliquer ou glisser-déposer un fichier ici (5mo max)",
       "premium-only": "Accessible avec les abonnements payant",
       "date-filter-title": "1. Date des événements à publier",
+      "select-date-filter": "Afficher les événements en fonction de leur date",
       "filter-title": "2. Filtrer les événements",
       "date-label": "Plage de dates de base",
       "additionnal-filter": "Parmis les événements faisant partie de la plage de date définie ci-dessus, ajouter les filtres suivants :",

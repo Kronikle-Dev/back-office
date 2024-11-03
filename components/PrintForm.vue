@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { Avatars, Query, Storage } from 'appwrite'
+import { Avatars, Query, Storage, Teams } from 'appwrite'
 import { jsPDF } from "jspdf"
 const {$appwrite} = useNuxtApp()
 //@ts-ignore
 import showdown from 'showdown'
 
 const converter = new showdown.Converter()
+
+let organization = ''
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+if (myTeams.teams.length === 0) {
+  organization = ''
+}
+const myTeamId = myTeams.teams[0].$id
+organization = myTeamId
+
 
 const avatars = new Avatars($appwrite().client)
 
@@ -31,7 +41,9 @@ const dates = (await $appwrite().getAllPages('kronikle', 'date', [
   Query.equal('eventId', props.event.$id)
 ])) as unknown as KDate[]
 
-const displays = (await $appwrite().getAllPages('kronikle', 'display')) as unknown as KDisplay[]
+const displays = (await $appwrite().getAllPages('kronikle', 'display', [
+  Query.equal('organization', organization)
+])) as unknown as KDisplay[]
 
 const orderedDates = computed(() => {
   return dates.sort((a: any, b: any) => {
