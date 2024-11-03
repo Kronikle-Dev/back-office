@@ -65,6 +65,10 @@ async function signup () {
         }
     );
     const respVer = await account.createVerification(`${config.public.Hostname}/verify`)
+    // if the browse supports it, store in localStorage a boolean to show the tutorial
+    if (typeof(Storage) !== 'undefined') {
+      localStorage.setItem('tutorial', 'true')
+    }
     state.loading = false
     await navigateTo('/')
   } catch (error) {
