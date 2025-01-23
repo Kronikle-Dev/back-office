@@ -109,7 +109,7 @@ if (display.eventFilter != 'none') {
 }
 
 // Si la eventIdList est null, c'est que c'est `all` qui est choisi et on a tous les événements, pas la pein d'en rajouter
-if (eventIdList != null) {
+if (eventIdList != null && eventIdList.size > 0) {
   const supplementaryEventIds = display.events.filter(e => !eventIdList.has(e))
 
   try {
