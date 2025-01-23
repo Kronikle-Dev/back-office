@@ -83,7 +83,7 @@ const queries = [
   */
 ]
 
-if (eventIdList) {
+if (eventIdList && eventIdList.size > 0) {
   queries.push(Query.equal('$id', new Array(...eventIdList)))
 }
 
