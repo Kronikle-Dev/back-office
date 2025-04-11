@@ -13,6 +13,8 @@ const props = defineProps<{
   editButton: boolean
 }>()
 
+const showArchiveModal = ref(false)
+
 if (!props.event.$id) {
   throw new Error('Missing event id');
 }
@@ -32,7 +34,10 @@ const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' } as DateTi
 const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOptions
 
 const deleteEvent = async () => {
-  await databases.deleteDocument('kronikle', 'event', props.event.$id as string)
+  //await databases.deleteDocument('kronikle', 'event', props.event.$id as string)
+  await databases.updateDocument('kronikle', 'event', props.event.$id as string, {
+    status: 'archived'
+  })
   navigateTo('/')
 }
 
@@ -48,7 +53,7 @@ function closePrintModale () {
       <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
-      <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="deleteEvent">{{ $t('event.card.delete') }}</div>
+      <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="showArchiveModal = true">{{ $t('event.card.delete') }}</div>
       <button onclick="printModale.showModal()" class="absolute top-20 left-4 btn btn-primary">{{ $t('event.card.print') }}</button>
       <figure><img :src="props.event.imageUrl" class="rounded-t-2xl min-h-[250px] w-full bg-urfist-300" alt="." /></figure>
       <div class="card-body">
@@ -73,6 +78,21 @@ function closePrintModale () {
     </div>
     <dialog id="printModale" class="modal">
       <PrintForm :event="event" @close="closePrintModale"></PrintForm>
+    </dialog>
+    <dialog class="modal" id="archiveEvent" :class="{ 'modal-open': showArchiveModal }" >
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Archiver l'événement</h3>
+        <p class="py-4">Voulez-vous vraiment archiver cet événement ?</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn" @click="showArchiveModal = false"> Annuler</button>
+          </form>
+          <button class="btn btn-error" @click="deleteEvent">Archiver</button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="showArchiveModal = false">close</button>
+      </form>
     </dialog>
   </div>
 </template>

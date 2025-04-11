@@ -67,23 +67,23 @@ onMounted(async () => {
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
           Query.lessThanEqual('startDateTime', lastDayOfMonth.toString())
-        ])).map((d: {eventId: string}) => d.eventId))
+        ])).map((d) => d.eventId))
         break
       case 'week':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
           Query.lessThanEqual('startDateTime', lastDayofWeek.toString())
-        ])).map((d: {eventId: string}) => d.eventId))
+        ])).map((d) => d.eventId))
         break
       case 'upcoming':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
-        ])).map((d: {eventId: string}) => d.eventId))
+        ])).map((d) => d.eventId))
         break
       case 'past':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.lessThan('startDateTime', beginningOfToday.toString())
-        ])).map((d: {eventId: string}) => d.eventId))
+        ])).map((d) => d.eventId))
         break
       case 'none':
         eventIdList = new Set()
@@ -97,7 +97,8 @@ onMounted(async () => {
     console.error('Failed to retrieve eventIdList : ', e)
   }
   const queries = [
-    Query.equal('organization', display.organization)
+    Query.equal('organization', display.organization),
+    Query.notEqual('status', 'archived'),
     /*
     ...tagQueries,
     ...publicQueries,
@@ -136,7 +137,8 @@ onMounted(async () => {
       try {
         events.value.push( ... (await $appwrite().getAllPages('kronikle', 'event', [
           Query.equal('$id', supplementaryEventIds),
-          Query.equal('organization', display.organization)
+          Query.equal('organization', display.organization),
+          Query.notEqual('status', 'archived')
         ])) as unknown[] as KEvent[])
       } catch (e) {
         console.error('Failed to retrieve supplementray events : ', e)

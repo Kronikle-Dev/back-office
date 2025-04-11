@@ -33,7 +33,8 @@ definePageMeta({
 const events = ref([] as KEvent[])
 
 events.value = (await $appwrite().getAllPages('kronikle', 'event', [
-  Query.equal('organization', organization)
+  Query.equal('organization', organization),
+  Query.notEqual('status', 'archived')
 ])) as unknown as KEvent[]
 
 let dates = [] as KDateApi[]
