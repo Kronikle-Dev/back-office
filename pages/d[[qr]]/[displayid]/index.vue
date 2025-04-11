@@ -75,7 +75,8 @@ const typeQueries = display.typeFilter.map(typeId => Query.search('eventType', t
 const events = ref([] as KEvent[])
 
 const queries = [
-  Query.equal('organization', display.organization)
+  Query.equal('organization', display.organization),
+  Query.notEqual('status', 'archived'),
   /*
   ...tagQueries,
   ...publicQueries,
@@ -115,7 +116,8 @@ if (eventIdList != null && eventIdList.size > 0) {
     try {
       events.value.push( ... (await $appwrite().getAllPages('kronikle', 'event', [
         Query.equal('$id', supplementaryEventIds),
-        Query.equal('organization', display.organization)
+        Query.equal('organization', display.organization),
+        Query.notEqual('status', 'archived')
       ])) as unknown[] as KEvent[])
     } catch (e) {
       console.error('Failed to retrieve supplementray events : ', e)
