@@ -41,6 +41,14 @@ const deleteEvent = async () => {
   navigateTo('/')
 }
 
+const restoreEvent = async () => {
+  await databases.updateDocument('kronikle', 'event', props.event.$id as string, {
+    status: 'published'
+    })
+   navigateTo('/')
+}
+
+
 function closePrintModale () {
   //@ts-ignore
   document.querySelector('#printModale').close()
@@ -53,7 +61,8 @@ function closePrintModale () {
       <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
-      <div class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="showArchiveModal = true">{{ $t('event.card.delete') }}</div>
+      <div v-show="props.event.status !== 'archived'" class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="showArchiveModal = true">{{ $t('event.card.delete') }}</div>
+      <div v-show="props.event.status === 'archived'" class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="restoreEvent">{{ $t('event.card.restore') }}</div>
       <button onclick="printModale.showModal()" class="absolute top-20 left-4 btn btn-primary">{{ $t('event.card.print') }}</button>
       <figure><img :src="props.event.imageUrl" class="rounded-t-2xl min-h-[250px] w-full bg-urfist-300" alt="." /></figure>
       <div class="card-body">
