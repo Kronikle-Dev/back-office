@@ -63,7 +63,8 @@
   "profile": {
     "title": "Mon compte",
     "subtitle": "Vous pouvez modifier les informations de votre compte ici",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "deleted-events": "Événements supprimés"
   },
   "tutorial": {
     "welcome": {
@@ -99,7 +100,8 @@
       "print-com-support": "Imprimer un support de communication pour votre événement",
       "select-date": "Choisir une date",
       "select-format": "Choisir un type d'impression",
-      "select-display": "Choisir un affichage"
+      "select-display": "Choisir un affichage",
+      "restore": "Restaurer l'événement"
     },
     "new": {
       "title": "Nouvel événement",

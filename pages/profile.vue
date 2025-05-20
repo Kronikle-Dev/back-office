@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Account, Teams } from 'appwrite'
+import { Account, Teams, Query } from 'appwrite'
 const {$appwrite} = useNuxtApp()
 const router = useRouter()
 
@@ -13,6 +13,7 @@ if (myTeams.teams.length === 0) {
 }
 const myTeamId = myTeams.teams[0].$id
 organization = myTeamId
+const deletedEvents = ref([] as KEvent[])
 
 definePageMeta({
   middleware: ["auth"],
@@ -25,12 +26,25 @@ function logout() {
   })
 }
 
+onMounted(async () => {
+  deletedEvents.value = (await $appwrite().getAllPages('kronikle', 'event', [
+    Query.equal('organization', organization),
+    Query.equal('status', 'archived')
+  ])) as unknown as KEvent[]
+})
+
 </script>
 
 <template>
   <div class="max-w-xl mx-auto prose">
     <h2>{{$t('profile.title')}}</h2>
     <p>{{$t('profile.subtitle')}}</p>
-    <a @click="logout">{{ $t('profile.logout') }}</a>
+    <h2>{{ $t('profile.deleted-events') }}</h2>
+    <div>
+      <div v-for="event in deletedEvents" :key="event.$id"> 
+        <NuxtLink :to="`/event/${event.$id}`">{{ event.name }}</NuxtLink>
+      </div>
+    </div>
+    <button class="btn btn-primary mt-10" @click="logout">{{ $t('profile.logout') }}</button>
   </div>
 </template>
