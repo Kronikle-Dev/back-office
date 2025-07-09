@@ -35,23 +35,27 @@ try {
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayOfMonth.toISO() as string),
         Query.lessThanEqual('startDateTime', lastDayOfMonth.toISO() as string),
-      ])).documents.map((d) => d.eventId))
+        Query.orderDesc('$createdAt')
+      ])).documents.map((d) => d.eventId).slice(0, 100))
       break
     case 'week':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
         Query.lessThanEqual('startDateTime', lastDayofWeek.toISO() as string),
-      ])).documents.map(d => d.eventId))
+        Query.orderDesc('$createdAt')
+      ])).documents.map(d => d.eventId).slice(0, 100))
       break
     case 'upcoming':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.greaterThanEqual('endDateTime', beginningOfToday.toISO() as string),
-      ])).documents.map(d => d.eventId))
+        Query.orderDesc('$createdAt')
+      ])).documents.map(d => d.eventId).slice(0, 100))
       break
     case 'past':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.lessThan('startDateTime', beginningOfToday.toISO() as string),
-      ])).documents.map(d => d.eventId))
+        Query.orderDesc('$createdAt')
+      ])).documents.map(d => d.eventId).slice(0, 100))
       break
     case 'none':
       eventIdList = new Set()

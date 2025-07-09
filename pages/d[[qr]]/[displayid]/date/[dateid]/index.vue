@@ -66,24 +66,28 @@ onMounted(async () => {
       case 'month':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', firstDayOfMonth.toString()),
-          Query.lessThanEqual('startDateTime', lastDayOfMonth.toString())
-        ])).map((d) => d.eventId))
+          Query.lessThanEqual('startDateTime', lastDayOfMonth.toString()),
+          Query.orderDesc('$createdAt')
+        ])).map((d) => d.eventId).slice(0, 100))
         break
       case 'week':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', firstDayofWeek.toString()),
-          Query.lessThanEqual('startDateTime', lastDayofWeek.toString())
-        ])).map((d) => d.eventId))
+          Query.lessThanEqual('startDateTime', lastDayofWeek.toString()),
+          Query.orderDesc('$createdAt')
+        ])).map((d) => d.eventId).slice(0, 100))
         break
       case 'upcoming':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.greaterThanEqual('startDateTime', beginningOfToday.toString()),
-        ])).map((d) => d.eventId))
+          Query.orderDesc('$createdAt')
+        ])).map((d) => d.eventId).slice(0, 100))
         break
       case 'past':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
-          Query.lessThan('startDateTime', beginningOfToday.toString())
-        ])).map((d) => d.eventId))
+          Query.lessThan('startDateTime', beginningOfToday.toString()),
+          Query.orderDesc('$createdAt')
+        ])).map((d) => d.eventId).slice(0, 100))
         break
       case 'none':
         eventIdList = new Set()
