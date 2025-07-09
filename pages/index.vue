@@ -34,15 +34,15 @@ const events = ref([] as KEvent[])
 
 events.value = (await $appwrite().getAllPages('kronikle', 'event', [
   Query.equal('organization', organization),
-  Query.notEqual('status', 'archived')
+  Query.notEqual('status', 'archived'),
+  Query.orderDesc('createdAt'),
 ])) as unknown as KEvent[]
 
 let dates = [] as KDateApi[]
 if (events.value.length > 0) {
   dates.push(... (await $appwrite().getAllPages('kronikle', 'date', [
-    Query.equal('eventId', events.value.map(ev => ev.$id as string)),
-    Query.orderDesc('startDateTime')
-  ])).slice(0, 99) as unknown as KDateApi[])
+    Query.equal('eventId', events.value.slice(0,100).map(ev => ev.$id as string))
+  ])) as unknown as KDateApi[])
 }
 
 onMounted(async () => {
