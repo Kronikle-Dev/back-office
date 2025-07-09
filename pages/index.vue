@@ -39,9 +39,10 @@ events.value = (await $appwrite().getAllPages('kronikle', 'event', [
 
 let dates = [] as KDateApi[]
 if (events.value.length > 0) {
-  dates.push(... await $appwrite().getAllPages('kronikle', 'date', [
-    Query.equal('eventId', events.value.map(ev => ev.$id as string))
-  ]) as unknown as KDateApi[])
+  dates.push(... (await $appwrite().getAllPages('kronikle', 'date', [
+    Query.equal('eventId', events.value.map(ev => ev.$id as string)),
+    Query.orderDesc('startDateTime')
+  ])).slice(0, 99) as unknown as KDateApi[])
 }
 
 onMounted(async () => {
