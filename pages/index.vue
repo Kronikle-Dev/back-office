@@ -35,7 +35,7 @@ const events = ref([] as KEvent[])
 events.value = (await $appwrite().getAllPages('kronikle', 'event', [
   Query.equal('organization', organization),
   Query.notEqual('status', 'archived'),
-  Query.orderDesc('createdAt'),
+  Query.orderDesc('$createdAt'),
 ])) as unknown as KEvent[]
 
 let dates = [] as KDateApi[]
