@@ -16,12 +16,12 @@ definePageMeta({
 
 const displayPromise = databases.getDocument('kronikle', 'display', displayid).catch(e => {
   console.error('Bad date id : ', e)
-  navigateTo(`/d${route.params.qr}/error`)
+  navigateTo(`/d${route.params.qr ?? ''}/error`)
 })
 
 const datePromise = databases.getDocument('kronikle', 'date', dateid).catch(e => {
   console.error('Bad date id : ', e)
-  navigateTo(`/d${route.params.qr}/error`)
+  navigateTo(`/d${route.params.qr ?? ''}/error`)
 })
 
 try {
@@ -29,17 +29,17 @@ try {
   date = (await datePromise) as unknown as KDateApi
 } catch (e) {
   console.error('Bad id : ', e)
-  navigateTo(`/d${route.params.qr}/error`)
+  navigateTo(`/d${route.params.qr ?? ''}/error`)
 }
 
 try {
   event = (await databases.getDocument('kronikle', 'event', date.eventId)) as unknown as KEvent
 } catch (e) {
   console.error('Bad event id : ', date.eventId, e)
-  navigateTo(`/d${route.params.qr}/error`)
+  navigateTo(`/d${route.params.qr ?? ''}/error`)
 }
 
-const qr = route.params.qr.length > 0
+const qr = !!route.params.qr && (route.params.qr as string).length > 0
 
 let eventIdList = null as unknown as Set<string>
 

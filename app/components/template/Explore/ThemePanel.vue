@@ -103,13 +103,12 @@ function relayDeselect (tag: string) {
   emit('deselect', tag)
 }
 
-const showPanel = ref(false)
-
-onBeforeMount(() => {
-  window.innerWidth < 640 ? showPanel.value = false : showPanel.value = true
-})
+// Default to open so SSR and client hydration agree (no hydration mismatch);
+// collapse on small screens after mount, once window is available.
+const showPanel = ref(true)
 
 onMounted(() => {
+  if (window.innerWidth < 640) showPanel.value = false
   qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
   qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
 })

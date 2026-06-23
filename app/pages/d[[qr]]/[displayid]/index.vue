@@ -15,10 +15,10 @@ try {
   display = (await databases.getDocument('kronikle', 'display', displayid)) as unknown as KDisplay
 } catch (e) {
   console.error('Bad display id : ', displayid, e)
-  navigateTo(`/d${route.params.qr}/error`)
+  navigateTo(`/d${route.params.qr ?? ''}/error`)
 }
 
-const qr = route.params.qr.length > 0
+const qr = !!route.params.qr && (route.params.qr as string).length > 0
 
 let eventIdList = null as unknown as Set<string>
 
