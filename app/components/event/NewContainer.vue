@@ -9,7 +9,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="pb-24">
     <ul class="steps pl-0">
       <li class="step step-primary">{{$t('event.new.step-one')}}</li>
       <li class="step" :class="{'step-primary': store.step >= 1}">{{$t('event.new.step-two')}}</li>
