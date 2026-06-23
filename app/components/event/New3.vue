@@ -30,7 +30,9 @@ const serverObj = {
       try {
         const resp = await storage.createFile('event-thumbnails', 'unique()', file)
         const thumbnailId = resp.$id
-        const thumbnailUrl = await storage.getFilePreview('event-thumbnails', thumbnailId)
+        // /view (fichier brut) et non /preview : l'endpoint de transformation Appwrite
+        // 1.9.0 renvoie une 500 sur event-thumbnails (cf. helper imgSrc).
+        const thumbnailUrl = storage.getFileView('event-thumbnails', thumbnailId)
         state.imageId = thumbnailId
         state.imageUrl = thumbnailUrl
         load(thumbnailUrl)

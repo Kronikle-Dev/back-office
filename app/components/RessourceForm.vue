@@ -101,7 +101,8 @@ const serverObj = {
       try {
         const resp = await storage.createFile('resource-file', 'unique()', file)
         const thumbnailId = resp.$id
-        const thumbnailUrl = await storage.getFilePreview('resource-file', thumbnailId)
+        // /view (fichier brut) et non /preview : voir helper imgSrc (preview 500 en 1.9.0).
+        const thumbnailUrl = storage.getFileView('resource-file', thumbnailId)
         //state.logoId = thumbnailId
         //state.logoUrl = thumbnailUrl.href
         resourceUrl.value = resourceUrl.value.length > 0 ? resourceUrl.value : (await storage.getFileView('resource-file', thumbnailId)).toString()

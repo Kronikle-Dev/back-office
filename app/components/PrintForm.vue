@@ -141,7 +141,8 @@ async function downloadPDF () {
         doc.save(`bookmark-${props.event.$id}.pdf`);
     } else if (selectedFormat.value === 'flyer') {
         const storage = new Storage($appwrite().client)
-        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, ImageGravity.Center, 0, 0, '000', 10)
+        // /view (fichier brut) et non /preview : preview 500 sur event-thumbnails (Appwrite 1.9.0).
+        const coverUrl = storage.getFileView('event-thumbnails', props.event.imageId as string)
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`
@@ -211,7 +212,8 @@ async function downloadPDF () {
         doc.save(`bookmark-${props.event.$id}.pdf`);
     } else if (selectedFormat.value === 'poster') {
         const storage = new Storage($appwrite().client)
-        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, ImageGravity.Center, 0, 0, '000', 10)
+        // /view (fichier brut) et non /preview : preview 500 sur event-thumbnails (Appwrite 1.9.0).
+        const coverUrl = storage.getFileView('event-thumbnails', props.event.imageId as string)
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`

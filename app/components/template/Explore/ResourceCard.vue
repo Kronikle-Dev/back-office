@@ -10,7 +10,7 @@ const props = defineProps<{
       <div class="rounded bg-white p-3" v-if="props.resource.html" v-html="props.resource.html"></div>
       <img
         v-if="props.resource.imageUrl && props.resource.imageUrl.length > 0"
-        :src="props.resource.imageUrl"
+        :src="imgSrc(props.resource.imageUrl)"
         class="max-h-[200px] rounded"/>
       <div class="flex flex-row space-x-2.5">
         <TemplateExploreResourceTypeIcon class="self-center" :resource="props.resource"></TemplateExploreResourceTypeIcon>
