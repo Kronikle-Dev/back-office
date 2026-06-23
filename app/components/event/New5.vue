@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
 import { numeric, integer, maxValue} from '@vuelidate/validators'
+import { useEventDraftStore } from '@/stores/eventDraft'
 
-const emit = defineEmits(['next', 'prev'])
-
-const props = defineProps(['event'])
+const store = useEventDraftStore()
 
 const state = reactive({
-  minAge: props.event.minAge,
-  maxAge: props.event.maxAge,
-  price: props.event.price,
+  minAge: store.event.minAge,
+  maxAge: store.event.maxAge,
+  price: store.event.price,
 })
 
 const rules = {
@@ -27,11 +26,12 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 async function next () {
-  emit('next', {
+  store.updateFragment({
     minAge: state.minAge ? parseInt(String(state.minAge), 10) : null,
     maxAge: state.maxAge ? parseInt(String(state.maxAge), 10) : null,
     price: state.price ? parseFloat(String(state.price)) : null,
   })
+  store.nextStep()
 }
 </script>
 
@@ -67,7 +67,7 @@ async function next () {
       </label>
     </div>
     <div class="flex flex-row w-full space-x-4">
-      <button class="btn btn-outline btn-primary mt-4 grow" @click="emit('prev')">{{$t('form.previous')}}</button>
+      <button class="btn btn-outline btn-primary mt-4 grow" @click="store.prevStep()">{{$t('form.previous')}}</button>
       <button class="btn btn-primary mt-4 grow" @click="next">{{$t('form.next')}}</button>
     </div>
   </div>

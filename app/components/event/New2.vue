@@ -2,26 +2,21 @@
 import {useVuelidate} from '@vuelidate/core'
 import { required, minLength, maxLength, integer } from '@vuelidate/validators'
 import 'v-calendar/dist/style.css';
-import {ID} from 'appwrite'
-import { DateTimeFormatOptions } from '@intlify/core-base'
 import { Databases } from 'appwrite'
+import { useEventDraftStore } from '@/stores/eventDraft'
 const {$appwrite} = useNuxtApp()
 const {t} = useI18n()
 
 const databases = new Databases($appwrite().client)
-
-
-const emit = defineEmits(['next', 'prev'])
-
-const props = defineProps(['event', 'dates'])
+const store = useEventDraftStore()
 
 const showSecondCalendar = ref(false)
- 
-const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' } as DateTimeFormatOptions
-const timeOptions = { hour: 'numeric', minute: 'numeric' } as DateTimeFormatOptions
+
+const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
+const timeOptions: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' }
 
 const state = reactive({
-  dates: props.dates as Array<KDate>,
+  dates: store.dates as Array<KDate>,
   placeName: '',
   placeDescription: '',
   startTime: new Date((new Date()).setMinutes(0)),
@@ -80,7 +75,8 @@ async function next () {
     console.log('form not valid')
     return
   }
-  emit('next', state.dates)
+  store.setDates(state.dates)
+  store.nextStep()
 }
 
 async function addDate() {
@@ -223,7 +219,7 @@ function cloneDate(date: any) {
           <div class="form-control">
             <label class="label cursor-pointer">
               <input type="checkbox" class="toggle" v-model="showSecondCalendar" />
-              <span class="label-text">{{$t('event.newtwo.span-mutliple-days')}}</span> 
+              <span class="label-text">{{$t('event.newtwo.span-mutliple-days')}}</span>
             </label>
           </div>
         </div>
@@ -267,20 +263,20 @@ function cloneDate(date: any) {
     </div>
     <div class="form-control">
       <label class="cursor-pointer label">
-        <span class="label-text">{{$t('event.newfive.mandatoryRegistration-label')}}</span> 
+        <span class="label-text">{{$t('event.newfive.mandatoryRegistration-label')}}</span>
         <input v-model="state.mandatoryRegistration" type="checkbox" class="toggle toggle-primary" />
       </label>
     </div>
     <div class="form-control">
       <label class="label cursor-pointer justify-start space-x-4">
         <input v-model="state.isOffline" type="checkbox" class="checkbox" />
-        <span class="label-text">{{$t('event.newfour.is-offline')}}</span> 
+        <span class="label-text">{{$t('event.newfour.is-offline')}}</span>
       </label>
     </div>
     <div class="form-control">
       <label class="label cursor-pointer justify-start space-x-4">
         <input v-model="state.isOnline" type="checkbox" class="checkbox" />
-        <span class="label-text">{{$t('event.newfour.is-online')}}</span> 
+        <span class="label-text">{{$t('event.newfour.is-online')}}</span>
       </label>
     </div>
     <label class="label">
@@ -294,11 +290,11 @@ function cloneDate(date: any) {
     </label>
     <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mb-10">
       <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
-        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span> 
+        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span>
         <span v-else class="indicator-item badge badge-primary cursor-pointer" @click="cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
-        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span> 
-        <span v-if="date.status == 'canceled'" class="indicator-item indicator-start indicator-bottom badge badge-primary cursor-pointer" @click="deleteDateFromAppwrite(date.$id)">{{$t('event.newtwo.definitive-delete')}}</span> 
-        <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span> 
+        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span>
+        <span v-if="date.status == 'canceled'" class="indicator-item indicator-start indicator-bottom badge badge-primary cursor-pointer" @click="deleteDateFromAppwrite(date.$id)">{{$t('event.newtwo.definitive-delete')}}</span>
+        <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span>
         <div class="card w-64 bg-white shadow not-prose" :class="{'card-bordered border-4 border-error': date.status == 'canceled'}">
           <span v-if="date.status == 'canceled'" class="absolute t-0 l-0 text-error -rotate-45 -translate-x-8">CANCELLED</span>
           <div class="card-body">
@@ -309,7 +305,7 @@ function cloneDate(date: any) {
       </div>
     </div>
     <div class="flex flex-row w-full space-x-4 mt-10 mb-10">
-      <button class="btn btn-outline btn-primary mt-4 grow" @click="emit('prev')">{{$t('form.previous')}}</button>
+      <button class="btn btn-outline btn-primary mt-4 grow" @click="store.prevStep()">{{$t('form.previous')}}</button>
       <button class="btn btn-primary mt-4 grow" @click="next">{{$t('form.next')}}</button>
     </div>
   </div>
