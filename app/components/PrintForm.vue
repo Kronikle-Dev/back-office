@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Avatars, Query, Storage, Teams } from 'appwrite'
+import { Avatars, Query, Storage, Teams, ImageGravity, ImageFormat } from 'appwrite'
 import { jsPDF } from "jspdf"
 const {$appwrite} = useNuxtApp()
 //@ts-ignore
@@ -141,7 +141,7 @@ async function downloadPDF () {
         doc.save(`bookmark-${props.event.$id}.pdf`);
     } else if (selectedFormat.value === 'flyer') {
         const storage = new Storage($appwrite().client)
-        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, 'center', 0, 0, '000', 10)
+        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, ImageGravity.Center, 0, 0, '000', 10)
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`
@@ -174,8 +174,8 @@ async function downloadPDF () {
             doc.setFontSize(24)
             doc.setFont("helvetica", "bold")
             doc.text(dateString, 20+135*i, 28, {angle: 270, maxWidth:123})
-            if (coverUrl?.href) {
-                doc.addImage(coverUrl.href, "JPEG", 20 + 135 * i, 135, 55, 55)
+            if (coverUrl) {
+                doc.addImage(coverUrl, "JPEG", 20 + 135 * i, 135, 55, 55)
             }
             const selectedDisplayLogoId = (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoId;
             const selectedDisplayLogoUrl = await storage.getFilePreview(
@@ -183,7 +183,7 @@ async function downloadPDF () {
                 selectedDisplayLogoId,
                 0, // width (optional)
                 0, // height (optional)
-                'center', // gravity (optional)
+                ImageGravity.Center, // gravity (optional)
                 100, // quality (optional)
                 5, // borderWidth (optional)
                 'f29f20', // borderColor (optional)
@@ -191,19 +191,19 @@ async function downloadPDF () {
                 1, // opacity (optional)
                 0, // rotation (optional)
                 'f29f20', // background (optional)
-                'png'// output (optional)
+                ImageFormat.Png// output (optional)
             )
 
-            if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
+            if (selectedDisplayLogoUrl) {
                 // Here, we should get the original image size, an then resize it to fit in the box of 30x16 if the width is bigger than the height or less if the height is bigger than the width
-                const imageSize = await getImageSize(selectedDisplayLogoUrl.href)
+                const imageSize = await getImageSize(selectedDisplayLogoUrl)
                 const width = imageSize.width
                 const height = imageSize.height
                 const ratio = width / height
                 if (ratio > 1) {
-                    doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30, 30 / ratio)
+                    doc.addImage(selectedDisplayLogoUrl, "PNG", 110 + 135 * i, 20, 30, 30 / ratio)
                 } else {
-                    doc.addImage(selectedDisplayLogoUrl.href, "PNG", 110 + 135 * i, 20, 30 * ratio, 30)
+                    doc.addImage(selectedDisplayLogoUrl, "PNG", 110 + 135 * i, 20, 30 * ratio, 30)
                 }
             }
             doc.addImage(qrUrl, "PNG", 110+135*i, 155, 35, 35)
@@ -211,7 +211,7 @@ async function downloadPDF () {
         doc.save(`bookmark-${props.event.$id}.pdf`);
     } else if (selectedFormat.value === 'poster') {
         const storage = new Storage($appwrite().client)
-        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, 'center', 0, 0, '000', 10)
+        const coverUrl = await storage.getFilePreview('event-thumbnails', props.event.imageId as string, 200, 200, ImageGravity.Center, 0, 0, '000', 10)
         const qrUrl = avatars.getQR(`https://app.kronikle.eu/dq/${selectedDisplay.value}/date/${selectedDate.value}`).toString()
         const startDate = new Date(dates.find((d) => d.$id === selectedDate.value)?.startDateTime as unknown as string)
         const dateString = `${startDate.toLocaleDateString('fr', {month: 'short', year: 'numeric', day: '2-digit'})} ${startDate.toLocaleTimeString('fr', {hour: '2-digit', minute: '2-digit'})}`
@@ -241,8 +241,8 @@ async function downloadPDF () {
         doc.setFontSize(24)
         doc.setFont("helvetica", "bold")
         doc.text(dateString, 20, 28, {angle: 270, maxWidth:123})
-        if (coverUrl?.href) {
-            doc.addImage(coverUrl.href, "JPEG", 20, 210, 65, 65)
+        if (coverUrl) {
+            doc.addImage(coverUrl, "JPEG", 20, 210, 65, 65)
         }
         const selectedDisplayLogoId = (displays.find(dis => dis.$id === selectedDisplay.value) as KDisplay)?.logoId;
         const selectedDisplayLogoUrl = await storage.getFilePreview(
@@ -250,7 +250,7 @@ async function downloadPDF () {
             selectedDisplayLogoId,
             0, // width (optional)
             0, // height (optional)
-            'center', // gravity (optional)
+            ImageGravity.Center, // gravity (optional)
             100, // quality (optional)
             5, // borderWidth (optional)
             'f29f20', // borderColor (optional)
@@ -258,19 +258,19 @@ async function downloadPDF () {
             1, // opacity (optional)
             0, // rotation (optional)
             'f29f20', // background (optional)
-            'png'// output (optional)
+            ImageFormat.Png// output (optional)
         )
 
-        if (selectedDisplayLogoUrl && selectedDisplayLogoUrl.href) {
+        if (selectedDisplayLogoUrl) {
             // Here, we should get the original image size, an then resize it to fit in the box of 30x16 if the width is bigger than the height or less if the height is bigger than the width
-            const imageSize = await getImageSize(selectedDisplayLogoUrl.href)
+            const imageSize = await getImageSize(selectedDisplayLogoUrl)
             const width = imageSize.width
             const height = imageSize.height
             const ratio = width / height
             if (ratio > 1) {
-                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 160, 20, 30, 30 / ratio)
+                doc.addImage(selectedDisplayLogoUrl, "PNG", 160, 20, 30, 30 / ratio)
             } else {
-                doc.addImage(selectedDisplayLogoUrl.href, "PNG", 160, 20, 30 * ratio, 30)
+                doc.addImage(selectedDisplayLogoUrl, "PNG", 160, 20, 30 * ratio, 30)
             }
         }
         doc.addImage(qrUrl, "PNG", 160, 240, 35, 35)

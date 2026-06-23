@@ -32,7 +32,7 @@ const serverObj = {
         const thumbnailId = resp.$id
         const thumbnailUrl = await storage.getFilePreview('event-thumbnails', thumbnailId)
         state.imageId = thumbnailId
-        state.imageUrl = thumbnailUrl.href
+        state.imageUrl = thumbnailUrl
         load(thumbnailUrl)
       } catch (e) {
         console.error(e)

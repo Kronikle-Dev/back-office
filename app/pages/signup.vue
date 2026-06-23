@@ -56,7 +56,7 @@ async function signup () {
   const teams = new Teams($appwrite().client)
   try {
     const respCreation = await account.create('unique()', state.email, state.password, state.name)
-    const resp = await account.createEmailSession(state.email, state.password)
+    const resp = await account.createEmailPasswordSession(state.email, state.password)
     const respTeam = await teams.create('unique()', state.name)
     const result = await account.updatePrefs(
         {

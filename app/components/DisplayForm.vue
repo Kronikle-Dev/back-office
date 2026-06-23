@@ -135,7 +135,7 @@ const serverObj = {
         const thumbnailId = resp.$id
         const thumbnailUrl = await storage.getFilePreview('display-logo', thumbnailId)
         state.logoId = thumbnailId
-        state.logoUrl = thumbnailUrl.href
+        state.logoUrl = thumbnailUrl
         load(thumbnailUrl)
       } catch (e) {
         console.error(e)

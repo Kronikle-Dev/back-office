@@ -36,7 +36,7 @@ async function login () {
   state.loading = true
   const account = $appwrite().account
   try {
-    const resp = await account.createEmailSession(state.email, state.password)
+    const resp = await account.createEmailPasswordSession(state.email, state.password)
     state.loading = false
     await navigateTo('/')
   } catch (error) {

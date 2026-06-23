@@ -39,7 +39,7 @@ async function recovery () {
   const account = $appwrite().account
   const teams = new Teams($appwrite().client)
   try {
-    const respCreation = await account.updateRecovery(userId, secret, state.password, state.password)
+    const respCreation = await account.updateRecovery(userId, secret, state.password)
     state.loading = false
     await navigateTo('/login')
   } catch (error) {

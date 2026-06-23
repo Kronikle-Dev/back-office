@@ -106,7 +106,7 @@ const serverObj = {
         //state.logoUrl = thumbnailUrl.href
         resourceUrl.value = resourceUrl.value.length > 0 ? resourceUrl.value : (await storage.getFileView('resource-file', thumbnailId)).toString()
         state.fileId = thumbnailId
-        state.imageUrl = thumbnailUrl.href
+        state.imageUrl = thumbnailUrl
         state.isLoading = false
         load(thumbnailUrl)
       } catch (e) {
