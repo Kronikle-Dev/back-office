@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Databases, Query } from 'appwrite'
+import { Databases, Query, Teams } from 'appwrite'
 import { useEventDraftStore } from '@/stores/eventDraft'
 
 definePageMeta({
@@ -14,8 +14,11 @@ const { $appwrite } = useNuxtApp()
 const eventid = route.params.eventid as string
 const databases = new Databases($appwrite().client)
 
-const prefs = await $appwrite().account.getPrefs()
-const organization = prefs.organization
+// Events store the team id in `organization`, so validate against the user's
+// team (like the detail/profile pages) — prefs.organization is never set.
+const teams = new Teams($appwrite().client)
+const myTeams = await teams.list()
+const organization = myTeams.teams[0]?.$id
 
 let event: KEvent
 try {
