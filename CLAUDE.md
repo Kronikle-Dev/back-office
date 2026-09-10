@@ -78,7 +78,7 @@ Le segment optionnel `d[[qr]]` permet la variante `/dqr/...` destinée aux QR co
 
 ### Style
 
-Tailwind + DaisyUI (thèmes `autumn`, `light`, `urfist`) avec une palette personnalisée dans `tailwind.config.js` (`urfist-*`, `primary-*-kv3`). Le plugin `@tailwindcss/typography` sert au rendu Markdown (`showdown`) des descriptions.
+Tailwind + DaisyUI (thèmes `autumn`, `light`, `urfist`) avec une palette personnalisée dans `tailwind.config.js` (`urfist-*`, `primary-*-kv3`). Le plugin `@tailwindcss/typography` sert au rendu Markdown des descriptions (`renderMarkdown()` dans `app/utils/markdown.ts`, basé sur `markdown-it` avec `html: false`).
 
 ## Git
 

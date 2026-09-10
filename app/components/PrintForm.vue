@@ -2,11 +2,6 @@
 import { Avatars, Query, Storage, Teams, ImageGravity, ImageFormat } from 'appwrite'
 import { jsPDF } from "jspdf"
 const {$appwrite} = useNuxtApp()
-//@ts-ignore
-import showdown from 'showdown'
-
-const converter = new showdown.Converter()
-
 let organization = ''
 const teams = new Teams($appwrite().client)
 const myTeams = await teams.list()
@@ -150,7 +145,7 @@ async function downloadPDF () {
         //console.log(truncatedDescription)
         const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
 
-        //const htmlDescription = converter.makeHtml(props.event.description)
+        //const htmlDescription = renderMarkdown(props.event.description)
         var doc = new jsPDF({
             orientation: "landscape",
         })
@@ -221,7 +216,7 @@ async function downloadPDF () {
         //console.log(truncatedDescription)
         const truncatedName = props.event.name.length > 92 ? props.event.name.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 92) + '...' : props.event.name.replace(/(\r\n|\n|\r)/gm, "")
 
-        //const htmlDescription = converter.makeHtml(props.event.description)
+        //const htmlDescription = renderMarkdown(props.event.description)
         var doc = new jsPDF({
             orientation: "portrait",
         })

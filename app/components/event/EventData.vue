@@ -2,10 +2,7 @@
 import { Databases, Query } from 'appwrite'
 
 const {$appwrite} = useNuxtApp()
-//@ts-ignore
-import showdown from 'showdown'
 
-const converter = new showdown.Converter()
 const databases = new Databases($appwrite().client)
 
 const props = defineProps<{
@@ -19,7 +16,7 @@ if (!props.event.$id) {
   throw new Error('Missing event id');
 }
 
-const htmlDescription = converter.makeHtml(props.event.description)
+const htmlDescription = renderMarkdown(props.event.description)
 
 const dates = (await $appwrite().getAllPages('kronikle', 'date', [
   Query.equal('eventId', props.event.$id)

@@ -4,10 +4,6 @@ import {DateTime} from 'luxon'
 const {$appwrite} = useNuxtApp()
 const databases = new Databases($appwrite().client)
 const avatars = new Avatars($appwrite().client)
-//@ts-ignore
-import showdown from 'showdown'
-
-const converter = new showdown.Converter()
 
 enum DisplayType {
   DAY = 1,
@@ -211,7 +207,7 @@ const futureEvents = computed(() => {
   })
 })
 
-const htmlDescription = converter.makeHtml(props.event.description)
+const htmlDescription = renderMarkdown(props.event.description)
 
 onMounted(() => {
 
