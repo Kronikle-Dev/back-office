@@ -16,6 +16,8 @@ const props = defineProps<{
   events: Array<KEvent>,
   dates: Array<KDateApiAug>,
   display: KDisplay,
+  // `drawerOpen` : tiroir mobile (< lg) ouvert. Sur desktop le panneau est toujours visible via CSS.
+  drawerOpen?: boolean,
 }>()
 
 const emit = defineEmits(['select', 'deselect', 'hideSidePanel'])
@@ -126,7 +128,10 @@ watch(tagsIds, async (newVal, oldVal) => {
 })
 
 watch(state, (newVal, oldVal) => {
-  if (newVal.openPanel) {
+  // Sur desktop (lg+), la colonne de dates prend la hauteur du panneau de filtres
+  // pour défiler en interne. En mode tiroir (empilé), on laisse le flux naturel.
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+  if (newVal.openPanel && isDesktop) {
     setTimeout(() => {
     const settingsHeight = document.querySelector('.settings-panel')?.clientHeight // Il n'existe pas encore ici !!!
     document.querySelector('.dates-panel')?.setAttribute("style",`height:${settingsHeight}px`)
@@ -199,7 +204,13 @@ const filteredDates = computed(() => {
 })
 
 onMounted(() => {
-  document.getElementById(`date-card-${props.currentDate.$id}`)?.scrollIntoView()
+  // Défilement ciblé de la colonne de dates (pas de `scrollIntoView`, qui ferait
+  // aussi défiler les ancêtres en `overflow-hidden`).
+  const card = document.getElementById(`date-card-${props.currentDate.$id}`)
+  const column = card?.closest<HTMLElement>('.dates-panel')
+  if (card && column) {
+    column.scrollTop = card.getBoundingClientRect().top - column.getBoundingClientRect().top + column.scrollTop
+  }
 })
 
 /** DATEPICKER CUSTOM DROPDOWN */
@@ -241,22 +252,23 @@ watch(el, (el, _, onCleanup) => {
 </script>
 
 <template>
-  <div class="max-w-xs flex flex-col space-y-5 items-center pb-8 z-30">
-    <div class="bg-primary-400-kv3 rounded-r-lg flex flex-row self-start relative w-fit"
+  <!-- Tiroir (< lg) / colonne latérale (lg+) -->
+  <div class="shrink-0 lg:static lg:z-auto lg:block lg:h-full lg:min-h-0 lg:pb-8" :class="drawerOpen ? 'fixed inset-0 z-40 flex' : 'hidden'">
+    <div class="absolute inset-0 bg-black/40 lg:hidden" @click="$emit('hideSidePanel')"></div>
+    <div class="relative z-10 bg-primary-400-kv3 rounded-r-lg flex flex-col lg:flex-row h-full w-[min(100vw-2rem,32rem)] overflow-y-auto nobar lg:mt-6 lg:h-auto lg:w-fit lg:overflow-visible"
       :class="{
-        'md:max-h-[65vh]': !state.openPanel,
-        'max-h-[85svh]': !state.openPanel,
-        'h-fit': state.openPanel
+        'lg:max-h-[65vh]': !state.openPanel,
+        'lg:h-fit': state.openPanel
         }">
-      <div  class="absolute right-0 p-4 bg-primary-300-kv3 z-40 md:rounded-bl-lg rounded-tr-lg cursor-pointer"
+      <div  class="absolute right-0 top-0 p-4 bg-primary-300-kv3 z-40 lg:rounded-bl-lg rounded-tr-lg cursor-pointer"
             @click="state.openPanel = !state.openPanel"><span>🔍</span>
       </div>
-      <div  class="absolute md:hidden right-0 top-[56px] p-4 bg-primary-300-kv3 z-40 rounded-bl-lg cursor-pointer"
+      <div  class="absolute lg:hidden right-0 top-[56px] p-4 bg-primary-300-kv3 z-40 rounded-bl-lg cursor-pointer"
             @click="$emit('hideSidePanel')"><span>❌</span>
       </div>
       <div
         v-if="state.openPanel"
-        class="bg-primary-300-kv3 py-8 px-2 md:px-16 transition-all w-[80vw] md:w-[465px] h-fit settings-panel">
+        class="bg-primary-300-kv3 py-6 md:py-8 px-4 md:px-8 xl:px-16 transition-all w-full lg:w-[465px] h-fit settings-panel">
         <h1 class="text-primary-900-kv3 font-extrabold text-2xl">{{ $t('displays.kronikle-v3.find-an-event') }}</h1>
         <h2 class="text-primary-900-kv3 font-extrabold text-xl">{{ $t('displays.kronikle-v3.date') }}</h2>
         <div class="divider before:bg-white after:bg-white before:h-1 after:h-1 mt-0"></div>
@@ -300,7 +312,7 @@ watch(el, (el, _, onCleanup) => {
               <v-date-picker
                 v-model="state.range"
                 color="blue"
-                class="w-64"
+                class="w-64 max-w-full"
                 is-range
               />
             </ClientOnly>
@@ -351,24 +363,28 @@ watch(el, (el, _, onCleanup) => {
           </VueMultiselect>
         </ClientOnly>
       </div>
-      <div class="py-8 px-2 md:px-16 max-h-full overflow-y-scroll nobar dates-panel">
-        <div v-if="!state.openPanel" class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
-        <div class="flex grow transition-all w-[14rem]"
+      <div class="py-6 md:py-8 px-4 md:px-8 xl:px-16 w-full lg:w-auto lg:max-h-full lg:overflow-y-auto nobar dates-panel">
+        <div v-if="!state.openPanel" class="text-primary-900-kv3 font-extrabold text-xl md:text-2xl mb-5 pr-12">{{ $t('displays.kronikle-v3.find-an-event') }}</div>
+        <!-- < lg : grille de 2 colonnes fluides ; lg+ : colonne de 14 rem, ou 28 rem en flex-wrap (xl+) quand les filtres sont ouverts -->
+        <div class="grid grid-cols-2 gap-2.5 transition-all lg:flex lg:grow lg:w-[14rem]"
           :class="{
-            'flex-col': !state.openPanel,
-            'space-y-2.5': !state.openPanel,
-            'flex-row': state.openPanel,
-            'flex-wrap': state.openPanel,
-            'gap-2.5': state.openPanel,
-            'md:w-[28rem]': state.openPanel
+            'lg:flex-col': !state.openPanel,
+            'lg:space-y-2.5': !state.openPanel,
+            'lg:flex-row': state.openPanel,
+            'lg:flex-wrap': state.openPanel,
+            'xl:w-[28rem]': state.openPanel
             }">
           <nuxt-link
               :to="`/d/${display.$id}/date/${date.$id}`"
               :id="`date-card-${date.$id}`"
+              class="min-w-0 lg:w-fit"
               v-for="date of filteredDates" >
+            <!-- `fluid` pour remplir la grille mobile ; à partir de lg on force la largeur fixe de la colonne -->
             <TemplateExploreEventCard
               :event="date.event"
-              :date="date">
+              :date="date"
+              class="lg:!w-52 lg:!h-fit"
+              fluid>
             </TemplateExploreEventCard>
           </nuxt-link>
         </div>

@@ -95,20 +95,22 @@ watch(tagsIds, async (newVal, oldVal) => {
   }
 })
 
+// `open` ne concerne que le tiroir mobile (< lg) : sur desktop le panneau est
+// toujours visible via CSS (`lg:block`), donc pas de lecture de `window` ni de
+// mismatch d'hydratation. On referme le tiroir après un choix de thème.
+const open = ref(false)
+
 function relaySelect (tag: string) {
   emit('select', tag)
+  open.value = false
 }
 
 function relayDeselect (tag: string) {
   emit('deselect', tag)
+  open.value = false
 }
 
-// Default to open so SSR and client hydration agree (no hydration mismatch);
-// collapse on small screens after mount, once window is available.
-const showPanel = ref(true)
-
 onMounted(() => {
-  if (window.innerWidth < 640) showPanel.value = false
   qrUrlTarget.value = `${window.location.hostname}/dq/${props.display.$id}`
   qrUrl.value = avatars.getQR(`${window.location.origin}/dq/${props.display.$id}`).toString()
 })
@@ -116,47 +118,62 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rounded-r-lg max-h-screen max-w-md">
-    <div v-if="!showPanel" @click="showPanel = true" class="btn btn-primary btn-circle cursor-pointer bg-primary-400-kv3 fixed bottom-10 left-4 p-4  rounded-full">
+  <div class="shrink-0 lg:h-full lg:min-h-0">
+    <!-- Bouton flottant d'ouverture, mobile/tablette uniquement -->
+    <button
+      v-if="!open"
+      type="button"
+      @click="open = true"
+      :aria-label="$t('displays.kronikle-v3.our-themes')"
+      class="lg:hidden fixed bottom-6 left-4 z-30 btn btn-primary btn-circle bg-primary-400-kv3 border-none text-xl shadow-lg">
       #
-    </div>
-    <div v-if="showPanel" @click="showPanel = false" class="sm:hidden cursor-pointer btn btn-primary bg-primary-400-kv3 absolute bottom-10 left-6 p-3 text-center rounded-full btn-circle">X</div>
-    <div v-if="showPanel" class="bg-primary-400-kv3 py-8 px-16 rounded-r-lg sm:rounded-br-none">
-      <div class="text-primary-900-kv3 font-extrabold text-2xl mb-5">{{ $t('displays.kronikle-v3.our-themes') }}</div>
-      <div class="flex flex-col space-y-2.5">
-        <TemplateExploreThemeTagButton
-          v-for="tag of tags"
-          :key="tag.$id"
-          @deselect="relayDeselect"
-          @select="relaySelect"
-          :tag-name="tag.name"
-          :tag-id="tag.$id"
-          :add-icon="true">
-        </TemplateExploreThemeTagButton>
-      </div>
-      <div class="text-primary-700-kv3 font-bold text-xl mt-6">{{ $t('displays.kronikle-v3.search-themes') }}</div>
-      <ClientOnly>
-        <VueMultiselect
-          class="mt-4"
-          v-model="selectedTags"
-          @select="relaySelect($event.$id)"
-          @remove="relayDeselect($event.$id)"
-          :multiple="true"
-          :close-on-select="true"
-          :placeholder="$t('displays.kronikle-v3.tags-placeholder')"
-          :selectLabel="$t('displays.kronikle-v3.select-label')"
-          :selectedLabel="$t('displays.kronikle-v3.selected-label')"
-          :deselectLabel="$t('displays.kronikle-v3.deselect-label')"
-          label="name"
-          track-by="$id"
-          :options="allTags">
-        </VueMultiselect>
-      </ClientOnly>
-    </div>
-    <div v-if="showPanel" class="hidden sm:block bg-primary-600-kv3 py-8 px-16 rounded-br-lg">
-      <div class="font-semibold text-lg text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-our-program-qr') }}</div>
-      <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
-      <div class="underline text-primary-200-kv3 font-light text-lg mt-3">{{ qrUrlTarget }}</div>
+    </button>
+    <!-- Tiroir (< lg) / colonne latérale (lg+) -->
+    <div class="lg:static lg:z-auto lg:block lg:h-full" :class="open ? 'fixed inset-0 z-40 flex' : 'hidden'">
+      <div class="absolute inset-0 bg-black/40 lg:hidden" @click="open = false"></div>
+      <aside class="relative z-10 h-full w-[min(100vw-3rem,28rem)] overflow-y-auto nobar bg-primary-400-kv3 lg:mt-6 lg:h-auto lg:max-h-full lg:w-auto lg:max-w-md lg:bg-transparent rounded-r-lg">
+        <div class="bg-primary-400-kv3 py-6 md:py-8 px-6 md:px-10 xl:px-16 rounded-r-lg lg:rounded-br-none">
+          <div class="flex flex-row items-start justify-between gap-4 mb-5">
+            <div class="text-primary-900-kv3 font-extrabold text-xl md:text-2xl">{{ $t('displays.kronikle-v3.our-themes') }}</div>
+            <button type="button" @click="open = false" aria-label="Fermer" class="lg:hidden btn btn-sm btn-circle bg-primary-100-kv3 border-none text-primary-900-kv3 shrink-0">✕</button>
+          </div>
+          <div class="flex flex-col space-y-2.5">
+            <TemplateExploreThemeTagButton
+              v-for="tag of tags"
+              :key="tag.$id"
+              @deselect="relayDeselect"
+              @select="relaySelect"
+              :tag-name="tag.name"
+              :tag-id="tag.$id"
+              :add-icon="true">
+            </TemplateExploreThemeTagButton>
+          </div>
+          <div class="text-primary-700-kv3 font-bold text-lg md:text-xl mt-6">{{ $t('displays.kronikle-v3.search-themes') }}</div>
+          <ClientOnly>
+            <VueMultiselect
+              class="mt-4"
+              v-model="selectedTags"
+              @select="relaySelect($event.$id)"
+              @remove="relayDeselect($event.$id)"
+              :multiple="true"
+              :close-on-select="true"
+              :placeholder="$t('displays.kronikle-v3.tags-placeholder')"
+              :selectLabel="$t('displays.kronikle-v3.select-label')"
+              :selectedLabel="$t('displays.kronikle-v3.selected-label')"
+              :deselectLabel="$t('displays.kronikle-v3.deselect-label')"
+              label="name"
+              track-by="$id"
+              :options="allTags">
+            </VueMultiselect>
+          </ClientOnly>
+        </div>
+        <!-- QR code : inutile sur l'appareil qui le flasherait -->
+        <div class="hidden lg:block bg-primary-600-kv3 py-8 px-10 xl:px-16 rounded-br-lg">
+          <div class="font-semibold text-lg text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-our-program-qr') }}</div>
+          <img class="w-36 h-36 m-auto border-4" :src="qrUrl" alt="QR code" />
+          <div class="underline text-primary-200-kv3 font-light text-lg mt-3 break-all">{{ qrUrlTarget }}</div>
+        </div>
+      </aside>
     </div>
   </div>
 </template>
@@ -172,13 +189,13 @@ onMounted(() => {
 }
 
 .multiselect__tag {
-  padding: 9px 24px 9px 20px;
+  padding: 6px 22px 6px 16px;
   border-radius: 20px;
   background-color: #39445A;
   color: white;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 22px;
+  line-height: 1.375rem;
 }
 
 .multiselect__tag-icon {

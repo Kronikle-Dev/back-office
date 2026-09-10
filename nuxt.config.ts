@@ -18,6 +18,11 @@ export default defineNuxtConfig({
     '/dqr/**': {
       ssr: true,
     },
+    // `/dq/**` est le préfixe encodé dans les QR codes (ThemePanel, ExploreEvent,
+    // PrintForm) : il doit bénéficier du même rendu serveur que `/d/**`.
+    '/dq/**': {
+      ssr: true,
+    },
   },
   app: {
     head: {

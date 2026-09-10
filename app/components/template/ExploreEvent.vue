@@ -249,15 +249,15 @@ const hideSidePanel = ref(true)
 </script>
 
 <template>
-  <div class="bg-urfist-800 h-screen flex flex-col">
-    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 z-50 rounded bg-neutral-100 drop-shadow-lg">
-      <img src="/loader.gif" class="w-10 h-10"/>
+  <div class="bg-urfist-800 h-screen supports-[height:100dvh]:h-dvh flex flex-col">
+    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded p-2 bg-white drop-shadow-lg">
+      <img src="/loader.gif" class="w-10 h-10" alt=""/>
     </div>
     <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="true"></TemplateExploreHeader>
-    <div class="grow overflow-y-scroll nobar flex flex-row p-4 md:p-0 md:space-x-32 relative">
+    <!-- Sous `lg`, le panneau de recherche est un tiroir plein écran ; seule la colonne de droite défile. -->
+    <div class="grow min-h-0 overflow-hidden flex flex-row lg:gap-8 xl:gap-16 relative">
       <TemplateExploreSearchPanel
-        class="-mt-2 -ml-4 md:mt-6 md:ml-0 grow-0 md:block relative"
-        :class="{'hidden': hideSidePanel}"
+        :drawer-open="!hideSidePanel"
         @hide-side-panel="hideSidePanel = true"
         @select="addTag"
         @deselect="removeTag"
@@ -266,13 +266,14 @@ const hideSidePanel = ref(true)
         :dates="augmentedDates"
         :events="props.events">
       </TemplateExploreSearchPanel>
-      <div v-show="hideSidePanel" class="grow overflow-y-scroll nobar">
-        <div class="hidden md:block pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
-        <div class="flex flex-row flex-wrap space-y-7 items-end">
-          <div class="rounded-lg p-7 md:mr-7 bg-urfist-200 max-w-2xl">
-            <h1 class="font-bold text-2xl text-primary-100-kv3">{{ props.event.name }}</h1>
-            <div class="grid grid-auto-rows md:grid-cols-2 gap-x-5 gap-y-5 mt-5">
-              <img class="max-h-[150px] md:max-h-none rounded" loading="lazy" :src="imgSrc(props.event.imageUrl)"/>
+      <div class="grow min-w-0 overflow-y-auto nobar px-4 pb-24 lg:px-0 lg:pr-8">
+        <div class="hidden lg:block pt-5 font-extrabold text-3xl text-primary-200-kv3 pb-5">{{ $t('displays.kronikle-v3.event-sheet') }}</div>
+        <!-- Colonne sur mobile ; à partir de xl, rangée avec retour à la ligne si la place manque (panneau de filtres ouvert). -->
+        <div class="flex flex-col xl:flex-row xl:flex-wrap xl:items-end gap-7 pt-4 lg:pt-0">
+          <div class="rounded-lg p-4 md:p-7 bg-urfist-200 w-full max-w-2xl min-w-0 xl:w-auto xl:grow xl:basis-96">
+            <h1 class="font-bold text-xl md:text-2xl text-primary-100-kv3 break-words">{{ props.event.name }}</h1>
+            <div class="grid md:grid-cols-2 gap-5 mt-5">
+              <EventVisual class="w-full max-h-[150px] md:max-h-none object-cover rounded self-start" :event="props.event"></EventVisual>
               <div class="flex flex-col space-y-2.5">
                 <div class="flex flex-row space-x-1">
                   <svg class="text-primary-200-kv3 w-5 min-w-[1.25rem]" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -321,7 +322,7 @@ const hideSidePanel = ref(true)
               </div>
               <div class="text-lg">
                 <div class="font-semibold">{{ $t('displays.kronikle-v3.description') }}</div>
-                <div class="overflow-clip" :class="{'max-h-full': !state.hideDescription, 'max-h-[5.25rem]': state.hideDescription}" v-html="htmlDescription"></div>
+                <div class="overflow-clip break-words [&_img]:max-w-full [&_table]:block [&_table]:overflow-x-auto" :class="{'max-h-full': !state.hideDescription, 'max-h-[5.25rem]': state.hideDescription}" v-html="htmlDescription"></div>
                 
                 <div class="text-lg underline cursor-pointer mt-4">
                   <a v-if="state.hideDescription" @click="state.hideDescription = false">{{ $t('displays.kronikle-v3.click-to-expand') }}</a>
@@ -330,13 +331,14 @@ const hideSidePanel = ref(true)
               </div>
             </div>
           </div>
-          <div class="flex flex-col h-full">
-            <div class="hidden sm:block bg-urfist-200 py-8 px-8 text-center w-72 rounded-lg">
+          <div class="flex flex-col gap-7 w-full xl:w-auto xl:shrink-0">
+            <!-- QR code : inutile sur l'appareil qui le flasherait -->
+            <div class="hidden lg:block bg-urfist-200 py-8 px-8 text-center w-72 rounded-lg">
               <div class="font-semibold text-lg leading-none text-primary-200-kv3 mb-3">{{ $t('displays.kronikle-v3.find-page-on-phone-qr') }}</div>
-              <img class="w-36 h-36 m-auto border-4" :src="qrUrl" />
+              <img class="w-36 h-36 m-auto border-4" :src="qrUrl" alt="QR code" />
               <!--<div class="underline text-primary-200-kv3 font-light text-lg mt-1">{{ qrUrlTarget }}</div>-->
             </div>
-            <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md mt-7 w-full rounded-lg p-6 font-normal text-xl grow">
+            <div v-if="resourceLabels.size > 0" class="bg-urfist-300 max-w-md w-full rounded-lg p-4 md:p-6 font-normal text-lg md:text-xl grow">
               <div class="font-bold text-2xl">{{ $t('displays.kronikle-v3.index') }}</div>
               <ul>
                 <li v-for="label of orderedResourcesKeys" :key="label" class="underline"><a :href="`#${label}`">{{ label }}</a></li>
@@ -360,12 +362,15 @@ const hideSidePanel = ref(true)
             </TemplateExploreResourceFolder>
           </div>
       </div>
-      <div
-        class="absolute left-0 top-2 md:hidden p-4 bg-primary-300-kv3 z-40 rounded-br-lg rounded-tr-lg cursor-pointer"
+      <!-- Bouton flottant d'ouverture du tiroir de recherche, mobile/tablette uniquement -->
+      <button
+        type="button"
+        class="lg:hidden fixed bottom-6 left-4 z-30 btn btn-circle bg-primary-300-kv3 border-none text-xl shadow-lg"
         v-show="hideSidePanel"
+        :aria-label="$t('displays.kronikle-v3.find-an-event')"
         @click="hideSidePanel = false">
         <span>🔍</span>
-      </div>
+      </button>
     </div>
   </div>
 </template>

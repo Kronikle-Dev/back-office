@@ -3,12 +3,12 @@ const props = defineProps(['logoUrl', 'corpName', 'display', 'showBack'])
 </script>
 
 <template>
-  <div class="w-full bg-primary-100-kv3 flex justify-between flex-row px-4 sm:px-16 pt-5 pb-4">
-    <NuxtLink :to="`/d/${display.$id}`" class="flex flex-row space-x-6">
-      <img v-if="display.logoUrl && display.logoUrl.length > 0" :src="display.logoUrl" class="h-14 self-end" alt="Logo"/>
-      <span class="font-black text-xl sm:text-4xl text-urfist-500 self-end"><!--{{ corpName }} -->{{ display.name }}</span>
+  <div class="w-full min-w-0 bg-primary-100-kv3 flex justify-between items-end flex-row gap-4 px-4 sm:px-8 lg:px-16 pt-5 pb-4">
+    <NuxtLink :to="`/d/${display.$id}`" class="flex flex-row items-end gap-3 sm:gap-6 min-w-0">
+      <img v-if="display.logoUrl && display.logoUrl.length > 0" :src="imgSrc(display.logoUrl)" class="h-10 sm:h-14 max-w-[40vw] object-contain shrink-0" alt="Logo"/>
+      <span class="font-black text-xl sm:text-3xl lg:text-4xl text-urfist-500 truncate"><!--{{ corpName }} -->{{ display.name }}</span>
     </NuxtLink>
-    <div class="flex" v-if="showBack">
+    <div class="flex shrink-0" v-if="showBack">
       <NuxtLink :to="`/d/${display.$id}`" class="text-base-100 flex flex-row space-x-2 self-end">
         <span>
           <svg class="text-urfist-200 w-5 h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

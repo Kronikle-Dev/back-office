@@ -22,9 +22,9 @@ if (props.resources.length >= 5) {
 </script>
 
 <template>
-  <div class="bg-urfist-300 w-fit max-w-[calc(100%-16px)] px-8 overflow-x-scroll nobar rounded-lg py-6">
-    <div class="font-bold text-2xl text-primary-100-kv3 mb-5 sticky left-4 md:relative">{{ label }}</div>
-    <div class="flex flex-row">
+  <div class="bg-urfist-300 w-fit max-w-full px-4 md:px-8 overflow-x-auto nobar rounded-lg py-6">
+    <div class="font-bold text-xl md:text-2xl text-primary-100-kv3 mb-5 sticky left-0 lg:relative">{{ label }}</div>
+    <div class="flex flex-row gap-5">
       <TemplateExploreResourceCard
         v-for="res of shownResources"
         :key="res.$id"
@@ -38,7 +38,7 @@ if (props.resources.length >= 5) {
     </div>
     <input type="checkbox" id="my-modal" class="modal-toggle" v-model="state.showModale" />
     <div class="modal cursor-pointer">
-      <div class="modal-box max-w-4xl bg-urfist-200 rounded-lg px-16 py-10">
+      <div class="modal-box w-11/12 max-w-4xl bg-urfist-200 rounded-lg px-4 md:px-16 py-6 md:py-10">
         <div class="flex flex-row justify-between">
           <div>
             <h3 class="font-bold text-lg">{{ props.label }}</h3>
@@ -46,9 +46,8 @@ if (props.resources.length >= 5) {
           </div>
           <label class="btn btn-primary"  @click="state.showModale = false">X</label>
         </div>
-        <div class="flex flex-row flex-wrap">
+        <div class="flex flex-row flex-wrap gap-5 mt-5">
           <TemplateExploreResourceCard
-            class="mr-5 mt-5"
             v-for="res of hiddenResources"
             :key="res.$id"
             :resource="res">

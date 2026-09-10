@@ -30,8 +30,6 @@ const orderedDates = computed(() => {
     return a.startDateTime - b.startDateTime
   })
 })
-const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
-const timeOptions: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' }
 
 const deleteEvent = async () => {
   //await databases.deleteDocument('kronikle', 'event', props.event.$id as string)
@@ -58,13 +56,14 @@ function closePrintModale () {
 <template>
   <div class="max-w-xl ml-4">
     <div class="card bg-white not-prose shadow">
-      <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4">
+      <!-- `z-10` : les boutons doivent rester au-dessus du visuel (EventVisual est positionné) -->
+      <NuxtLink :to="`/event/edit/${props.event.$id}`" class="absolute top-4 left-4 z-10">
         <div class="btn btn-primary">{{$t('event.card.edit')}}</div>
       </NuxtLink>
-      <div v-show="props.event.status !== 'archived'" class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="showArchiveModal = true">{{ $t('event.card.delete') }}</div>
-      <div v-show="props.event.status === 'archived'" class="absolute top-4 right-4 btn btn-primary btn-outline bg-white" @click="restoreEvent">{{ $t('event.card.restore') }}</div>
-      <button onclick="printModale.showModal()" class="absolute top-20 left-4 btn btn-primary">{{ $t('event.card.print') }}</button>
-      <figure><img :src="props.event.imageUrl" class="rounded-t-2xl min-h-[250px] w-full bg-urfist-300" alt="." /></figure>
+      <div v-show="props.event.status !== 'archived'" class="absolute top-4 right-4 z-10 btn btn-primary btn-outline bg-white" @click="showArchiveModal = true">{{ $t('event.card.delete') }}</div>
+      <div v-show="props.event.status === 'archived'" class="absolute top-4 right-4 z-10 btn btn-primary btn-outline bg-white" @click="restoreEvent">{{ $t('event.card.restore') }}</div>
+      <button onclick="printModale.showModal()" class="absolute top-20 left-4 z-10 btn btn-primary">{{ $t('event.card.print') }}</button>
+      <figure><EventVisual :event="props.event" class="rounded-t-2xl w-full max-h-[360px] object-cover" /></figure>
       <div class="card-body">
         <h2 class="card-title">{{props.event.name}}</h2>
         <div v-html="htmlDescription"></div>
@@ -72,17 +71,9 @@ function closePrintModale () {
         <div>
           <span v-for="tag of props.event.tags" :key="tag">{{availableTags.find((t) => t.$id === tag)?.name}} </span>
         </div>-->
-        <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mt-4">
-        <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
-          <div class="card w-64 bg-white shadow not-prose">
-            <div class="card-body">
-              <h2 class="card-title">{{new Date(date.startDateTime).toLocaleDateString(undefined, dateOptions)}} ({{new Date(date.startDateTime).toLocaleTimeString(undefined, timeOptions)}})</h2>
-              <p>{{date.placeName}}, {{date.placeDescription}}.<br/>{{new Date(date.endDateTime).toLocaleDateString(undefined, dateOptions)}} ({{new Date(date.endDateTime).toLocaleTimeString(undefined, timeOptions)}})</p>
-              <p>{{ date.attendanceMode }}</p>
-            </div>
-          </div>
+        <div class="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-4">
+          <SessionCard v-for="date of orderedDates" :key="`${date.$id}`" :date="date" />
         </div>
-      </div>
       </div>
     </div>
     <dialog id="printModale" class="modal">

@@ -191,50 +191,59 @@ onMounted(() => {
         return true;
     }
 }
+  // On fait défiler uniquement la colonne des cartes (et pas ses ancêtres en
+  // `overflow-hidden`, que `scrollIntoView` ferait aussi bouger) jusqu'à la
+  // section courante, en tenant compte de la hauteur du bandeau collant.
   if (!inIframe()) {
-    document.getElementById('current-section')?.scrollIntoView()
+    const section = document.getElementById('current-section')
+    const column = document.querySelector<HTMLElement>('.explore-scroll-column')
+    const banner = column?.querySelector<HTMLElement>('.consult-bg-gradient')
+    if (section && column) {
+      const top = section.getBoundingClientRect().top - column.getBoundingClientRect().top + column.scrollTop - (banner?.offsetHeight ?? 0)
+      column.scrollTo({ top: Math.max(0, top) })
+    }
   }
 })
 
 </script>
 
 <template>
-  <div class="bg-primary-200-kv3 h-screen flex flex-col relative">
-    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 z-50 rounded bg-neutral-100 drop-shadow-lg">
-      <img src="/loader.gif" class="w-10 h-10"/>
+  <div class="bg-primary-200-kv3 h-screen supports-[height:100dvh]:h-dvh flex flex-col relative">
+    <div v-if="navigationStarted" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded p-2 bg-white drop-shadow-lg">
+      <img src="/loader.gif" class="w-10 h-10" alt=""/>
     </div>
     <TemplateExploreHeader :logo-url="'/urfist_bordeaux_blanc-logo 1.png'" :corp-name="'URFIST de Bordeaux'" :display="props.display" :show-back="false"></TemplateExploreHeader>
-    <div class="grow overflow-y-scroll nobar flex flex-row space-x-10 sm:space-x-32">
+    <!-- Sous `lg`, le panneau de thèmes est un tiroir plein écran ; seule la colonne de droite défile. -->
+    <div class="grow min-h-0 overflow-hidden flex flex-row lg:gap-8 xl:gap-16">
       <TemplateExploreThemePanel
-        class="mt-6"
         @select="addTag"
         @deselect="removeTag"
         :display="display"
         :events="events">
       </TemplateExploreThemePanel>
-      <div class="grow overflow-y-scroll nobar">
-        <div class="fixed pt-5 pb-5 consult-bg-gradient font-extrabold text-xl sm:text-4xl text-urfist-100 w-full">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
-        <div class="flex flex-row flex-wrap w-full mt-16">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of pastEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+      <div class="explore-scroll-column grow min-w-0 overflow-y-auto nobar px-4 pb-24 lg:px-0 lg:pr-8">
+        <div class="sticky top-0 z-10 py-4 md:py-5 consult-bg-gradient font-extrabold text-2xl md:text-4xl text-urfist-100">{{ $t('displays.kronikle-v3.consult-our-program') }}</div>
+        <div class="explore-event-grid">
+          <TemplateExploreEventCard fluid v-for="date of pastEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div id="current-section" v-if="state.displayType == DisplayType.DAY && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.WEEK && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
-        <div id="current-section" v-if="state.displayType == DisplayType.MONTH && currentEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of currentEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+        <div id="current-section" v-if="state.displayType == DisplayType.DAY && currentEvents.length > 0" class="explore-section-title pt-10 md:pt-24">{{ $t('displays.kronikle-v3.today') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.WEEK && currentEvents.length > 0" class="explore-section-title pt-10 md:pt-24">{{ $t('displays.kronikle-v3.this-week') }}</div>
+        <div id="current-section" v-if="state.displayType == DisplayType.MONTH && currentEvents.length > 0" class="explore-section-title pt-10 md:pt-24">{{ $t('displays.kronikle-v3.this-month') }}</div>
+        <div class="explore-event-grid">
+          <TemplateExploreEventCard fluid v-for="date of currentEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div v-if="state.displayType == DisplayType.DAY && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
-        <div v-if="state.displayType == DisplayType.WEEK && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
-        <div v-if="state.displayType == DisplayType.MONTH && nextEvents.length > 0" class="font-extrabold text-4xl text-urfist-100 mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of nextEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+        <div v-if="state.displayType == DisplayType.DAY && nextEvents.length > 0" class="explore-section-title mt-8 md:mt-16">{{ $t('displays.kronikle-v3.tomorrow') }}</div>
+        <div v-if="state.displayType == DisplayType.WEEK && nextEvents.length > 0" class="explore-section-title mt-8 md:mt-16">{{ $t('displays.kronikle-v3.next-week') }}</div>
+        <div v-if="state.displayType == DisplayType.MONTH && nextEvents.length > 0" class="explore-section-title mt-8 md:mt-16">{{ $t('displays.kronikle-v3.next-month') }}</div>
+        <div class="explore-event-grid">
+          <TemplateExploreEventCard fluid v-for="date of nextEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
-        <div class="font-extrabold text-4xl text-urfist-100 mt-16" v-if="futureEvents.length > 0">{{ $t('displays.kronikle-v3.future') }}</div>
-        <div class="flex flex-row flex-wrap w-full">
-          <TemplateExploreEventCard class="mr-8 mt-8" v-for="date of futureEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
+        <div class="explore-section-title mt-8 md:mt-16" v-if="futureEvents.length > 0">{{ $t('displays.kronikle-v3.future') }}</div>
+        <div class="explore-event-grid">
+          <TemplateExploreEventCard fluid v-for="date of futureEvents" :key="date.$id" :date="date" :event="date.event" @click="$router.push(`/d/${props.display.$id}/date/${date.$id}`)">
           </TemplateExploreEventCard>
         </div>
       </div>
@@ -256,5 +265,17 @@ onMounted(() => {
 
 .consult-bg-gradient {
   background: linear-gradient(0deg, rgba(2,0,36,0) 0%, rgba(36,47,70,1) 24%, rgba(36,47,70,1) 100%);
+}
+
+/* Grille fluide de cartes : 10 rem mini sur mobile, 13 rem (= l'ancien w-52) dès `sm`. */
+.explore-event-grid {
+  @apply grid gap-4 md:gap-8 mt-4 md:mt-8 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(13rem,1fr))];
+}
+.explore-event-grid:empty {
+  @apply hidden;
+}
+
+.explore-section-title {
+  @apply font-extrabold text-2xl md:text-4xl text-urfist-100;
 }
 </style>

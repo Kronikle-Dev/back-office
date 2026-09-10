@@ -6,7 +6,7 @@ const props = defineProps<{
 
 <template>
   <div>
-    <div class="bg-urfist-200 w-[240px] h-fit mr-5 rounded-lg p-5 cursor-pointer">
+    <div class="bg-urfist-200 w-[70vw] sm:w-[240px] shrink-0 h-fit rounded-lg p-5 cursor-pointer">
       <div class="font-bold text-2xl text-primary-100-kv3 mb-5">{{ props.resources.length }} {{ $t('displays.kronikle-v3.additional-resource-to-consult') }}</div>
       <div class="grid grid-cols-3 gap-5">
         <div
