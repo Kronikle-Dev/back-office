@@ -234,6 +234,10 @@
       "pick-events-title": "3. Sélectionner des événéments à absolument afficher",
       "pick-events": "Événements à afficher",
       "pick-events-placeholder": "Sélectionnez des événements à afficher",
+      "max-age-label": "Masquer les séances plus anciennes que",
+      "max-age-unlimited": "Illimité",
+      "max-age-months": "{n} mois",
+      "max-age-help": "Les séances dont la date de début est antérieure à cette durée ne sont pas affichées ; un événement dont toutes les séances sont trop anciennes disparaît. Surtout utile avec « Tous ».",
       "add": "Ajouter l'affichage",
       "update": "Mettre à jour d'affichage",
       "delete": "Supprimer l'affichage"

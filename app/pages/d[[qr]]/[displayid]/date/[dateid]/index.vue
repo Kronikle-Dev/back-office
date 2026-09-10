@@ -82,6 +82,7 @@ onMounted(async () => {
       case 'past':
         eventIdList = new Set((await $appwrite().getAllPages('kronikle', 'date', [
           Query.lessThan('startDateTime', beginningOfToday.toString()),
+          ...expirationDateQueries(disp),
           Query.orderDesc('$createdAt')
         ])).map((d) => d.eventId).slice(0, 100))
         break
@@ -146,7 +147,15 @@ onMounted(async () => {
     }
   }
 
-  dates.value = (await $appwrite().getAllPages('kronikle', 'date', [Query.equal('eventId', events.value.map(ev => ev.$id as string))])) as unknown as KDateApi[]
+  dates.value = (await $appwrite().getAllPages('kronikle', 'date', [
+    Query.equal('eventId', events.value.map(ev => ev.$id as string)),
+    ...expirationDateQueries(disp)
+  ])) as unknown as KDateApi[]
+  // Un événement dont toutes les séances sont périmées disparaît (liste latérale
+  // et panneau de recherche, qui se construit à partir de `events`).
+  if (eventExpirationCutoff(disp)) {
+    events.value = events.value.filter(ev => dates.value.some(d => d.eventId === ev.$id))
+  }
 
 })
 

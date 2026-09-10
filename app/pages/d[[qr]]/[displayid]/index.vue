@@ -65,6 +65,7 @@ try {
     case 'past':
       eventIdList = new Set((await databases.listDocuments('kronikle', 'date', [
         Query.lessThan('startDateTime', beginningOfToday.toISO() as string),
+        ...expirationDateQueries(disp),
         Query.orderDesc('$createdAt')
       ])).documents.map(d => d.eventId).slice(0, 100))
       break
@@ -142,8 +143,14 @@ console.log(JSON.stringify(events.value.map(ev => ev.$id as string)))
 
 if (events.value.length > 0) {
   dates.push(... await $appwrite().getAllPages('kronikle', 'date', [
-    Query.equal('eventId', events.value.map(ev => ev.$id as string))
+    Query.equal('eventId', events.value.map(ev => ev.$id as string)),
+    ...expirationDateQueries(disp)
   ]) as unknown as KDateApi[])
+  // Un événement dont toutes les séances sont périmées disparaît (cartes et
+  // panneau des thèmes, qui se construit à partir de `events`).
+  if (eventExpirationCutoff(disp)) {
+    events.value = events.value.filter(ev => dates.some(d => d.eventId === ev.$id))
+  }
 }
 }
 

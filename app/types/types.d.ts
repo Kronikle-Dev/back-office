@@ -99,4 +99,5 @@ interface KDisplay {
   organization: string,
   logoId: string,
   logoUrl: string,
+  maxEventAgeMonths?: number | null, // null/absent/0 = pas de péremption des séances
 }

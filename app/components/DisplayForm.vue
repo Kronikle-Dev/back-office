@@ -98,10 +98,12 @@ const state = reactive({
   tagFilter: [] as {$id: string, name: string | undefined}[],
   excludeFilters: false,
   logoId: '',
-  logoUrl: null as string | null
+  logoUrl: null as string | null,
+  maxEventAgeMonths: null as number | null
 })
 
 if (props.display) {
+  state.maxEventAgeMonths = props.display.maxEventAgeMonths ?? null
   state.name = props.display.name
   state.template = props.display.template
   state.events = props.display.events.map((e: string) => ({$id: e}))
@@ -183,6 +185,9 @@ const filters = [
   }
 ]
 
+// Durées de péremption proposées (en mois) ; « Illimité » = null.
+const maxEventAgeOptions = [1, 3, 6, 12, 24]
+
 const rules = {
   name: {
     required
@@ -206,7 +211,10 @@ async function addDisplay() {
     excludeFilters: state.excludeFilters,
     organization: organization,
     logoId: state.logoId,
-    logoUrl: state.logoUrl
+    logoUrl: state.logoUrl,
+    // Clé toujours envoyée : en mise à jour, l'omettre garderait l'ancienne
+    // valeur et empêcherait de revenir à « Illimité » (null).
+    maxEventAgeMonths: state.maxEventAgeMonths || null
   }
   try {
     if (props.display) {
@@ -299,6 +307,16 @@ const originUrl = window.location.origin
       <option disabled selected>{{ $t('display.form.select-date-filter') }}</option>
       <option v-for="filter of filters" :value="filter.code" :key="filter.code">{{ filter.name }}</option>
     </select>
+    <label class="label mt-4">
+      <span class="label-text">{{ $t('display.form.max-age-label') }}</span>
+    </label>
+    <select v-model="state.maxEventAgeMonths" class="select select-bordered w-full max-w-xs">
+      <option :value="null">{{ $t('display.form.max-age-unlimited') }}</option>
+      <option v-for="n of maxEventAgeOptions" :value="n" :key="n">{{ $t('display.form.max-age-months', { n }) }}</option>
+    </select>
+    <label class="label">
+      <span class="label-text-alt">{{ $t('display.form.max-age-help') }}</span>
+    </label>
     <h2>{{ $t('display.form.filter-title') }}</h2>
     <label class="label">
       <span class="label-text">{{$t('display.form.additionnal-filter')}}</span>

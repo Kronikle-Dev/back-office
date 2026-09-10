@@ -57,7 +57,7 @@ Appwrite n'a pas de requête « contains » sur les tableaux : les filtres par t
 
 ### Affichages publics (`/d/:displayid`, `/dqr/:displayid`)
 
-Le segment optionnel `d[[qr]]` permet la variante `/dqr/...` destinée aux QR codes (`qr` = true). Un `KDisplay` définit un `eventFilter` (`month`, `week`, `upcoming`, `past`, `all`, `none`), des filtres tags/publics/types (`excludeFilters` inverse la logique) et une liste `events` supplémentaires. La page résout les IDs à partir des `date`, charge les événements, puis délègue au template `components/template/ExploreHome.vue` (seul template actif : `explore-v3`). Ces templates forcent le thème DaisyUI `urfist` via `useHead`.
+Le segment optionnel `d[[qr]]` permet la variante `/dqr/...` destinée aux QR codes (`qr` = true). Un `KDisplay` définit un `eventFilter` (`month`, `week`, `upcoming`, `past`, `all`, `none`), des filtres tags/publics/types (`excludeFilters` inverse la logique), une liste `events` supplémentaires et un âge maximum optionnel `maxEventAgeMonths` (null/0 = illimité) qui masque les `date` dont `startDateTime` est antérieure à maintenant moins N mois (helper `app/utils/displayExpiration.ts`, appliqué au fetch final des dates, puis élagage des événements sans séance restante). La page résout les IDs à partir des `date`, charge les événements, puis délègue au template `components/template/ExploreHome.vue` (seul template actif : `explore-v3`). Ces templates forcent le thème DaisyUI `urfist` via `useHead`.
 
 ### Routes serveur (Nitro)
 
