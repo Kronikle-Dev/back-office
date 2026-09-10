@@ -8,21 +8,21 @@ definePageMeta({
 })
 
 const store = useEventDraftStore()
+const { $appwrite } = useNuxtApp()
 
-onBeforeMount(async () => {
-  const { $appwrite } = useNuxtApp()
-  const teams = new Teams($appwrite().client)
-  const myTeams = await teams.list()
-  if (myTeams.teams.length === 0) {
-    return
-  }
-  store.initForCreate(myTeams.teams[0].$id)
-})
+// Page SPA (cf. nuxt.config) : l'await au top-level est acceptable et garantit que
+// le store est initialisé avant le montage de l'assistant.
+const myTeams = await new Teams($appwrite().client).list()
+const ready = myTeams.teams.length > 0
+if (ready) {
+  store.initForCreate(myTeams.teams[0]!.$id)
+}
 </script>
 
 <template>
   <div class="max-w-xl mx-auto prose">
-    <EventNewContainer />
+    <EventNewContainer v-if="ready" />
+    <p v-else>{{ $t('event.new.no-organization') }}</p>
   </div>
 </template>
 

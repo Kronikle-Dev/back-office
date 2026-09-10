@@ -20,27 +20,26 @@ const teams = new Teams($appwrite().client)
 const myTeams = await teams.list()
 const organization = myTeams.teams[0]?.$id
 
-let event: KEvent
+let ready = false
 try {
-  event = (await databases.getDocument('kronikle', 'event', eventid)) as unknown as KEvent
+  const event = (await databases.getDocument('kronikle', 'event', eventid)) as unknown as KEvent
   if (event.organization != organization) {
     throw new Error("bad organization")
   }
+  const dates = (await $appwrite().getAllPages('kronikle', 'date', [
+    Query.equal('eventId', eventid)
+  ])) as unknown as KDate[]
+  store.initFromExisting(event, dates)
+  ready = true
 } catch (e) {
   console.error('Bad event id : ', eventid, e)
-  navigateTo('/')
+  await navigateTo('/')
 }
-
-const dates = (await $appwrite().getAllPages('kronikle', 'date', [
-  Query.equal('eventId', event.$id as string)
-])) as unknown as KDate[]
-
-store.initFromExisting(event!, dates)
 </script>
 
 <template>
   <div class="max-w-xl mx-auto prose">
-    <EventNewContainer />
+    <EventNewContainer v-if="ready" />
   </div>
 </template>
 

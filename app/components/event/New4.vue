@@ -1,35 +1,31 @@
 <script lang="ts" setup>
-import {useVuelidate} from '@vuelidate/core'
 import { useEventDraftStore } from '@/stores/eventDraft'
 // @ts-ignore
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 
+type ReferenceItem = { $id: string, name: string }
+
 const store = useEventDraftStore()
 
-const state = reactive({
-    tags: store.event.tags.map((t: string) => ({$id: t})),
-    publicTypes: store.event.publicTypes.map((t: string) => ({$id: t})),
-    eventType: store.event.eventType.map((t: string) => ({$id: t})),
-})
-
-const availableTags = computed(() => store.availableTags)
-const availablePublicTypes = computed(() => store.availablePublicTypes)
-const availableEventTypes = computed(() => store.availableEventTypes)
-
-onMounted(async () => {
-  await store.fetchReferenceData()
-  state.publicTypes = state.publicTypes.map((e: {$id: string}) => ({$id: e.$id, name: availablePublicTypes.value.find(ae => ae.$id == e.$id)?.name}))
-  state.eventType = state.eventType.map((e: {$id: string}) => ({$id: e.$id, name: availableEventTypes.value.find(ae => ae.$id == e.$id)?.name}))
-  state.tags = state.tags.map((e: {$id: string}) => ({$id: e.$id, name: availableTags.value.find(ae => ae.$id == e.$id)?.name}))
-})
-
-async function next () {
-  store.updateFragment({
-    tags: state.tags.map((tag: {$id: string, name: string}) => tag.$id),
-    publicTypes: state.publicTypes.map((type: {$id: string, name: string}) => type.$id),
-    eventType: state.eventType.map((type: {$id: string, name: string}) => type.$id),
+// Le store conserve des identifiants, VueMultiselect manipule des objets
+// { $id, name } : un computed en lecture/écriture fait la conversion, sans copie
+// locale. Un identifiant sans référentiel chargé s'affiche par son id.
+function bind (
+  key: 'tags' | 'publicTypes' | 'eventType',
+  available: () => ReferenceItem[],
+) {
+  return computed<ReferenceItem[]>({
+    get: () => store.event[key].map((id) => available().find((item) => item.$id === id) ?? { $id: id, name: id }),
+    set: (items) => { store.event[key] = items.map((item) => item.$id) },
   })
+}
+
+const tags = bind('tags', () => store.availableTags)
+const publicTypes = bind('publicTypes', () => store.availablePublicTypes)
+const eventType = bind('eventType', () => store.availableEventTypes)
+
+function next () {
   store.nextStep()
 }
 </script>
@@ -43,13 +39,13 @@ async function next () {
     </label>
     <ClientOnly>
       <VueMultiselect
-        v-model="state.tags"
+        v-model="tags"
         :multiple="true"
         :close-on-select="true"
         :placeholder="$t('event.newfour.tags-placeholder')"
         label="name"
         track-by="$id"
-        :options="availableTags">
+        :options="store.availableTags">
       </VueMultiselect>
     </ClientOnly>
     <label class="label">
@@ -57,13 +53,13 @@ async function next () {
     </label>
     <ClientOnly>
       <VueMultiselect
-        v-model="state.publicTypes"
+        v-model="publicTypes"
         :multiple="true"
         :close-on-select="true"
         :placeholder="$t('event.newfour.publicTypes-placeholder')"
         label="name"
         track-by="$id"
-        :options="availablePublicTypes">
+        :options="store.availablePublicTypes">
       </VueMultiselect>
     </ClientOnly>
     <label class="label">
@@ -71,13 +67,13 @@ async function next () {
     </label>
     <ClientOnly>
       <VueMultiselect
-        v-model="state.eventType"
+        v-model="eventType"
         :multiple="true"
         :close-on-select="true"
         :placeholder="$t('event.newfour.eventTypes-placeholder')"
         label="name"
         track-by="$id"
-        :options="availableEventTypes">
+        :options="store.availableEventTypes">
       </VueMultiselect>
     </ClientOnly>
     <div class="flex flex-row w-full space-x-4">

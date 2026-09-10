@@ -55,7 +55,11 @@ Appwrite n'a pas de requête « contains » sur les tableaux : les filtres par t
 
 ### Assistant de création/édition d'événement
 
-`pages/event/new.vue` et `pages/event/edit/[eventid].vue` montent `components/event/NewContainer.vue`, qui affiche `New1` à `New6` selon `store.step`. Tout l'état vit dans le store Pinia `app/stores/eventDraft.ts` (`useEventDraftStore`) : `initForCreate(teamId)` / `initFromExisting(event, dates)`, `updateFragment()`, `setDates()`, `fetchReferenceData()`, puis `publish()` qui crée ou met à jour l'événement et insère les dates marquées `new`. Chaque étape valide son formulaire avec Vuelidate avant d'appeler `store.nextStep()`.
+`pages/event/new.vue` et `pages/event/edit/[eventid].vue` initialisent le store (`initForCreate(teamId)` / `initFromExisting(event, dates)`) **avant** de monter `components/event/NewContainer.vue`, qui affiche `New1` à `New6` selon `store.step`. Le store Pinia `app/stores/eventDraft.ts` (`useEventDraftStore`) est l'unique état du formulaire : les étapes lient leurs champs directement sur `store.event` / `store.dates` (v-model, Vuelidate sur l'objet du store) et n'ont pas de copie locale ; seule `New2` garde en local la séance en cours de saisie avant `store.addDate()`. Les opérations Appwrite sur les séances existantes (`cancelDate`, `reinstateDate`, `deleteDate`) sont des actions du store. `publish()` crée ou met à jour l'événement, insère les dates marquées `new` et renvoie un booléen (l'erreur va dans `store.error`, affichée en toast par `NewContainer` ; la navigation est faite par `New6`).
+
+- Chaque étape valide avec Vuelidate avant `store.nextStep()` ; `maxReachedStep` borne les sauts (`goToStep`, barre d'étapes cliquable, paramètre d'URL `?step=N` à partir de 1, synchronisé par `NewContainer`).
+- Le brouillon est persisté en `sessionStorage` (clé `kronikle:eventDraft:new` ou `kronikle:eventDraft:<eventId>`) et restauré à l'initialisation s'il a du contenu, avec un bandeau « Repartir de zéro » (`discardDraft()`). En édition, seules les séances `new` viennent du brouillon, les autres sont rechargées depuis Appwrite. Le stockage est vidé à la publication.
+- Les champs numériques (`minAge`, `maxAge`, `price`, `maxAttendeeCapacity`) peuvent contenir des chaînes dans le brouillon : la conversion se fait dans `publish()`.
 
 ### Affichages publics (`/d/:displayid`, `/dqr/:displayid`)
 

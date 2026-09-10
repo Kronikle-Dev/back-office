@@ -6,12 +6,6 @@ import { useEventDraftStore } from '@/stores/eventDraft'
 const router = useRouter()
 const store = useEventDraftStore()
 
-const state = reactive({
-    name: store.event.name,
-    description: store.event.description,
-    loading: false,
-})
-
 const rules = {
   name: {
     required,
@@ -25,18 +19,12 @@ const rules = {
   },
 }
 
-const v$ = useVuelidate(rules, state)
+// Validation directement sur le brouillon du store : les saisies sont conservées
+// même en revenant à l'étape précédente.
+const v$ = useVuelidate(rules, store.event)
 
 async function next () {
-  const formValid = await v$.value.$validate()
-  if (!formValid) {
-    console.log('form not valid')
-    return
-  }
-  store.updateFragment({
-    name: state.name,
-    description: state.description,
-  })
+  if (!(await v$.value.$validate())) return
   store.nextStep()
 }
 
@@ -52,7 +40,7 @@ function prev() {
     <label class="label">
       <span class="label-text">{{$t('event.newone.name-label')}}</span>
     </label>
-    <input v-model="state.name" type="text" :placeholder="$t('event.newone.name-placeholder')" class="input input-bordered bg-white w-full" />
+    <input v-model="store.event.name" type="text" :placeholder="$t('event.newone.name-placeholder')" class="input input-bordered bg-white w-full" />
     <label class="label">
       <span v-if="v$.name.$error && v$.name.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.name.$error && v$.name.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 3})}}</span>
@@ -61,7 +49,7 @@ function prev() {
     <label class="label">
       <span class="label-text">{{$t('event.newone.description-label')}} <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">ℹ️</a></span>
     </label>
-    <textarea v-model="state.description" class="min-h-[15rem] textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newone.description-placeholder')"/>
+    <textarea v-model="store.event.description" class="min-h-[15rem] textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newone.description-placeholder')"/>
     <label class="label">
       <span v-if="v$.description.$error && v$.description.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.description.$error && v$.description.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 1})}}</span>

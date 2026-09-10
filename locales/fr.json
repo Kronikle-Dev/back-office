@@ -88,6 +88,14 @@
     }
   },
   "event": {
+    "session": {
+      "canceled": "Séance annulée",
+      "no-place": "Lieu non précisé",
+      "onsite": "Présentiel",
+      "online": "En ligne",
+      "registration-required": "Inscription obligatoire",
+      "capacity": "{n} places"
+    },
     "index": {
       "title": "Événements",
       "subtitle": "Retrouvez ici l'entièreté de votre programmation",
@@ -117,7 +125,14 @@
       "step-two": "Dates",
       "step-three": "Image",
       "step-four": "Catégories",
-      "step-five": "Précisions"
+      "step-five": "Précisions",
+      "step-six": "Récapitulatif",
+      "draft-restored": "Un brouillon non publié a été restauré.",
+      "discard-draft": "Repartir de zéro",
+      "publish-error": "La publication a échoué. Vérifiez votre connexion puis réessayez : rien n'a été perdu.",
+      "date-error": "La modification de la séance a échoué. Réessayez dans un instant.",
+      "reference-error": "Le chargement des tags, publics et types a échoué.",
+      "no-organization": "Votre compte n'appartient à aucune organisation : impossible de créer un événement."
     },
     "newone": {
       "title": "Les informations de base",
@@ -284,7 +299,8 @@
     "minLength": "C'est un peu court (minimum : {length})",
     "maxLength": "C'est un peu long (maximum : {length})",
     "maxValue": "C'est un peu beaucoup (maximum : {value})",
-    "valid-url": "Doit être une URL valide (ex: https://example.fr)"
+    "valid-url": "Doit être une URL valide (ex: https://example.fr)",
+    "numeric": "Entrez un nombre"
   },
   "displays": {
     "kronikle-v3": {

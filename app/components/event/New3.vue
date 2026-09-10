@@ -18,8 +18,8 @@ const FilePond = vueFilePond(
   FilePondPluginFileValidateSize
 )
 
-const imageResp = ref(null as any)
-
+// L'image est envoyée à Appwrite dès sa sélection ; l'identifiant et l'URL sont
+// écrits directement dans le brouillon du store.
 const serverObj = {
   // @ts-ignore
   process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
@@ -33,8 +33,8 @@ const serverObj = {
         // /view (fichier brut) et non /preview : l'endpoint de transformation Appwrite
         // 1.9.0 renvoie une 500 sur event-thumbnails (cf. helper imgSrc).
         const thumbnailUrl = storage.getFileView('event-thumbnails', thumbnailId)
-        state.imageId = thumbnailId
-        state.imageUrl = thumbnailUrl
+        store.event.imageId = thumbnailId
+        store.event.imageUrl = thumbnailUrl
         load(thumbnailUrl)
       } catch (e) {
         console.error(e)
@@ -47,24 +47,15 @@ const serverObj = {
   fetch: null,
 }
 
-const state = reactive({
-  imageId: store.event.imageId,
-  imageUrl: store.event.imageUrl
-})
+// Image déjà présente (édition ou retour sur l'étape) : FilePond la réaffiche.
+const imageToLoad = ref<string[]>(store.event.imageUrl ? [store.event.imageUrl] : [])
 
-const imageToLoad = ref([] as Array<string>)
+function onRemoveFile () {
+  store.event.imageId = ''
+  store.event.imageUrl = undefined
+}
 
-onMounted(() => {
-  if (state.imageUrl && state.imageUrl.length > 0) {
-    imageToLoad.value = [state.imageUrl]
-  }
-})
-
-async function next () {
-  store.updateFragment({
-    imageId: state.imageId,
-    imageUrl: state.imageUrl
-  })
+function next () {
   store.nextStep()
 }
 </script>
@@ -84,7 +75,7 @@ async function next () {
         :label-idle="$t('event.newthree.image-placeholder')"
         :server="serverObj"
         :files="imageToLoad"
-        v-model="state.imageUrl"
+        @removefile="onRemoveFile"
       />
     </ClientOnly>
     <div class="flex flex-row w-full space-x-4">

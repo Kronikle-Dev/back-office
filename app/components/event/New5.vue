@@ -1,15 +1,9 @@
 <script lang="ts" setup>
 import {useVuelidate} from '@vuelidate/core'
-import { numeric, integer, maxValue} from '@vuelidate/validators'
+import { numeric, integer } from '@vuelidate/validators'
 import { useEventDraftStore } from '@/stores/eventDraft'
 
 const store = useEventDraftStore()
-
-const state = reactive({
-  minAge: store.event.minAge,
-  maxAge: store.event.maxAge,
-  price: store.event.price,
-})
 
 const rules = {
   minAge: {
@@ -23,14 +17,12 @@ const rules = {
   }
 }
 
-const v$ = useVuelidate(rules, state)
+// Les champs sont liés directement au brouillon ; la conversion en nombres se fait
+// dans le store au moment de la publication (`eventPayload`).
+const v$ = useVuelidate(rules, store.event)
 
 async function next () {
-  store.updateFragment({
-    minAge: state.minAge ? parseInt(String(state.minAge), 10) : null,
-    maxAge: state.maxAge ? parseInt(String(state.maxAge), 10) : null,
-    price: state.price ? parseFloat(String(state.price)) : null,
-  })
+  if (!(await v$.value.$validate())) return
   store.nextStep()
 }
 </script>
@@ -43,7 +35,7 @@ async function next () {
       <label class="label">
         <span class="label-text">{{$t('event.newfive.minAge-label')}}</span>
       </label>
-      <input v-model="state.minAge" type="text" :placeholder="$t('event.newfive.minAge-placeholder')" class="input input-bordered bg-white w-full" />
+      <input v-model="store.event.minAge" type="text" :placeholder="$t('event.newfive.minAge-placeholder')" class="input input-bordered bg-white w-full" />
       <label class="label">
         <span v-if="v$.minAge.$error && v$.minAge.integer.$invalid" class="label-text-alt text-error">{{$t('validation.integer')}}</span>
       </label>
@@ -52,7 +44,7 @@ async function next () {
       <label class="label">
         <span class="label-text">{{$t('event.newfive.maxAge-label')}}</span>
       </label>
-      <input v-model="state.maxAge" type="text" :placeholder="$t('event.newfive.maxAge-placeholder')" class="input input-bordered bg-white w-full" />
+      <input v-model="store.event.maxAge" type="text" :placeholder="$t('event.newfive.maxAge-placeholder')" class="input input-bordered bg-white w-full" />
       <label class="label">
         <span v-if="v$.maxAge.$error && v$.maxAge.integer.$invalid" class="label-text-alt text-error">{{$t('validation.integer')}}</span>
       </label>
@@ -61,9 +53,9 @@ async function next () {
       <label class="label">
         <span class="label-text">{{$t('event.newfive.price-label')}}</span>
       </label>
-      <input v-model="state.price" type="text" :placeholder="$t('event.newfive.price-placeholder')" class="input input-bordered bg-white w-full" />
+      <input v-model="store.event.price" type="text" :placeholder="$t('event.newfive.price-placeholder')" class="input input-bordered bg-white w-full" />
       <label class="label">
-        <span v-if="v$.price.$error && v$.price.integer.$invalid" class="label-text-alt text-error">{{$t('validation.integer')}}</span>
+        <span v-if="v$.price.$error && v$.price.numeric.$invalid" class="label-text-alt text-error">{{$t('validation.numeric')}}</span>
       </label>
     </div>
     <div class="flex flex-row w-full space-x-4">

@@ -2,48 +2,42 @@
 import {useVuelidate} from '@vuelidate/core'
 import { required, minLength, maxLength, integer } from '@vuelidate/validators'
 import 'v-calendar/dist/style.css';
-import { Databases } from 'appwrite'
+import { storeToRefs } from 'pinia'
 import { useEventDraftStore } from '@/stores/eventDraft'
-const {$appwrite} = useNuxtApp()
-const {t} = useI18n()
 
-const databases = new Databases($appwrite().client)
 const store = useEventDraftStore()
+const { dates } = storeToRefs(store)
 
 const showSecondCalendar = ref(false)
 
 const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
 const timeOptions: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' }
 
-const state = reactive({
-  dates: store.dates as Array<KDate>,
+const HOUR = 3600000
+
+function roundedNow () {
+  return new Date(new Date().setMinutes(0, 0, 0))
+}
+
+// Seul état local de l'étape : la séance en cours de saisie, avant son ajout à
+// `store.dates`. Les séances elles-mêmes vivent dans le store.
+const blankForm = () => ({
   placeName: '',
   placeDescription: '',
-  startTime: new Date((new Date()).setMinutes(0)),
-  endTime: new Date((new Date((new Date()).setTime((new Date()).getTime() + 3600000))).setMinutes(0)),
-  maxAttendeeCapacity: null,
+  startTime: roundedNow(),
+  endTime: new Date(roundedNow().getTime() + HOUR),
+  maxAttendeeCapacity: null as number | string | null,
   mandatoryRegistration: false,
   accessibility: '',
-  attendanceMode: '',
   isOffline: true,
   isOnline: false,
 })
 
-const orderedDates = computed(() => {
-  return state.dates.sort((a: any, b: any) => {
-    return a.startDateTime - b.startDateTime
-  }).map(d => {
-    return {
-      ...d,
-      startDateTime: new Date(d.startDateTime),
-      endDateTime: new Date(d.endDateTime)
-    }
-  })
-})
+const form = reactive(blankForm())
 
-watch(() => state.startTime, (newVal, oldVal) => {
-  if (newVal > state.endTime) {
-    state.endTime = new Date((new Date(newVal)).setTime((new Date(newVal)).getTime() + 3600000))
+watch(() => form.startTime, (newVal) => {
+  if (newVal > form.endTime) {
+    form.endTime = new Date(new Date(newVal).getTime() + HOUR)
   }
 })
 
@@ -59,117 +53,52 @@ const rulesDate = {
   },
 }
 
-
 const rulesEvent = {
   dates: {
     required,
     minLength: minLength(1),
   },
 }
-const vd$ = useVuelidate(rulesDate, state)
-const v$ = useVuelidate(rulesEvent, state)
+const vd$ = useVuelidate(rulesDate, form)
+const v$ = useVuelidate(rulesEvent, { dates })
 
 async function next () {
-  const formValid = await v$.value.$validate()
-  if (!formValid) {
-    console.log('form not valid')
-    return
-  }
-  store.setDates(state.dates)
+  if (!(await v$.value.$validate())) return
   store.nextStep()
 }
 
+function attendanceMode () {
+  if (form.isOffline && form.isOnline) return 'mixed'
+  if (form.isOnline) return 'online'
+  return 'offline'
+}
+
 async function addDate() {
-  const formValid = await vd$.value.$validate()
-  if (!formValid) {
-    console.log('form not valid')
-    return
-  }
-  let attendanceMode = ''
-  if (state.isOffline && state.isOnline) {
-    attendanceMode = 'mixed'
-  } else if (state.isOffline) {
-    attendanceMode = 'offline'
-  } else if (state.isOnline) {
-    attendanceMode = 'online'
-  } else {
-    attendanceMode = 'offline'
-  }
-  state.dates.push({
-    $id: `${Date.now()}`,
-    eventId: '',
-    status: 'valid',
-    startDateTime: state.startTime,
-    endDateTime: state.endTime,
-    placeName: state.placeName,
-    placeDescription: state.placeDescription,
-    maxAttendeeCapacity: state.maxAttendeeCapacity ? parseInt(String(state.maxAttendeeCapacity), 10) : null,
-    mandatoryRegistration: state.mandatoryRegistration,
-    accessibility: state.accessibility,
-    attendanceMode: attendanceMode,
-    new: true,
+  if (!(await vd$.value.$validate())) return
+  store.addDate({
+    startDateTime: form.startTime,
+    endDateTime: form.endTime,
+    placeName: form.placeName,
+    placeDescription: form.placeDescription,
+    maxAttendeeCapacity: form.maxAttendeeCapacity ? parseInt(String(form.maxAttendeeCapacity), 10) : null,
+    mandatoryRegistration: form.mandatoryRegistration,
+    accessibility: form.accessibility,
+    attendanceMode: attendanceMode(),
   })
-  state.startTime = new Date((new Date()).setMinutes(0))
-  state.endTime = new Date((new Date((new Date()).setTime((new Date()).getTime() + 3600000))).setMinutes(0))
-  state.placeName = ''
-  state.placeDescription = ''
-  state.maxAttendeeCapacity = null
-  state.mandatoryRegistration = false
-  state.accessibility = ''
-  state.attendanceMode = ''
-  state.isOffline = true
-  state.isOnline = false
+  Object.assign(form, blankForm())
+  vd$.value.$reset()
 }
 
-function deleteDate(id: string | undefined) {
-  if (!id) return
-  state.dates = state.dates.filter((date: any) => date.$id !== id)
-}
-
-function cancelDate (id: string | undefined) {
-  let date = state.dates.find(d => d.$id == id)
-  if (date) {
-    date.status = 'canceled'
-    databases.updateDocument('kronikle', 'date', id as string, {
-      status: 'canceled'
-    })
-  }
-}
-
-function deleteDateFromAppwrite(id: string | undefined) {
-  if (!id) return
-  if (state.dates.length < 2) {
-    alert(t('event.newtwo.keep-at-least-one-date'))
-    return
-  }
-  try {
-    databases.deleteDocument('kronikle', 'date', id as string)
-    state.dates = state.dates.filter((date: any) => date.$id !== id)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-function reinstateDate (id: string | undefined) {
-  let date = state.dates.find(d => d.$id == id)
-  if (date) {
-    date.status = 'valid'
-    databases.updateDocument('kronikle', 'date', id as string, {
-      status: 'valid'
-    })
-  }
-}
-function cloneDate(date: any) {
-  state.startTime = date.startDateTime
-  state.endTime = date.endDateTime
-  state.placeName = date.placeName
-  state.placeDescription = date.placeDescription
-  state.maxAttendeeCapacity = date.maxAttendeeCapacity
-  state.mandatoryRegistration = date.mandatoryRegistration
-  state.accessibility = date.accessibility
-  state.attendanceMode = date.attendanceMode
-  state.isOffline = date.attendanceMode == 'mixed' || date.attendanceMode == 'offline'
-  state.isOnline = date.attendanceMode == 'mixed' || date.attendanceMode == 'online'
+function cloneDate(date: KDate) {
+  form.startTime = new Date(date.startDateTime)
+  form.endTime = new Date(date.endDateTime)
+  form.placeName = date.placeName
+  form.placeDescription = date.placeDescription
+  form.maxAttendeeCapacity = date.maxAttendeeCapacity as number | null
+  form.mandatoryRegistration = date.mandatoryRegistration
+  form.accessibility = date.accessibility
+  form.isOffline = date.attendanceMode == 'mixed' || date.attendanceMode == 'offline'
+  form.isOnline = date.attendanceMode == 'mixed' || date.attendanceMode == 'online'
 }
 
 </script>
@@ -187,7 +116,7 @@ function cloneDate(date: any) {
             <template #fallback>
               <p>...</p>
             </template>
-            <v-date-picker v-model="state.startTime" is-required>
+            <v-date-picker v-model="form.startTime" is-required>
             </v-date-picker>
           </ClientOnly>
         </div>
@@ -200,7 +129,7 @@ function cloneDate(date: any) {
               <template #fallback>
                 <p>...</p>
               </template>
-              <v-date-picker v-model="state.startTime" mode="time" is24hr :minute-increment="10">
+              <v-date-picker v-model="form.startTime" mode="time" is24hr :minute-increment="10">
               </v-date-picker>
             </ClientOnly>
           </div>
@@ -212,7 +141,7 @@ function cloneDate(date: any) {
               <template #fallback>
                 <p>...</p>
               </template>
-              <v-date-picker v-model="state.endTime" mode="time" is24hr :minute-increment="10">
+              <v-date-picker v-model="form.endTime" mode="time" is24hr :minute-increment="10">
               </v-date-picker>
             </ClientOnly>
           </div>
@@ -233,7 +162,7 @@ function cloneDate(date: any) {
             <template #fallback>
               <p>...</p>
             </template>
-            <v-date-picker v-model="state.endTime" :min-date="state.startTime" is-required>
+            <v-date-picker v-model="form.endTime" :min-date="form.startTime" is-required>
             </v-date-picker>
           </ClientOnly>
         </div>
@@ -241,14 +170,14 @@ function cloneDate(date: any) {
     <label class="label">
       <span class="label-text">{{$t('event.newtwo.placename-label')}}</span>
     </label>
-    <input v-model="state.placeName" :placeholder="$t('event.newtwo.placename-placeholder')" class="input input-bordered bg-white w-full" />
+    <input v-model="form.placeName" :placeholder="$t('event.newtwo.placename-placeholder')" class="input input-bordered bg-white w-full" />
     <label class="label">
       <span v-if="vd$.placeName.$error && vd$.placeName.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 200})}}</span>
     </label>
     <label class="label">
       <span class="label-text">{{$t('event.newtwo.placedescription-label')}}</span>
     </label>
-    <textarea v-model="state.placeDescription" :placeholder="$t('event.newtwo.placedescription-placeholder')" class="textarea textarea-bordered bg-white w-full" />
+    <textarea v-model="form.placeDescription" :placeholder="$t('event.newtwo.placedescription-placeholder')" class="textarea textarea-bordered bg-white w-full" />
     <label class="label">
       <span v-if="vd$.placeDescription.$error && vd$.placeDescription.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 500})}}</span>
     </label>
@@ -256,7 +185,7 @@ function cloneDate(date: any) {
       <label class="label">
         <span class="label-text">{{$t('event.newfive.maxAttendeeCapacity-label')}}</span>
       </label>
-      <input v-model="state.maxAttendeeCapacity" type="text" :placeholder="$t('event.newfive.maxAttendeeCapacity-placeholder')" class="input input-bordered bg-white w-full" />
+      <input v-model="form.maxAttendeeCapacity" type="text" :placeholder="$t('event.newfive.maxAttendeeCapacity-placeholder')" class="input input-bordered bg-white w-full" />
       <label class="label">
         <span v-if="vd$.maxAttendeeCapacity.$error && vd$.maxAttendeeCapacity.integer.$invalid" class="label-text-alt text-error">{{$t('validation.integer')}}</span>
       </label>
@@ -264,36 +193,36 @@ function cloneDate(date: any) {
     <div class="form-control">
       <label class="cursor-pointer label">
         <span class="label-text">{{$t('event.newfive.mandatoryRegistration-label')}}</span>
-        <input v-model="state.mandatoryRegistration" type="checkbox" class="toggle toggle-primary" />
+        <input v-model="form.mandatoryRegistration" type="checkbox" class="toggle toggle-primary" />
       </label>
     </div>
     <div class="form-control">
       <label class="label cursor-pointer justify-start space-x-4">
-        <input v-model="state.isOffline" type="checkbox" class="checkbox" />
+        <input v-model="form.isOffline" type="checkbox" class="checkbox" />
         <span class="label-text">{{$t('event.newfour.is-offline')}}</span>
       </label>
     </div>
     <div class="form-control">
       <label class="label cursor-pointer justify-start space-x-4">
-        <input v-model="state.isOnline" type="checkbox" class="checkbox" />
+        <input v-model="form.isOnline" type="checkbox" class="checkbox" />
         <span class="label-text">{{$t('event.newfour.is-online')}}</span>
       </label>
     </div>
     <label class="label">
       <span class="label-text">{{$t('event.newfour.accessibility-label')}}</span>
     </label>
-    <textarea v-model="state.accessibility" class="textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newfour.accessibility-placeholder')"/>
+    <textarea v-model="form.accessibility" class="textarea textarea-bordered bg-white w-full" :placeholder="$t('event.newfour.accessibility-placeholder')"/>
     <button class="btn btn-primary mt-4 grow" @click="addDate">{{$t('event.newtwo.add-date')}}</button>
     <label class="label">
       <span v-if="v$.dates.$error && v$.dates.required.$invalid" class="label-text-alt text-error">{{$t('validation.required')}}</span>
       <span v-if="v$.dates.$error && v$.dates.minLength.$invalid" class="label-text-alt text-error">{{$t('validation.minLength', {length: 1})}}</span>
     </label>
     <div class="grid sm:grid-cols-2 gap-y-8 grid-cols-1 mb-10">
-      <div v-for="date of orderedDates" :key="`${date.$id}`" class="indicator">
-        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="deleteDate(date.$id)">{{$t('event.newtwo.delete')}}</span>
-        <span v-else class="indicator-item badge badge-primary cursor-pointer" @click="cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
-        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span>
-        <span v-if="date.status == 'canceled'" class="indicator-item indicator-start indicator-bottom badge badge-primary cursor-pointer" @click="deleteDateFromAppwrite(date.$id)">{{$t('event.newtwo.definitive-delete')}}</span>
+      <div v-for="date of store.orderedDates" :key="`${date.$id}`" class="indicator">
+        <span v-if="date.new" class="indicator-item badge badge-primary cursor-pointer" @click="store.removeNewDate(date.$id)">{{$t('event.newtwo.delete')}}</span>
+        <span v-else-if="date.status != 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="store.cancelDate(date.$id)">{{$t('event.newtwo.cancel')}}</span>
+        <span v-if="date.status == 'canceled'" class="indicator-item badge badge-primary cursor-pointer" @click="store.reinstateDate(date.$id)">{{$t('event.newtwo.reinstate')}}</span>
+        <span v-if="date.status == 'canceled'" class="indicator-item indicator-start indicator-bottom badge badge-primary cursor-pointer" @click="store.deleteDate(date.$id)">{{$t('event.newtwo.definitive-delete')}}</span>
         <span class="indicator-item indicator-bottom badge badge-success cursor-pointer" @click="cloneDate(date)">{{$t('event.newtwo.clone')}}</span>
         <div class="card w-64 bg-white shadow not-prose" :class="{'card-bordered border-4 border-error': date.status == 'canceled'}">
           <span v-if="date.status == 'canceled'" class="absolute t-0 l-0 text-error -rotate-45 -translate-x-8">CANCELLED</span>
