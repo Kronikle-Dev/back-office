@@ -62,16 +62,21 @@ export default defineEventHandler(async (event) : Promise<ThirdPartyEvent[] | an
       const options = optionsFact(config.organizationId, 0, nbevents, queryObject)
       const eventsResp = await fetch(initialfetchurl, options )
       const eventsJson = await eventsResp.json()
-      return eventsJson.items.map((event: any) : ThirdPartyEvent => {
+      const mapped: ThirdPartyEvent[] = eventsJson.items.map((event: any) : ThirdPartyEvent => {
         return {
           name: event.name,
           id: event.id,
           description: event.objectives,
-          date: event.sessions.map((session: any): Date => {
-            return new Date(session.dateBegin)
-          })
+          // Sessions les plus récentes en premier
+          date: (event.sessions ?? [])
+            .map((session: any): Date => new Date(session.dateBegin))
+            .sort((a: Date, b: Date) => b.getTime() - a.getTime())
         }
       })
+      // Événements triés par date décroissante (session la plus récente) ;
+      // ceux sans session passent en fin de liste.
+      const latest = (e: ThirdPartyEvent) => e.date[0]?.getTime() ?? -Infinity
+      return mapped.sort((a, b) => latest(b) - latest(a))
     } else {
       console.error(body)
       throw new Error('Could not import events from Sygefor API endpoint')
