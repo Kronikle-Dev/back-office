@@ -6,10 +6,16 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
   ],
   routeRules: {
-    '/*': {
+    // `/**` (et non `/*`, qui ne couvre qu'un segment) : tout le back-office est
+    // une SPA, sinon les pages imbriquées (/event/new, /display/:id…) passent en
+    // SSR et le middleware auth, sans session côté serveur, redirige vers /login.
+    '/**': {
       ssr: false,
     },
-    '/d/*': {
+    '/d/**': {
+      ssr: true,
+    },
+    '/dqr/**': {
       ssr: true,
     },
   },
