@@ -1,20 +1,11 @@
 <script lang="ts" setup>
 import { Databases, Query, Teams, Permission, Role } from 'appwrite'
-import { CalendarView, CalendarViewHeader } from "vue-simple-calendar"
-import "~~/node_modules/vue-simple-calendar/dist/style.css"
-import "~~/node_modules/vue-simple-calendar/dist/css/default.css"
 const {$appwrite} = useNuxtApp()
 
-let organization = ''
 const teams = new Teams($appwrite().client)
 const myTeams = await teams.list()
-if (myTeams.teams.length === 0) {
-  organization = ''
-}
-const myTeamId = myTeams.teams[0].$id
-organization = myTeamId
+const organization = myTeams.teams[0]?.$id ?? ''
 
-let showDate = ref(new Date())
 let showTutorial = ref(false)
 let isTestEventCreating = ref(false)
 
@@ -23,20 +14,31 @@ definePageMeta({
   layout: "app"
 })
 
-const events = ref([] as KEvent[])
+const events = ref<KEvent[]>([])
+const dates = ref<KDateApi[]>([])
 
-events.value = (await $appwrite().getAllPages('kronikle', 'event', [
+const eventQueries = () => [
   Query.equal('organization', organization),
   Query.notEqual('status', 'archived'),
   Query.orderDesc('$createdAt'),
-])) as unknown as KEvent[]
+]
 
-let dates = [] as KDateApi[]
-if (events.value.length > 0) {
-  dates.push(... (await $appwrite().getAllPages('kronikle', 'date', [
-    Query.equal('eventId', events.value.slice(0,100).map(ev => ev.$id as string))
-  ])) as unknown as KDateApi[])
+async function fetchEvents() {
+  events.value = (await $appwrite().getAllPages('kronikle', 'event', eventQueries())) as unknown as KEvent[]
 }
+
+// Appwrite limite le nombre de valeurs d'un `Query.equal` : on découpe par lots de 100.
+async function fetchDates() {
+  const ids = events.value.map(e => e.$id as string)
+  const chunks: string[][] = []
+  for (let i = 0; i < ids.length; i += 100) chunks.push(ids.slice(i, i + 100))
+  const pages = await Promise.all(chunks.map(chunk =>
+    $appwrite().getAllPages('kronikle', 'date', [Query.equal('eventId', chunk)])))
+  dates.value = pages.flat() as unknown as KDateApi[]
+}
+
+await fetchEvents()
+await fetchDates()
 
 onMounted(async () => {
   if(typeof Storage !== 'undefined') {
@@ -47,58 +49,35 @@ onMounted(async () => {
   }
 })
 
-function getEventForDate (date: KDateApi) : KEvent  | null {
-  return events.value.find((e) => e.$id == date.eventId) || null
-}
+// Séances avec leur événement, triées par date de début.
+const augmentedDates = computed<KDateApiAug[]>(() =>
+  dates.value
+    .map(d => ({ ...d, event: events.value.find(e => e.$id === d.eventId) ?? null }))
+    .filter(d => d.event !== null)
+    .sort((a, b) => Date.parse(a.startDateTime) - Date.parse(b.startDateTime)))
 
-const augmentedDates = computed(() => {
- return dates.sort((a, b) => {
-    return (new Date(a.startDateTime)).getTime() - (new Date(b.startDateTime)).getTime()
-  }).map((d) => {
-    (d as KDateApiAug).event = getEventForDate(d)
-    if (d != null) {
-      return d
-    } else {
-      return
-    }
-  }) as KDateApiAug[]
-})
-
+const upcomingSessions = computed(() =>
+  augmentedDates.value.filter(d => Date.parse(d.startDateTime) >= Date.now()).slice(0, 5))
 
 $appwrite().client.subscribe(['databases.kronikle.collections.event.documents'], async () => {
-  events.value = (await $appwrite().getAllPages('kronikle', 'event', [
-    Query.equal('organization', organization)
-  ])) as unknown as KEvent[]
+  await fetchEvents()
+  await fetchDates()
 })
 
 $appwrite().client.subscribe(['databases.kronikle.collections.date.documents'], async () => {
-  dates = []
-  dates.push(... await $appwrite().getAllPages('kronikle', 'date', [
-    Query.equal('eventId', events.value.map(ev => ev.$id as string))
-  ]) as unknown as KDateApi[])
+  await fetchDates()
 })
 
-function setShowDate(d: Date) {
-  console.log(d)
-  showDate.value = d;
+// Mise à jour locale après un glisser-déposer réussi dans le calendrier.
+function onSessionUpdated(p: { id: string, startDateTime: string, endDateTime: string }) {
+  const d = dates.value.find(x => x.$id === p.id)
+  if (d) Object.assign(d, { startDateTime: p.startDateTime, endDateTime: p.endDateTime })
 }
 
-const eventItems = computed(() => {
-  return augmentedDates.value.map((date) => {
-    return {
-      id: date.$id,
-      startDate: new Date(date.startDateTime),
-      endDate: new Date(date.endDateTime),
-      title: date.event?.name,
-      url: `/event/${date.event?.$id}`,
-      classes: ["cursor-pointer"]
-    }
-  })
-})
-
-function navigateToEvent (simpleCalendarEvent: any) {
-  console.log(simpleCalendarEvent)
-  navigateTo(simpleCalendarEvent.url)
+const errorMessage = ref('')
+function onCalendarError(message: string) {
+  errorMessage.value = message
+  setTimeout(() => { errorMessage.value = '' }, 5000)
 }
 
 async function createTestEvent () {
@@ -162,25 +141,14 @@ async function createTestEvent () {
 </script>
 
 <template>
-  <div class="max-w-[50rem] mx-auto prose">
+  <div class="max-w-5xl mx-auto prose">
     <h2>{{$t('event.index.title')}}</h2>
     <div class="flex flex-row justify-between">
       <p>{{$t('event.index.subtitle')}} </p><nuxt-link to="/event/new" class="btn btn-primary">{{ $t('event.index.create-event') }}</nuxt-link>
     </div>
-    <div class="my-3 flex flex-col grow">
-      <CalendarView
-        class="theme-default card shadow rounded-lg"
-        :startingDayOfWeek="1"
-        :items="eventItems"
-        @click-item="navigateToEvent"
-        :show-date="showDate">
-        <template #header="{ headerProps }">
-          <calendar-view-header
-            :header-props="headerProps"
-            @input="setShowDate" />
-        </template>
-      </CalendarView>
-    </div>
+    <UpcomingSessions :sessions="upcomingSessions" />
+    <h3 class="not-prose text-xl font-bold mb-3">{{ $t('event.index.calendar.title') }}</h3>
+    <HomeCalendar :sessions="augmentedDates" @updated="onSessionUpdated" @error="onCalendarError" />
     <dialog id="my_modal_2" class="modal" :class="{'modal-open': showTutorial}">
       <div class="modal-box">
         <h3 class="text-lg font-bold">{{ $t('tutorial.welcome.title') }}</h3>
@@ -198,27 +166,8 @@ async function createTestEvent () {
         </div>
       </div>
     </dialog>
-    <!--
-    <NuxtLink
-        v-for="event of events"
-        :key="event.$id"
-        :to="`/event/${event.$id}`">
-      <div
-        class="my-3 bg-white card shadow py-2 px-4 cursor-pointer hover:shadow-lg flex flex-row space-x-2 not-prose">
-        <div class="avatar">
-          <div class="w-24 rounded">
-            <img :src="event.imageUrl" />
-          </div>
-        </div>
-        <div class="font-bold">{{event.name}}</div>
-      </div>
-    </NuxtLink>
-    -->
+    <div v-if="errorMessage" class="toast toast-end z-50">
+      <div class="alert alert-error"><span>{{ errorMessage }}</span></div>
+    </div>
   </div>
 </template>
-
-<style>
-.cv-week {
-  min-height: 6em;
-}
-</style>

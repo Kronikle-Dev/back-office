@@ -49,6 +49,8 @@ Les référentiels `tag`, `public-type`, `event-type` sont filtrés par `author 
 
 Un `KEvent` est un document `event` ; ses occurrences sont des documents `date` séparés (`eventId`). Les listes chargent donc d'abord les événements, puis toutes leurs dates via `Query.equal('eventId', [...ids])`. Un événement supprimé passe en `status: 'archived'` (corbeille) et les requêtes ajoutent `Query.notEqual('status', 'archived')`.
 
+La page d'accueil (`pages/index.vue`) affiche les 5 prochaines séances (`components/UpcomingSessions.vue`) et un calendrier `@svar-ui/vue-calendar` (`components/HomeCalendar.client.vue`, client-only, thème Willow, locale fr, vues mois/semaine/jour). Le glisser-déposer d'une séance met à jour `startDateTime`/`endDateTime` du document `date` (revert + toast en cas d'échec) ; création et suppression depuis le calendrier sont bloquées par `api.intercept`. Le composant doit rester dans un conteneur `not-prose`.
+
 Appwrite n'a pas de requête « contains » sur les tableaux : les filtres par tags/publics/types des affichages sont appliqués **côté client** après récupération.
 
 ### Assistant de création/édition d'événement

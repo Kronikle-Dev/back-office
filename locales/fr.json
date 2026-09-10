@@ -91,7 +91,15 @@
     "index": {
       "title": "Événements",
       "subtitle": "Retrouvez ici l'entièreté de votre programmation",
-      "create-event": "Créer un événement"
+      "create-event": "Créer un événement",
+      "upcoming": {
+        "title": "Événements à venir"
+      },
+      "calendar": {
+        "title": "Calendrier",
+        "update-error": "La séance n'a pas pu être déplacée, la modification a été annulée.",
+        "invalid-range": "La fin de la séance doit être postérieure à son début."
+      }
     },
     "card": {
       "edit": "Éditer l'événement",

@@ -164,6 +164,6 @@ onMounted(async () => {
 <template>
   <div>
     <!--<TemplateBasicEvent v-if="qr || display.template === 'basic'" :events="events" :event="event"></TemplateBasicEvent>-->
-    <TemplateExploreEvent v-if="loaded && display && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event" :date="date"></TemplateExploreEvent>
+    <TemplateExploreEvent v-if="display && event && date && display.template === 'explore-v3'" :events="events" :display="display" :dates="dates" :event="event" :date="date"></TemplateExploreEvent>
   </div>
 </template>
