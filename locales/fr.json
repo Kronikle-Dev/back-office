@@ -200,7 +200,7 @@
     },
     "import": {
       "title": "Importer un événement",
-      "subtitle": "Importez vos événements depuis l'URL d'un calendrier (Google Agenda, Outlook, Nextcloud…). L'import depuis Sygefor est réservé à la version pro.",
+      "subtitle": "Importez vos événements depuis l'URL d'un calendrier (Google Agenda, Outlook, Nextcloud…) plutôt que de les ressaisir un par un.",
       "new-event": "Créer un événement manuellement",
       "name-label": "Nom de l'événement",
       "name-placeholder": "Entrez ici le nom de l'événement que vous souhaitez importer",
@@ -210,7 +210,8 @@
       "failed": "L'import a échoué, veuillez réessayer.",
       "tabs": {
         "ical": "Calendrier (URL)",
-        "sygefor": "Sygefor"
+        "sygefor": "Sygefor",
+        "custom": "Un autre outil ?"
       },
       "ical": {
         "url-label": "URL du calendrier (iCalendar / .ics)",
@@ -245,6 +246,20 @@
           "not-ical": "Cette adresse ne renvoie pas un calendrier iCalendar.",
           "invalid-ical": "Ce calendrier est illisible : le fichier iCalendar est mal formé."
         }
+      },
+      "custom": {
+        "ical-first": "L'import par URL de calendrier couvre déjà la plupart des besoins : si votre outil publie un agenda (.ics), commencez par là.",
+        "ical-first-button": "Essayer l'import par URL",
+        "title": "Votre agenda n'est pas dans la liste ?",
+        "intro": "Si votre programmation vit ailleurs — logiciel métier, plateforme d'inscription, base de données, site web — nous développons sur demande un connecteur dédié à votre outil.",
+        "arg-1": "Vos événements remontent automatiquement, avec leurs séances, leurs thèmes et leurs publics.",
+        "arg-2": "Le connecteur est spécifié avec vous, puis développé et maintenu par l'équipe Kronikle.",
+        "arg-3": "Le développement d'un connecteur sur mesure fait partie des prestations de la version pro.",
+        "cta-title": "Parlons de votre outil",
+        "cta-text": "Décrivez-nous votre logiciel et le volume d'événements concerné : nous revenons vers vous avec la faisabilité et une estimation.",
+        "cta": "Parler de mon outil d'agenda",
+        "mail-subject": "Kronikle — connecteur pour mon outil d'agenda",
+        "mail-body": "Bonjour,\n\nNous souhaitons importer automatiquement nos événements dans Kronikle depuis notre outil d'agenda.\n\nOrganisation : {organization}\nOutil utilisé : \nAccès disponible (API, export, flux) : \nNombre d'événements par an : \n\nMerci de nous indiquer la faisabilité et le budget.\n\nCordialement,"
       }
     }
   },

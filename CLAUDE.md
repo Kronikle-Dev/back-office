@@ -68,13 +68,13 @@ Le segment optionnel `d[[qr]]` permet la variante `/dqr/...` destinée aux QR co
 ### Routes serveur (Nitro)
 
 - `server/api/open-graph.get.ts` : scrape les métadonnées OG d'une URL (ou oEmbed Twitter) pour les ressources de type lien.
-- `server/api/third-party/sygefor-33/` : importeur d'événements depuis l'API Sygefor (réseau URFIST). `list.get.ts` interroge l'API Elasticsearch de Sygefor, `event/[eventId].get.ts` convertit une formation en `KImportEvent` (HTML → Markdown via `node-html-markdown`). Le nom du dossier (`sygefor-33`) doit correspondre à l'ID de team utilisé par `pages/event/import.vue`, qui construit l'URL `/api/third-party/${organization}/...`. L'`organizationId` Sygefor est dans `shared/sygefor.ts`.
+- `server/api/third-party/sygefor-33/` : importeur d'événements depuis l'API Sygefor (réseau URFIST). `list.get.ts` interroge l'API Elasticsearch de Sygefor, `event/[eventId].get.ts` convertit une formation en `KImportEvent` (HTML → Markdown via `node-html-markdown`). Le nom du dossier (`sygefor-33`) doit correspondre à l'ID de team, car `components/event/import/SygeforImporter.vue` construit l'URL `/api/third-party/${organization}/...`. Cet ID est exposé par `shared/sygefor.ts` (`sygeforTeamId`) et sert à n'afficher l'onglet Sygefor qu'à cette organisation ; l'`organizationId` de l'API Sygefor, lui, est dans `SygeforImporterConfig.js`.
 
 ### Layouts et auth
 
 - `layouts/app.vue` : back-office avec `SideBar` ; `layouts/blank.vue` : login/signup/recovery ; `layouts/display.vue` : pages publiques.
 - `middleware/auth.ts` redirige vers `/login` si `account.get()` échoue. Toute page du back-office déclare `definePageMeta({ middleware: ["auth"], layout: "app" })`.
-- Certaines fonctionnalités (import) sont réservées aux comptes portant le label Appwrite `premium`.
+- Certaines fonctionnalités sont réservées aux comptes portant le label Appwrite `premium` (visuels de `RessourceForm`/`DisplayForm`, formats de `PrintForm`). L'import, lui, ne dépend plus du label : l'onglet Sygefor est réservé à sa team, les autres organisations voient un onglet proposant un connecteur sur mesure.
 
 ### Style
 

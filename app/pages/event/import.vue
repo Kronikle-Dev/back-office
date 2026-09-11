@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Teams, Query } from 'appwrite'
+import { sygeforTeamId } from '#shared/sygefor'
 const { $appwrite } = useNuxtApp()
 
 definePageMeta({
@@ -13,8 +14,13 @@ const router = useRouter()
 const teams = new Teams($appwrite().client)
 const myTeams = await teams.list()
 const organization = myTeams.teams[0]?.$id ?? ''
+const organizationName = myTeams.teams[0]?.name ?? ''
 
-const isPremium = (await $appwrite().account?.get()).labels?.includes('premium')
+// L'importeur Sygefor a été développé pour une organisation précise, et ses routes
+// serveur sont résolues depuis l'id de team : il n'a de sens que pour elle. Les autres
+// se voient proposer le développement de leur propre connecteur.
+const isSygeforTeam = organization === sygeforTeamId
+const secondTab = isSygeforTeam ? 'sygefor' : 'custom'
 
 // `originId` des événements déjà importés, toutes sources confondues : sert aux
 // deux onglets pour griser les lignes correspondantes.
@@ -31,7 +37,13 @@ if (organization) {
   }
 }
 
-const tab = ref(isPremium && route.query.tab === 'sygefor' ? 'sygefor' : 'ical')
+const tab = ref(route.query.tab === secondTab ? secondTab : 'ical')
+
+// URL forgée (`?tab=sygefor` sur un compte qui n'y a pas droit) : on retombe sur
+// l'onglet calendrier et on nettoie la query plutôt que de laisser un état trompeur.
+if (route.query.tab && route.query.tab !== tab.value) {
+  router.replace({ query: { ...route.query, tab: tab.value } })
+}
 
 function selectTab (value: string) {
   tab.value = value
@@ -50,12 +62,12 @@ function onImported (originId: string) {
     <h2>{{ $t('event.import.title') }}</h2>
     <p>{{ $t('event.import.subtitle') }}</p>
 
-    <div v-if="isPremium" role="tablist" class="tabs tabs-boxed not-prose my-4">
+    <div role="tablist" class="tabs tabs-boxed not-prose my-4">
       <a role="tab" class="tab" :class="{ 'tab-active': tab === 'ical' }" @click="selectTab('ical')">
         {{ $t('event.import.tabs.ical') }}
       </a>
-      <a role="tab" class="tab" :class="{ 'tab-active': tab === 'sygefor' }" @click="selectTab('sygefor')">
-        {{ $t('event.import.tabs.sygefor') }}
+      <a role="tab" class="tab" :class="{ 'tab-active': tab === secondTab }" @click="selectTab(secondTab)">
+        {{ $t(`event.import.tabs.${secondTab}`) }}
       </a>
     </div>
 
@@ -66,8 +78,13 @@ function onImported (originId: string) {
       @imported="onImported" />
 
     <EventImportSygeforImporter
-      v-if="isPremium && tab === 'sygefor'"
+      v-if="isSygeforTeam && tab === 'sygefor'"
       :organization="organization"
       :existing-origin-ids="existingOriginIds" />
+
+    <EventImportCustomImporterPitch
+      v-if="!isSygeforTeam && tab === 'custom'"
+      :organization-name="organizationName"
+      @select-ical="selectTab('ical')" />
   </div>
 </template>
