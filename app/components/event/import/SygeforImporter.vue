@@ -10,7 +10,14 @@ const errorMessage = ref('')
 
 const { importKEvent } = useEventImporter(props.organization)
 
-const { data: events, pending, refresh } = await useFetch(() => `/api/third-party/${props.organization}/list?query=${query.value}`)
+// `lazy: true` est indispensable : sans lui, l'`await` rend le setup asynchrone et Vue
+// suspend le composant entier (monté en `v-if`) le temps de la réponse de l'API Sygefor,
+// qui est lente. L'utilisateur n'a alors aucun retour visuel. En lazy, le composant
+// s'affiche tout de suite et `pending` pilote le loader ci-dessous.
+const { data: events, pending, refresh } = await useFetch(
+  () => `/api/third-party/${props.organization}/list?query=${query.value}`,
+  { lazy: true },
+)
 
 function search () {
   refresh()
@@ -44,7 +51,10 @@ async function importEvent (eventId: string) {
       :placeholder="$t('event.import.name-placeholder')"
       class="input input-bordered bg-white w-full"
       @keypress.enter="search">
-    <div v-if="pending" class="my-4">{{ $t('event.import.loading') }}</div>
+    <div v-if="pending" class="my-4 flex items-center gap-3">
+      <span class="loading loading-spinner loading-md" />
+      <span>{{ $t('event.import.loading') }}</span>
+    </div>
     <div
       v-for="event of events"
       :key="event.id"
