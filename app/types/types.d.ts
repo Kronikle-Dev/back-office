@@ -101,3 +101,25 @@ interface KDisplay {
   logoUrl: string,
   maxEventAgeMonths?: number | null, // null/absent/0 = pas de péremption des séances
 }
+
+// --- Import iCalendar (cf. server/utils/ical.ts) ---
+
+interface IcalPreviewEvent {
+  uid: string,
+  originId: string,
+  name: string,
+  firstStart: string, // ISO
+  lastEnd: string, // ISO
+  occurrences: number,
+  recurring: boolean,
+  past: boolean,
+  location: string,
+  import: KImportEvent,
+}
+
+interface IcalPreviewResponse {
+  error?: string, // code d'erreur traduit côté client (event.import.ical.errors.<code>)
+  calendarName?: string,
+  truncated?: boolean,
+  events: IcalPreviewEvent[],
+}

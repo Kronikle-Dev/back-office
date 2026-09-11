@@ -28,6 +28,7 @@
     "filepond-plugin-file-validate-size": "^2.2.7",
     "filepond-plugin-file-validate-type": "^1.2.8",
     "filepond-plugin-image-preview": "^4.6.11",
+    "ical.js": "^2.2.1",
     "jspdf": "^4.2.1",
     "luxon": "^3.2.1",
     "markdown-it": "^15.0.1",

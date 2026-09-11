@@ -35,7 +35,7 @@
     "consent": "En créant mon compte, j'accepte les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGU.pdf\" target=\"_blank\">conditions générales d'utilisation</a> ainsi que les <a href=\"https://www.kronikle.eu/wp-content/uploads/2024/04/CGV.pdf\" target=\"_blank\">conditions générales de vente</a>",
     "signup": "Créer un compte",
     "login": "J'ai déjà un compte",
-    "error":"Une erreur est survenue, vous pouvez envoyer un email à alix@kronikle.eu"
+    "error": "Une erreur est survenue, vous pouvez envoyer un email à alix@kronikle.eu"
   },
   "recovery": {
     "title": "Réinitialisation de mot de passe",
@@ -71,7 +71,7 @@
       "title": "Bienvenue sur Kronikle",
       "text-1": "Kronikle vous permet de gérer vos événements et de les afficher sur des écrans dédiés.",
       "text-2": "Vous pouvez ajouter des événements manuellement ou en créer un de test (pas ne panique, vous pourrez le supprimer).",
-      "text-3": "Vous pouvez aussi importer des événements depuis votre outil d'agenda avec la version pro, discutons-en !",
+      "text-3": "Vous pouvez aussi importer vos événements depuis l'URL d'un calendrier (Google Agenda, Outlook, Nextcloud…).",
       "button-create-event": "Créer un événement manuellement",
       "button-create-test-event": "Créer un événement test",
       "button-discuss": "Discuter de la version pro",
@@ -167,7 +167,7 @@
       "subtitle": "Vous pouvez choisir une image pour votre événement, elle sera affichée sur la page de l'événement.",
       "image-label": "Image",
       "image-placeholder": "Cliquer ou glisser-déposer un fichier ici (5mo max)"
-    }, 
+    },
     "newfour": {
       "title": "Quelques informations supplémentaires",
       "subtitle": "Vous pouvez ajouter des informations supplémentaires à votre événement (thèmes, publics, etc...)",
@@ -200,13 +200,52 @@
     },
     "import": {
       "title": "Importer un événement",
-      "subtitle": "Importer un événement depuis votre outils d'agenda, vous faites partie de l'organisation : ",
-      "subtitle-premium": "L'importation d'événements à partir d'un de vos logiciels d'agenda est une fonctionnalité réservée aux utilisateurs ayant souscrit à un abonnement payant. Vous pouvez tout de même ajouter des événements manuellement.",
+      "subtitle": "Importez vos événements depuis l'URL d'un calendrier (Google Agenda, Outlook, Nextcloud…). L'import depuis Sygefor est réservé à la version pro.",
       "new-event": "Créer un événement manuellement",
       "name-label": "Nom de l'événement",
       "name-placeholder": "Entrez ici le nom de l'événement que vous souhaitez importer",
       "importing": "Import en cours.",
-      "already-imported": "Déjà importé"
+      "already-imported": "Déjà importé",
+      "loading": "Chargement…",
+      "failed": "L'import a échoué, veuillez réessayer.",
+      "tabs": {
+        "ical": "Calendrier (URL)",
+        "sygefor": "Sygefor"
+      },
+      "ical": {
+        "url-label": "URL du calendrier (iCalendar / .ics)",
+        "url-placeholder": "https://… ou webcal://…",
+        "load": "Charger",
+        "saved-urls": "Calendriers déjà utilisés",
+        "forget": "Oublier cette URL",
+        "include-past": "Inclure les événements passés",
+        "default-calendar-name": "Calendrier",
+        "calendar-empty": "Aucun événement à importer dans ce calendrier.",
+        "truncated": "Ce calendrier contient beaucoup d'événements : seuls les 500 premiers sont affichés.",
+        "select-all": "Tout sélectionner",
+        "deselect-all": "Tout désélectionner",
+        "search-placeholder": "Filtrer par titre ou description…",
+        "search-hint": "Accepte une expression régulière (insensible à la casse).",
+        "search-results": "{shown} événement(s) affiché(s) sur {total}.",
+        "search-empty": "Aucun événement ne correspond à cette recherche.",
+        "recurring": "Récurrent",
+        "past": "Passé",
+        "other-sessions": "et {n} autre séance | et {n} autres séances",
+        "import-button": "Importer {n} événement | Importer {n} événements",
+        "progress": "{done} / {total}",
+        "success": "{n} événement importé | {n} événements importés",
+        "see-events": "Voir mes événements",
+        "failed": "Certains événements n'ont pas pu être importés :",
+        "errors": {
+          "missing-url": "Veuillez saisir l'URL d'un calendrier.",
+          "invalid-url": "Cette URL n'est pas valide. Utilisez une adresse http(s):// ou webcal:// publique.",
+          "fetch-failed": "Impossible de récupérer ce calendrier. Vérifiez que l'URL est accessible publiquement.",
+          "timeout": "Le calendrier a mis trop de temps à répondre.",
+          "too-large": "Ce calendrier est trop volumineux (plus de 5 Mo).",
+          "not-ical": "Cette adresse ne renvoie pas un calendrier iCalendar.",
+          "invalid-ical": "Ce calendrier est illisible : le fichier iCalendar est mal formé."
+        }
+      }
     }
   },
   "resource": {
@@ -223,7 +262,7 @@
       "url-placeholder": "https://example.fr",
       "tags": "Catégories",
       "tags-placeholder": "Arts et Culture, Musique, etc...",
-      "preview" : "Aperçu"
+      "preview": "Aperçu"
     }
   },
   "display": {
