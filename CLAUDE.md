@@ -35,7 +35,7 @@ Variable d'environnement : `NUXT_PUBLIC_APPWRITE_PROJECT` (projet Appwrite, déf
 
 - `app/plugins/appwrite.ts` fournit `$appwrite()` : un singleton avec `client`, `account` et `getAllPages(db, collection, queries, cursor?, pageSize = 100)` qui pagine automatiquement via `cursorAfter`. Utiliser `getAllPages` plutôt que `listDocuments` dès qu'on peut dépasser 100 documents ; `pageSize` peut monter jusqu'à 1000 pour les collections volumineuses (max Appwrite 5000).
 - Le SDK `appwrite` (v26) est importé directement dans les composants pour `Databases`, `Teams`, `Storage`, `Query`, `Permission`, `Role`.
-- Base : `kronikle`. Collections : `event`, `date`, `resource`, `display`, `display-usage`, `tag`, `public-type`, `event-type`. Buckets : `event-thumbnails`, `resource-file`, `display-logo`.
+- Base : `kronikle`. Collections : `event`, `date`, `resource`, `display`, `display-usage`, `tag`, `public-type`, `event-type`, `place`. Buckets : `event-thumbnails`, `resource-file`, `display-logo`.
 - Les types des documents sont déclarés globalement (sans import) dans `app/types/types.d.ts` : `KEvent`, `KDate`/`KDateApi`, `KResource`, `KDisplay`, `KImportEvent`…
 - **Images** : toujours passer les URLs de fichiers Appwrite par `imgSrc()` (`app/utils/storage.ts`) et utiliser `getFileView`, jamais `getFilePreview` : l'endpoint `/preview` renvoie une 500 sur le serveur 1.9.0.
 
@@ -52,6 +52,10 @@ Un `KEvent` est un document `event` ; ses occurrences sont des documents `date` 
 La page d'accueil (`pages/index.vue`) affiche les 5 prochaines séances (`components/UpcomingSessions.vue`) et un calendrier `@svar-ui/vue-calendar` (`components/HomeCalendar.client.vue`, client-only, thème Willow, locale fr, vues mois/semaine/jour). Le glisser-déposer d'une séance met à jour `startDateTime`/`endDateTime` du document `date` (revert + toast en cas d'échec) ; création et suppression depuis le calendrier sont bloquées par `api.intercept`. Le composant doit rester dans un conteneur `not-prose`.
 
 Appwrite n'a pas de requête « contains » sur les tableaux : les filtres par tags/publics/types des affichages sont appliqués **côté client** après récupération.
+
+### Lieux
+
+Collection `place` (`KPlace` : `name`, `description`, `author` = id de team), gérée sur `/place` (`pages/place.vue`) et manipulée exclusivement via `app/composables/usePlaces.ts` (liste, création, modification, suppression, `ensure`/`ensureMany` par nom normalisé — trim, espaces réduits, minuscules —, `importFromDates` qui rattrape les lieux des séances existantes). Le lieu d'une séance reste **dénormalisé** sur le document `date` (`placeName`/`placeDescription`) : renommer ou supprimer un lieu ne propage rien. Le référentiel est alimenté automatiquement, de façon non bloquante, à la publication (`publish()` du store) et à l'import (`useEventImporter`). À l'étape 2 de l'assistant, `components/event/PlacePicker.vue` propose les lieux connus (`store.availablePlaces`) dans le champ « Nom du lieu » et remplit aussi la description. Contrairement aux autres référentiels, les documents `place` sont en `read: team(org)` (jamais lus par les pages publiques).
 
 ### Assistant de création/édition d'événement
 

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { Databases, Permission, Role, Query } from 'appwrite'
+import { usePlaces } from '@/composables/usePlaces'
 
 // Store de l'assistant de création / édition d'événement (New1 → New6).
 //
@@ -108,6 +109,7 @@ export const useEventDraftStore = defineStore('eventDraft', () => {
   const availableTags = ref<ReferenceItem[]>([])
   const availablePublicTypes = ref<ReferenceItem[]>([])
   const availableEventTypes = ref<ReferenceItem[]>([])
+  const availablePlaces = ref<KPlace[]>([])
   let referenceLoadedFor: string | null = null
 
   const isEditing = computed(() => existingEventId.value !== null)
@@ -278,6 +280,13 @@ export const useEventDraftStore = defineStore('eventDraft', () => {
       console.error('Chargement des référentiels impossible', e)
       setError('event.new.reference-error')
     }
+
+    // Les lieux sont chargés à part : leur absence ne doit pas bloquer l'assistant.
+    try {
+      availablePlaces.value = await usePlaces(org).list()
+    } catch (e) {
+      console.warn('Chargement des lieux impossible', e)
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -420,6 +429,16 @@ export const useEventDraftStore = defineStore('eventDraft', () => {
       const failed = results.find((r): r is PromiseRejectedResult => r.status === 'rejected')
       if (failed) throw failed.reason
 
+      // Apprentissage des lieux des nouvelles séances : un échec ne doit pas
+      // faire échouer la publication, l'événement et ses séances sont en base.
+      try {
+        const placesApi = usePlaces(org)
+        await placesApi.ensureMany(newDates.map((d) => ({ name: d.placeName, description: d.placeDescription })))
+        availablePlaces.value = placesApi.places.value
+      } catch (e) {
+        console.warn('Enregistrement des lieux impossible', e)
+      }
+
       persistenceEnabled = false
       clearPersistedDraft()
       return true
@@ -446,6 +465,7 @@ export const useEventDraftStore = defineStore('eventDraft', () => {
     availableTags,
     availablePublicTypes,
     availableEventTypes,
+    availablePlaces,
     initForCreate,
     initFromExisting,
     discardDraft,

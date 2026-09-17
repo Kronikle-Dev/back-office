@@ -29,6 +29,15 @@ interface KDateApiAug extends KDateApi {
   event: KEvent | null
 }
 
+// Lieu réutilisable d'une organisation (collection `place`). Le lieu d'une séance
+// reste dénormalisé sur le document `date` : renommer un lieu ne propage rien.
+interface KPlace {
+  $id?: string,
+  name: string,
+  description: string,
+  author: string, // id de la Team (organisation)
+}
+
 interface KEvent {
   name: string,
   description: string,

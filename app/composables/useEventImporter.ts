@@ -1,4 +1,5 @@
 import { Databases, Permission, Role, Query } from 'appwrite'
+import { usePlaces } from '@/composables/usePlaces'
 
 type RefDoc = { $id: string, name: string }
 type RefCollection = 'tag' | 'public-type' | 'event-type'
@@ -12,6 +13,7 @@ type RefCollection = 'tag' | 'public-type' | 'event-type'
 export function useEventImporter (organization: string) {
   const { $appwrite } = useNuxtApp()
   const databases = new Databases($appwrite().client)
+  const places = usePlaces(organization)
 
   const caches: Record<RefCollection, RefDoc[] | null> = {
     'tag': null,
@@ -29,6 +31,7 @@ export function useEventImporter (organization: string) {
     caches.tag = null
     caches['public-type'] = null
     caches['event-type'] = null
+    places.invalidate()
   }
 
   async function resolveRefs (collection: RefCollection, names: string[]): Promise<string[]> {
@@ -82,6 +85,13 @@ export function useEventImporter (organization: string) {
         eventId: eventObj.$id,
       }, permissions())
     }))
+
+    // Lieux des séances importées : non bloquant, l'événement est déjà créé.
+    try {
+      await places.ensureMany(imp.dates.map((d) => ({ name: d.placeName ?? '', description: d.placeDescription ?? '' })))
+    } catch (e) {
+      console.warn('Enregistrement des lieux importés impossible', e)
+    }
 
     return eventObj.$id
   }

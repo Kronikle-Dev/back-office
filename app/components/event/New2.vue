@@ -78,8 +78,8 @@ async function addDate() {
   store.addDate({
     startDateTime: form.startTime,
     endDateTime: form.endTime,
-    placeName: form.placeName,
-    placeDescription: form.placeDescription,
+    placeName: form.placeName.trim(),
+    placeDescription: form.placeDescription.trim(),
     maxAttendeeCapacity: form.maxAttendeeCapacity ? parseInt(String(form.maxAttendeeCapacity), 10) : null,
     mandatoryRegistration: form.mandatoryRegistration,
     accessibility: form.accessibility,
@@ -170,7 +170,10 @@ function cloneDate(date: KDate) {
     <label class="label">
       <span class="label-text">{{$t('event.newtwo.placename-label')}}</span>
     </label>
-    <input v-model="form.placeName" :placeholder="$t('event.newtwo.placename-placeholder')" class="input input-bordered bg-white w-full" />
+    <EventPlacePicker v-model:name="form.placeName" v-model:description="form.placeDescription" :places="store.availablePlaces" :placeholder="$t('event.newtwo.placename-placeholder')" />
+    <label class="label">
+      <span class="label-text-alt">{{$t('event.newtwo.placename-hint')}} <NuxtLink to="/place" class="link">{{$t('event.newtwo.manage-places')}}</NuxtLink></span>
+    </label>
     <label class="label">
       <span v-if="vd$.placeName.$error && vd$.placeName.maxLength.$invalid" class="label-text-alt text-error">{{$t('validation.maxLength', {length: 200})}}</span>
     </label>
