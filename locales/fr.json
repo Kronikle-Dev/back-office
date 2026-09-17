@@ -284,7 +284,33 @@
     "index": {
       "title": "Affichages",
       "subtitle": "Listez et créez des affichages qui permettront à vos usagers de consulter vos contenus et événements",
-      "new": "Créer un nouvel affichage"
+      "new": "Créer un nouvel affichage",
+      "stats": "Statistiques"
+    },
+    "stats": {
+      "title": "Statistiques : {name}",
+      "back": "Retour à l'affichage",
+      "period-7": "7 jours",
+      "period-30": "30 jours",
+      "period-90": "90 jours",
+      "loading": "Chargement des statistiques…",
+      "error": "Impossible de charger les statistiques. Réessayez dans un instant.",
+      "empty": "Aucune donnée pour cette période. Les compteurs se remplissent dès que l'affichage est consulté sur son adresse publique.",
+      "visits": "Visites",
+      "visits-help": "Nombre de fois où la page de l'affichage a été ouverte. Une borne qui reste allumée compte une seule visite.",
+      "qr-share": "dont {n} via QR code",
+      "unique-visitors": "Visiteurs uniques",
+      "unique-visitors-help": "Nombre d'appareils différents ayant ouvert l'affichage sur la période.",
+      "interactions": "Interactions",
+      "interactions-help": "Gestes effectués sur l'affichage : touchers ou clics, défilements, saisies.",
+      "interactions-detail": "{clicks} touchers ou clics, {scrolls} défilements",
+      "sessions": "Sessions d'interaction",
+      "sessions-help": "Une session commence au premier geste et se termine après 60 secondes sans activité. Sur une borne, chaque personne qui s'en sert compte pour une session.",
+      "avg-duration": "Durée moyenne : {d}",
+      "chart-title": "Jour par jour",
+      "legend-visits": "Visites",
+      "legend-sessions": "Sessions d'interaction",
+      "members-not-counted": "Les consultations faites par les membres connectés de votre organisation ne sont pas comptées."
     },
     "form": {
       "title": "Nouvel affichage",
@@ -296,6 +322,7 @@
       "display-logo": "Logo de votre institution",
       "display-logo-placeholder": "Cliquer ou glisser-déposer un fichier ici (5mo max)",
       "premium-only": "Accessible avec les abonnements payant",
+      "stats-link": "Statistiques",
       "date-filter-title": "1. Date des événements à publier",
       "select-date-filter": "Afficher les événements en fonction de leur date",
       "filter-title": "2. Filtrer les événements",

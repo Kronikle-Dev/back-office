@@ -102,6 +102,26 @@ interface KDisplay {
   maxEventAgeMonths?: number | null, // null/absent/0 = pas de péremption des séances
 }
 
+// Statistiques d'usage d'un affichage (collection `display-usage`, cf. composables/useDisplayTracking.ts)
+interface KDisplayUsage {
+  $id?: string,
+  $createdAt?: string,
+  kind: 'visit' | 'session',
+  displayId: string,
+  source: 'direct' | 'qr',
+  visitorId: string,
+  path?: string,
+  // Champs propres aux sessions d'interaction
+  startedAt?: string,
+  endedAt?: string,
+  durationSeconds?: number,
+  interactions?: number,
+  clicks?: number,
+  scrolls?: number,
+  keys?: number,
+  pageViews?: number,
+}
+
 // --- Import iCalendar (cf. server/utils/ical.ts) ---
 
 interface IcalPreviewEvent {

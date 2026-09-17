@@ -11,12 +11,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     class Appwrite {
         static client: Client = client;
         static account: Account = account;
-        static async getAllPages (databaseid: string, collectionId: string, queries: string[] = [], cursor: string | null = null) : Promise<{ $id: string; [key: string]: any }[]> {
+        static async getAllPages (databaseid: string, collectionId: string, queries: string[] = [], cursor: string | null = null, pageSize: number = 100) : Promise<{ $id: string; [key: string]: any }[]> {
             
             const database = new Databases(this.client)
             const currentQueries = [
               ...queries,
-              Query.limit(100)
+              Query.limit(pageSize)
             ];
       
             if (cursor) {
@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       
             const response = await database.listDocuments(databaseid, collectionId, currentQueries);
       
-            if (response.documents.length < 100) {
+            if (response.documents.length < pageSize) {
               return response.documents;
             }
       
@@ -33,7 +33,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       
             return [
               ...response.documents,
-              ...(await this.getAllPages(databaseid, collectionId, queries, nextCursor))
+              ...(await this.getAllPages(databaseid, collectionId, queries, nextCursor, pageSize))
             ]
           }
     }

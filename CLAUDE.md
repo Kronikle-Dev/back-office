@@ -33,9 +33,9 @@ Variable d'environnement : `NUXT_PUBLIC_APPWRITE_PROJECT` (projet Appwrite, déf
 
 ### Accès à Appwrite
 
-- `app/plugins/appwrite.ts` fournit `$appwrite()` : un singleton avec `client`, `account` et `getAllPages(db, collection, queries)` qui pagine automatiquement par 100 via `cursorAfter`. Utiliser `getAllPages` plutôt que `listDocuments` dès qu'on peut dépasser 100 documents.
+- `app/plugins/appwrite.ts` fournit `$appwrite()` : un singleton avec `client`, `account` et `getAllPages(db, collection, queries, cursor?, pageSize = 100)` qui pagine automatiquement via `cursorAfter`. Utiliser `getAllPages` plutôt que `listDocuments` dès qu'on peut dépasser 100 documents ; `pageSize` peut monter jusqu'à 1000 pour les collections volumineuses (max Appwrite 5000).
 - Le SDK `appwrite` (v26) est importé directement dans les composants pour `Databases`, `Teams`, `Storage`, `Query`, `Permission`, `Role`.
-- Base : `kronikle`. Collections : `event`, `date`, `resource`, `display`, `tag`, `public-type`, `event-type`. Buckets : `event-thumbnails`, `resource-file`, `display-logo`.
+- Base : `kronikle`. Collections : `event`, `date`, `resource`, `display`, `display-usage`, `tag`, `public-type`, `event-type`. Buckets : `event-thumbnails`, `resource-file`, `display-logo`.
 - Les types des documents sont déclarés globalement (sans import) dans `app/types/types.d.ts` : `KEvent`, `KDate`/`KDateApi`, `KResource`, `KDisplay`, `KImportEvent`…
 - **Images** : toujours passer les URLs de fichiers Appwrite par `imgSrc()` (`app/utils/storage.ts`) et utiliser `getFileView`, jamais `getFilePreview` : l'endpoint `/preview` renvoie une 500 sur le serveur 1.9.0.
 
@@ -64,6 +64,12 @@ Appwrite n'a pas de requête « contains » sur les tableaux : les filtres par t
 ### Affichages publics (`/d/:displayid`, `/dqr/:displayid`)
 
 Le segment optionnel `d[[qr]]` permet la variante `/dqr/...` destinée aux QR codes (`qr` = true). Un `KDisplay` définit un `eventFilter` (`month`, `week`, `upcoming`, `past`, `all`, `none`), des filtres tags/publics/types (`excludeFilters` inverse la logique), une liste `events` supplémentaires et un âge maximum optionnel `maxEventAgeMonths` (null/0 = illimité) qui masque les `date` dont `startDateTime` est antérieure à maintenant moins N mois (helper `app/utils/displayExpiration.ts`, appliqué au fetch final des dates, puis élagage des événements sans séance restante). La page résout les IDs à partir des `date`, charge les événements, puis délègue au template `components/template/ExploreHome.vue` (seul template actif : `explore-v3`). Ces templates forcent le thème DaisyUI `urfist` via `useHead`.
+
+### Statistiques d'usage des affichages
+
+Collection `display-usage` (`KDisplayUsage`) alimentée par `app/composables/useDisplayTracking.ts`, monté une seule fois dans `layouts/display.vue` (il survit donc aux navigations internes). Deux types de documents : `visit` (un par chargement de page publique, avec un `visitorId` aléatoire persisté en `localStorage`) et `session` (une « session d'interaction » : démarre au premier geste, chaque clic/défilement/saisie relance un compte à rebours de 60 s, close et envoyée à son expiration ou au déchargement de la page). Les défilements sont détectés par `wheel`/`touchmove`, pas par `scroll`, car `ExploreHome` fait un `scrollTo()` programmatique au montage. Les écritures passent par l'API REST en `fetch` keepalive (pas le SDK) pour survivre à la fermeture de l'onglet ; les membres connectés (prévisualisation) ne sont pas comptés.
+
+Permissions de la collection : `create: any`, `read: users`, rien d'autre, sécurité par document désactivée. Un visiteur anonyme ne peut pas poser `read("team:…")` sur le document qu'il crée, donc tout compte connecté peut techniquement lire ces compteurs : la page `/display/:id/stats` (`pages/display/[displayid]/stats.vue`) vérifie l'organisation à partir du document `display`, jamais depuis les documents d'usage. Elle agrège côté client sur 7/30/90 jours (`getAllPages` avec `pageSize` 1000).
 
 ### Routes serveur (Nitro)
 

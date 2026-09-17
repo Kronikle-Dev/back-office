@@ -34,6 +34,10 @@ try {
 
 <template>
   <div class="max-w-xl mx-auto prose">
+    <NuxtLink :to="`/display/${displayid}/stats`" class="btn btn-outline btn-sm no-underline">
+      <svg class="h-4 w-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z" /></svg>
+      {{ $t('display.form.stats-link') }}
+    </NuxtLink>
     <DisplayForm :display="display"></DisplayForm>
   </div>
 </template>
