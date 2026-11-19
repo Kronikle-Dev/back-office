@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projet
 
-Back-office **Kronikle** : application Nuxt 4 (Vue 3, TypeScript) qui permet à une organisation de gérer ses événements, de les enrichir de ressources documentaires et de les publier sur des « affichages » publics (écrans, QR codes). Le backend est une instance **Appwrite** auto-hébergée (`https://appwrite.kronikle.eu/v1`, serveur 1.9.0) ; il n'y a pas de base de données ni d'API métier dans ce dépôt.
+Back-office **Kronikle** : application Nuxt 4 (Vue 3, TypeScript) qui permet à une organisation de gérer ses événements, de les enrichir de ressources documentaires et de les publier sur des « affichages » publics (écrans, QR codes). Le backend est une instance **Appwrite** auto-hébergée (`https://appwrite.krlx.fr/v1`, serveur 1.9.0) ; il n'y a pas de base de données ni d'API métier dans ce dépôt.
 
 L'interface, les commentaires et les messages de commit sont en français. Une seule locale (`fr`) est déclarée dans `locales/fr.json` ; tout texte visible passe par `$t(...)`.
 

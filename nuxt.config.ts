@@ -72,7 +72,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       AppwriteProject: import.meta.env.NUXT_PUBLIC_APPWRITE_PROJECT || 'kronikle',
-      AppwriteEndpoint: "https://appwrite.kronikle.eu/v1",
+      AppwriteEndpoint: "https://appwrite.krlx.fr/v1",
       Hostname: import.meta.env.NUXT_PUBLIC_APPWRITE_PROJECT ? 'https://app.kronikle.eu' : 'http://localhost:3000',
     }
   },
